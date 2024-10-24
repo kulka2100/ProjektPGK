@@ -6,14 +6,17 @@ void Game::initWindow(){
 }
 
 void Game::initPlayer() {
-	this->player = new Player(200.0);
+	this->player = new Player(sf::Vector2f(100.f, 400.f), 500.0);
 }
 
 void Game::initBackground() {
-	this->background = new Background("textury/tlo1.jpg");
+	this->background = new Background("textury/tlo3.png");
+	this->background->setSpeed(200.0f);
 }
 
-Game::Game() {
+Game::Game(int width, int height) {
+	this->width = width;
+	this->height = height;
 	this->initWindow();
 	this->menu = new Menu(800, 600);
 	isMenuActive = true;
@@ -30,6 +33,7 @@ sf::RenderWindow& Game::getWindow() {
 }
 
 void Game::updatePlayer(float deltaTime) {
+
 	this->player->update(deltaTime);
 }
 
@@ -42,7 +46,8 @@ void Game::renderBackground() {
 }
 
 void Game::update() {
-	float deltaTime = clock.restart().asSeconds(); // deltaTime w sekundach
+	// deltaTime w sekundach
+	float deltaTime = clock.restart().asSeconds();
 	while (this->window.pollEvent(event)) {
 		if (event.type == sf::Event::Closed) {
 			this->window.close();
@@ -78,7 +83,12 @@ void Game::update() {
 			}
 		}
 	}
+
+	sf::Vector2f playerPosition = player->getPlayerPosition();	
 	this->updatePlayer(deltaTime);
+	// T³o pod¹¿a za postaci¹
+	this->background->followPlayer(playerPosition, window);
+	this->background->update(deltaTime);
 	
 }
 

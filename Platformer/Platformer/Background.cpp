@@ -10,33 +10,21 @@ Background::Background(const std::string& filename){
 	position = sf::Vector2f(0.0f, 0.0f);
 }
 
-void Background::adjustBackground(sf::RenderWindow& window) {
-    sf::Vector2u textureSize = textureBackground.getSize();
-    sf::Vector2u windowSize = window.getSize();
 
-    sprite.setScale(
-        float(windowSize.x) / textureSize.x,
-        float(windowSize.y) / textureSize.y
-    );
+void Background::followPlayer( sf::Vector2f& playerPosition, sf::RenderWindow& window) {
+
 }
 
+
+
 void Background::update(float deltaTime) {
-    // Przesuwanie t³a, jeœli jest ustawiona prêdkoœæ
-    if (speed != 0.0f) {
-        position.x -= speed * deltaTime;
-
-        // Jeœli t³o przesunie siê za ekran, zresetuj pozycjê
-        if (position.x + textureBackground.getSize().x <= 0) {
-            position.x = 0;
-        }
-
-        sprite.setPosition(position);
-    }
+    sprite.setPosition(position);
 }
 
 void Background::render(sf::RenderTarget& target) {
     target.draw(sprite);
     // Rysowanie dodatkowego sprite'a, aby stworzyæ p³ynne przesuwanie t³a
+    //Sprawdzenie czy tlo jest przesuwane
     if (speed != 0.0f) {
         sf::Sprite secondSprite = sprite;
         secondSprite.setPosition(position.x + textureBackground.getSize().x, position.y);

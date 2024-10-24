@@ -3,7 +3,7 @@
 
 int main()
 {
-    Game game;
+    Game game(800,600);
     while (game.getWindow().isOpen()) {
         game.update();
         game.render();

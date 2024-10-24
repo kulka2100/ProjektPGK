@@ -14,8 +14,14 @@ public:
 
 	void render(sf::RenderTarget& target);
 
+	// Metoda do ustawienia prêdkoœci t³a
+	void setSpeed(float newSpeed) {
+		speed = newSpeed;
+	}
 
-	void adjustBackground(sf::RenderWindow& window);
+
+	void followPlayer( sf::Vector2f& playerPosition, sf::RenderWindow& window);
+
 
 };
 

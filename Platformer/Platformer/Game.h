@@ -6,6 +6,8 @@
 class Game
 {
 private:
+	int width; 
+	int height; 
 	sf::Event event;
 	sf::RenderWindow window;
 	sf::Clock clock;
@@ -22,7 +24,7 @@ private:
 
 public:
 	
-	Game();
+	Game(int width, int height);
 
 	~Game();
 
@@ -38,5 +40,13 @@ public:
 	void update();
 
 	void render();
+
+	int getWidth() {
+		return width;
+	}
+
+	int getHeight() {
+		return height;
+	}
 };
 

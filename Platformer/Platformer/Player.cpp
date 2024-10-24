@@ -7,14 +7,14 @@ void Player::initTexture() {
 	sf::Texture tempTexture;
 
     for (int i = 1; i <= 4; i++) {
-        if (!tempTexture.loadFromFile("textury/right" + std::to_string(i) + ".png")) {
+        if (!tempTexture.loadFromFile("textury/prawo" + std::to_string(i) + ".png")) {
             std::cout << "Nie uda³o siê za³adowaæ tekstury right" + std::to_string(i) + ".png\n";
         }
         this->rightTextures.push_back(tempTexture);
     }
 
     for (int i = 1; i <= 4; i++) {
-        if (!tempTexture.loadFromFile("textury/left" + std::to_string(i) + ".png")) {
+        if (!tempTexture.loadFromFile("textury/lewo" + std::to_string(i) + ".png")) {
             std::cout << "Nie uda³o siê za³adowaæ tekstury right" + std::to_string(i) + ".png\n";
         }
         this->leftTextures.push_back(tempTexture);
@@ -39,16 +39,17 @@ void Player::initSprite() {
     }
 
     // Mo¿na ustawiæ domyœln¹ pozycjê sprite'a, jeœli chcesz
-    this->sprite.setPosition(characterX, characterY); // Przyk³adowa pozycja startowa
-	
+    this->sprite.setPosition(sf::Vector2f(playerPosition));
 }
 
 
 
-Player::Player(float speed) {
+Player::Player(sf::Vector2f playerPosition, float speed) {
+    this->playerPosition = playerPosition;
+    this->characterSpeed = speed;
+
 	this->initTexture();
 	this->initSprite();
-    this->characterSpeed = speed;
 
     this->animationTimer = 0.0f;
     this->animationTimerMax = 0.1f; // Zmieniaj klatkê co 10 jednostek czasu
@@ -59,26 +60,41 @@ Player::~Player()
 {
 }
 
+
+
+
 void Player::update(float deltaTime) {
     this->animationTimer += deltaTime; // Zwiêkszamy timer co klatkê
     // SprawdŸ, czy nale¿y zmieniæ klatkê
     if (this->animationTimer >= this->animationTimerMax) {
-        std::cout << "animiation " << animationIndex << std::endl;
-
         this->animationIndex++;
         if (this->animationIndex >= this->rightTextures.size()) {
             this->animationIndex = 0;
         }
-
         // Reset timer
         this->animationTimer = 0.0f;
+    }
+
+    std::cout << "pos x: " << getPlayerPosition().x << " y: " << getPlayerPosition().y << std::endl;
+
+    if (getPlayerPosition().x > 700) {
+        this->sprite.setPosition(700.f, getPlayerPosition().y);
+    }
+    else if (getPlayerPosition().x < 10) {
+        this->sprite.setPosition(10.f, getPlayerPosition().y);
+    }
+    else if (getPlayerPosition().y < 10) {
+        this->sprite.setPosition(getPlayerPosition().x, 10);
+    }
+
+    else if (getPlayerPosition().y > 490) {
+        this->sprite.setPosition(getPlayerPosition().x, 490);
     }
 
 
     // Ruch w prawo
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         this->sprite.move(characterSpeed * deltaTime, 0.0);
-        //std::cout << "index " << animationIndex << std::endl;
         this->sprite.setTexture(this->rightTextures[this->animationIndex]);
     }
     // Ruch w lewo
@@ -93,6 +109,14 @@ void Player::update(float deltaTime) {
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         this->sprite.move(0.0, .3);
     }
+
+    else if (sf::Event::KeyReleased) {
+        if (sf::Keyboard::D) {
+            this->sprite.setTexture(this->rightTextures[0]);
+        }
+     
+    }
+
 
 }
 
