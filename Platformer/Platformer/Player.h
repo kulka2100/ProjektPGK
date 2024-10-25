@@ -2,12 +2,13 @@
 class Player
 {
 private:
-	sf::Sprite sprite;
+	sf::Sprite playerSprite;
 	std::vector<sf::Texture> rightTextures;
 	std::vector<sf::Texture> leftTextures;
 	std::vector<sf::Texture> upTextures;
 	std::vector<sf::Texture> downTextures;
 	sf::Texture upTexture;
+
 
 	// Zegar animacji
 	float animationTimer;               
@@ -34,7 +35,15 @@ public:
 
 	//Metoda zwracajaca biezaca pozycje postaci
 	sf::Vector2f getPlayerPosition() {
-		return this->sprite.getPosition();
+		return this->playerSprite.getPosition();
+	}
+
+	sf::Sprite getPlayerSprite() {
+		return playerSprite;
+	}
+
+	float getCharacterSpeed() {
+		return characterSpeed;
 	}
 };
 

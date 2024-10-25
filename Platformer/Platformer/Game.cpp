@@ -10,7 +10,7 @@ void Game::initPlayer() {
 }
 
 void Game::initBackground() {
-	this->background = new Background("textury/tlo3.png");
+	this->background = new Background("textury/tlo3.png", this->player);
 	this->background->setSpeed(200.0f);
 }
 
@@ -87,8 +87,7 @@ void Game::update() {
 	sf::Vector2f playerPosition = player->getPlayerPosition();	
 	this->updatePlayer(deltaTime);
 	// T³o pod¹¿a za postaci¹
-	this->background->followPlayer(playerPosition, window);
-	this->background->update(deltaTime);
+	this->background->update(deltaTime, player->getCharacterSpeed());
 	
 }
 

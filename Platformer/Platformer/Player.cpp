@@ -8,21 +8,21 @@ void Player::initTexture() {
 
     for (int i = 1; i <= 4; i++) {
         if (!tempTexture.loadFromFile("textury/prawo" + std::to_string(i) + ".png")) {
-            std::cout << "Nie uda³o siê za³adowaæ tekstury right" + std::to_string(i) + ".png\n";
+            std::cout << "Nie uda³o siê za³adowaæ tekstury prawo" + std::to_string(i) + ".png\n";
         }
         this->rightTextures.push_back(tempTexture);
     }
 
     for (int i = 1; i <= 4; i++) {
         if (!tempTexture.loadFromFile("textury/lewo" + std::to_string(i) + ".png")) {
-            std::cout << "Nie uda³o siê za³adowaæ tekstury right" + std::to_string(i) + ".png\n";
+            std::cout << "Nie uda³o siê za³adowaæ tekstury lewo" + std::to_string(i) + ".png\n";
         }
         this->leftTextures.push_back(tempTexture);
     }
 
-    for (int i = 1; i <= 4; i++) {
+    for (int i = 1; i <= 2; i++) {
         if (!tempTexture.loadFromFile("textury/up" + std::to_string(i) + ".png")) {
-            std::cout << "Nie uda³o siê za³adowaæ tekstury right" + std::to_string(i) + ".png\n";
+            std::cout << "Nie uda³o siê za³adowaæ tekstury gora" + std::to_string(i) + ".png\n";
         }
         this->upTextures.push_back(tempTexture);
     }
@@ -32,14 +32,14 @@ void Player::initSprite() {
     // SprawdŸ, czy wektor tekstur nie jest pusty
     if (!this->rightTextures.empty()) {
         // Ustaw pierwsz¹ klatkê animacji ruchu w prawo jako pocz¹tkow¹ teksturê
-        this->sprite.setTexture(this->rightTextures[0]);
+        this->playerSprite.setTexture(this->rightTextures[0]);
     }
     else {
         std::cout << "Brak tekstur do ustawienia dla sprite'a!\n";
     }
 
     // Mo¿na ustawiæ domyœln¹ pozycjê sprite'a, jeœli chcesz
-    this->sprite.setPosition(sf::Vector2f(playerPosition));
+    this->playerSprite.setPosition(sf::Vector2f(playerPosition));
 }
 
 
@@ -75,44 +75,44 @@ void Player::update(float deltaTime) {
         this->animationTimer = 0.0f;
     }
 
-    std::cout << "pos x: " << getPlayerPosition().x << " y: " << getPlayerPosition().y << std::endl;
-
+    // Zatrzymywanie postaci gdy dojdzie do krawedzi
     if (getPlayerPosition().x > 700) {
-        this->sprite.setPosition(700.f, getPlayerPosition().y);
+        this->playerSprite.setPosition(700.f, getPlayerPosition().y);
     }
     else if (getPlayerPosition().x < 10) {
-        this->sprite.setPosition(10.f, getPlayerPosition().y);
+       this->playerSprite.setPosition(10.f, getPlayerPosition().y);
     }
     else if (getPlayerPosition().y < 10) {
-        this->sprite.setPosition(getPlayerPosition().x, 10);
+        this->playerSprite.setPosition(getPlayerPosition().x, 10);
     }
 
     else if (getPlayerPosition().y > 490) {
-        this->sprite.setPosition(getPlayerPosition().x, 490);
+       this->playerSprite.setPosition(getPlayerPosition().x, 490);
     }
+
 
 
     // Ruch w prawo
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        this->sprite.move(characterSpeed * deltaTime, 0.0);
-        this->sprite.setTexture(this->rightTextures[this->animationIndex]);
+        this->playerSprite.move(characterSpeed * deltaTime, 0.0);
+        this->playerSprite.setTexture(this->rightTextures[this->animationIndex]);
     }
     // Ruch w lewo
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        this->sprite.move(-characterSpeed * deltaTime, 0.0);
-        this->sprite.setTexture(this->leftTextures[this->animationIndex]);
+        this->playerSprite.move(-characterSpeed * deltaTime, 0.0);
+        this->playerSprite.setTexture(this->leftTextures[this->animationIndex]);
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-        this->sprite.move(0.0, -50.0 * deltaTime);
-        this->sprite.setTexture(this->upTextures[this->animationIndex]);
+        this->playerSprite.move(0.0, -50.0 * deltaTime);
+        this->playerSprite.setTexture(this->upTextures[this->animationIndex]);
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        this->sprite.move(0.0, .3);
+        this->playerSprite.move(0.0, .3);
     }
 
     else if (sf::Event::KeyReleased) {
         if (sf::Keyboard::D) {
-            this->sprite.setTexture(this->rightTextures[0]);
+            this->playerSprite.setTexture(this->rightTextures[0]);
         }
      
     }
@@ -121,6 +121,6 @@ void Player::update(float deltaTime) {
 }
 
 void Player::render(sf::RenderTarget& target) {
-	target.draw(this->sprite);
+	target.draw(this->playerSprite);
 }
 

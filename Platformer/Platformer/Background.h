@@ -1,16 +1,20 @@
 #pragma once
+#include "Player.h"
 class Background
 {
 private:
 	sf::Texture textureBackground;
-	sf::Sprite sprite;
+	sf::Sprite backgroundSprite;
 	float speed;
 	sf::Vector2f position;
 
+	Player* player;
+
 public:
+	Background(const std::string& filname, Player *player);
 	Background(const std::string& filname);
 
-	void update(float deltaTime);
+	void update(float deltaTime, float characterSpeed);
 
 	void render(sf::RenderTarget& target);
 
@@ -20,7 +24,14 @@ public:
 	}
 
 
-	void followPlayer( sf::Vector2f& playerPosition, sf::RenderWindow& window);
+
+	sf::Sprite& getBackgroundSprite() {
+		return backgroundSprite;
+	}
+
+	sf::Texture& getBackgroundTexture() {
+		return textureBackground;
+	}
 
 
 };
