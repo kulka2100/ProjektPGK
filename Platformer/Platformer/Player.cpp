@@ -114,7 +114,6 @@ void Player::update(float deltaTime) {
         if (sf::Keyboard::D) {
             this->playerSprite.setTexture(this->rightTextures[0]);
         }
-     
     }
 
 
