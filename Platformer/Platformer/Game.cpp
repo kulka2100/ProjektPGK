@@ -17,15 +17,17 @@ void Game::initBackground() {
 Game::Game(int width, int height) {
 	this->width = width;
 	this->height = height;
-	this->initWindow();
 	this->menu = new Menu(800, 600);
 	isMenuActive = true;
+
+	this->initWindow();
 	this->initPlayer();
 	this->initBackground();
 }
 
 Game::~Game(){
 	delete this->player;
+	delete this->background;
 }
 
 sf::RenderWindow& Game::getWindow() {
@@ -34,7 +36,7 @@ sf::RenderWindow& Game::getWindow() {
 
 void Game::updatePlayer(float deltaTime) {
 
-	this->player->update(deltaTime);
+	this->player->update(deltaTime, event);
 }
 
 void Game::renderPlayer() {
@@ -52,6 +54,8 @@ void Game::update() {
 		if (event.type == sf::Event::Closed) {
 			this->window.close();
 		}
+
+
 
 
 		if(isMenuActive) {

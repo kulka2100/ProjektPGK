@@ -6,14 +6,14 @@
 void Player::initTexture() {
 	sf::Texture tempTexture;
 
-    for (int i = 1; i <= 4; i++) {
+    for (int i = 1; i <= 5; i++) {
         if (!tempTexture.loadFromFile("textury/prawo" + std::to_string(i) + ".png")) {
             std::cout << "Nie uda³o siê za³adowaæ tekstury prawo" + std::to_string(i) + ".png\n";
         }
         this->rightTextures.push_back(tempTexture);
     }
 
-    for (int i = 1; i <= 4; i++) {
+    for (int i = 1; i <= 5; i++) {
         if (!tempTexture.loadFromFile("textury/lewo" + std::to_string(i) + ".png")) {
             std::cout << "Nie uda³o siê za³adowaæ tekstury lewo" + std::to_string(i) + ".png\n";
         }
@@ -48,6 +48,7 @@ Player::Player(sf::Vector2f playerPosition, float speed) {
     this->playerPosition = playerPosition;
     this->characterSpeed = speed;
 
+    bulletTexture.loadFromFile("textury/bullet.png");
 	this->initTexture();
 	this->initSprite();
 
@@ -61,9 +62,17 @@ Player::~Player()
 }
 
 
+void Player::shoot() {
+    // Pozycja pocisku zaczyna siê przy postaci
+    sf::Vector2f startPos = this->playerSprite.getPosition();
+    // Kierunek, np. strza³ w prawo
+    sf::Vector2f direction(bulletDir, 0.0f);
+    bullets.emplace_back(bulletTexture, startPos, direction, 500.f);
+}
 
 
-void Player::update(float deltaTime) {
+
+void Player::update(float deltaTime, sf::Event &event) {
     this->animationTimer += deltaTime; // Zwiêkszamy timer co klatkê
     // SprawdŸ, czy nale¿y zmieniæ klatkê
     if (this->animationTimer >= this->animationTimerMax) {
@@ -94,32 +103,77 @@ void Player::update(float deltaTime) {
 
     // Ruch w prawo
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        //Skok podczas ruchu w prawo
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
+            verticalVelocity = JUMP_STRENGTH;
+            isJumping = true;
+        }
         this->playerSprite.move(characterSpeed * deltaTime, 0.0);
         this->playerSprite.setTexture(this->rightTextures[this->animationIndex]);
+        bulletDir = 1.0;
     }
     // Ruch w lewo
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        //Skok podczas ruchu w lewo
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
+            verticalVelocity = JUMP_STRENGTH;
+            isJumping = true;
+        }
         this->playerSprite.move(-characterSpeed * deltaTime, 0.0);
         this->playerSprite.setTexture(this->leftTextures[this->animationIndex]);
+        bulletDir = -1.0;
     }
+    //Skok
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
+        verticalVelocity = JUMP_STRENGTH;
+        isJumping = true;
+     
+    }
+    //Strzaly
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-        this->playerSprite.move(0.0, -50.0 * deltaTime);
-        this->playerSprite.setTexture(this->upTextures[this->animationIndex]);
-    }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        this->playerSprite.move(0.0, .3);
+        shoot();
     }
 
-    else if (sf::Event::KeyReleased) {
-        if (sf::Keyboard::D) {
+    if (event.type == sf::Event::KeyReleased) {
+        if (event.key.code == sf::Keyboard::D) {
             this->playerSprite.setTexture(this->rightTextures[0]);
+        }
+        else if (event.key.code == sf::Keyboard::A) {
+            this->playerSprite.setTexture(this->leftTextures[0]);
         }
     }
 
+    // Dodawanie grawitacji, aby postaæ wraca³a na ziemiê
+    if (isJumping) {
+        verticalVelocity += GRAVITY * deltaTime;
+        playerSprite.move(0, verticalVelocity);
+
+        // Sprawdzanie, czy postaæ dotknê³a ziemi
+        if (playerSprite.getPosition().y >= playerPosition.y) {
+            playerSprite.setPosition(playerSprite.getPosition().x, playerPosition.y);
+            verticalVelocity = 0;
+            isJumping = false;
+        }
+    }
+
+    for (auto it = bullets.begin(); it != bullets.end(); ) {
+        it->update(deltaTime);
+        if (it->isOffScreen()) {  // Dodaj metodê `isOffScreen()` w klasie Bullet
+            it = bullets.erase(it); // Usuñ pocisk, jeœli jest poza ekranem
+        }
+        else {
+            ++it;
+        }
+    }
 
 }
 
-void Player::render(sf::RenderTarget& target) {
-	target.draw(this->playerSprite);
-}
+    void Player::render(sf::RenderTarget &target) {
+        target.draw(this->playerSprite);
+
+        for (auto& bullet : bullets) {
+            bullet.render(&target);
+        }
+    }
+
 

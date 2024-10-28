@@ -1,4 +1,5 @@
 #pragma once
+#include "Bullet.h"
 class Player
 {
 private:
@@ -8,6 +9,10 @@ private:
 	std::vector<sf::Texture> upTextures;
 	std::vector<sf::Texture> downTextures;
 	sf::Texture upTexture;
+
+	std::vector<Bullet> bullets;
+	sf::Texture bulletTexture;
+	float bulletDir;
 
 
 	// Zegar animacji
@@ -20,6 +25,12 @@ private:
 	sf::Vector2f playerPosition;
 	// Szybkoœæ poruszania postaci
 	float characterSpeed; 
+	//Grawitacja
+	const float GRAVITY = 5.7f;
+	const float JUMP_STRENGTH = -0.75f;
+	float verticalVelocity = 0.0f;
+	bool isJumping = false;
+
 
 	void initSprite();
 	void initTexture();
@@ -29,9 +40,8 @@ public:
 
 	~Player();
 
-	void render(sf::RenderTarget& target);
 
-	void update(float deltaTime);
+
 
 	//Metoda zwracajaca biezaca pozycje postaci
 	sf::Vector2f getPlayerPosition() {
@@ -45,5 +55,13 @@ public:
 	float getCharacterSpeed() {
 		return characterSpeed;
 	}
+
+	void shoot();
+
+
+
+	void update(float deltaTime,sf::Event &event);
+
+	void render(sf::RenderTarget& target);
 };
 

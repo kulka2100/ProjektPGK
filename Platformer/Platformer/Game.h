@@ -45,7 +45,7 @@ public:
 		return width;
 	}
 
-	int getHeight() {
+ 	int getHeight() {
 		return height;
 	}
 };
