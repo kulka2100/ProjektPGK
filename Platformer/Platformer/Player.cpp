@@ -20,12 +20,7 @@ void Player::initTexture() {
         this->leftTextures.push_back(tempTexture);
     }
 
-    for (int i = 1; i <= 2; i++) {
-        if (!tempTexture.loadFromFile("textury/up" + std::to_string(i) + ".png")) {
-            std::cout << "Nie uda³o siê za³adowaæ tekstury gora" + std::to_string(i) + ".png\n";
-        }
-        this->upTextures.push_back(tempTexture);
-    }
+
 }
 
 void Player::initSprite() {
@@ -48,7 +43,7 @@ Player::Player(sf::Vector2f playerPosition, float speed) {
     this->playerPosition = playerPosition;
     this->characterSpeed = speed;
 
-    bulletTexture.loadFromFile("textury/bullet.png");
+    bulletTexture.loadFromFile("textury/bullet1.png");
 	this->initTexture();
 	this->initSprite();
 
@@ -61,44 +56,69 @@ Player::~Player()
 {
 }
 
-
-void Player::shoot() {
-    // Pozycja pocisku zaczyna siê przy postaci
-    sf::Vector2f startPos = this->playerSprite.getPosition();
-    // Kierunek, np. strza³ w prawo
-    sf::Vector2f direction(bulletDir, 0.0f);
-    bullets.emplace_back(bulletTexture, startPos, direction, 500.f);
+void Player::updateAnimations(float deltaTime) {
+    {
+        this->animationTimer += deltaTime; // Zwiêkszamy timer co klatkê
+        // SprawdŸ, czy nale¿y zmieniæ klatkê
+        if (this->animationTimer >= this->animationTimerMax) {
+            this->animationIndex++;
+            if (this->animationIndex >= this->rightTextures.size()) {
+                this->animationIndex = 0;
+            }
+            // Reset timer
+            this->animationTimer = 0.0f;
+        }
+    }
 }
 
 
-
-void Player::update(float deltaTime, sf::Event &event) {
-    this->animationTimer += deltaTime; // Zwiêkszamy timer co klatkê
-    // SprawdŸ, czy nale¿y zmieniæ klatkê
-    if (this->animationTimer >= this->animationTimerMax) {
-        this->animationIndex++;
-        if (this->animationIndex >= this->rightTextures.size()) {
-            this->animationIndex = 0;
-        }
-        // Reset timer
-        this->animationTimer = 0.0f;
-    }
-
-    // Zatrzymywanie postaci gdy dojdzie do krawedzi
+void Player::holdPlayerAtEdges() {
     if (getPlayerPosition().x > 700) {
         this->playerSprite.setPosition(700.f, getPlayerPosition().y);
     }
     else if (getPlayerPosition().x < 10) {
-       this->playerSprite.setPosition(10.f, getPlayerPosition().y);
+        this->playerSprite.setPosition(10.f, getPlayerPosition().y);
     }
     else if (getPlayerPosition().y < 10) {
         this->playerSprite.setPosition(getPlayerPosition().x, 10);
     }
 
     else if (getPlayerPosition().y > 490) {
-       this->playerSprite.setPosition(getPlayerPosition().x, 490);
+        this->playerSprite.setPosition(getPlayerPosition().x, 490);
     }
+}
 
+
+void Player::shoot() {
+    // Pozycja pocisku zaczyna siê przy postaci
+    sf::Vector2f startPos = this->playerSprite.getPosition();
+    // Kierunek, np. strza³ w prawo
+    sf::Vector2f direction(bulletDir, 0.0f);
+    bullets.emplace_back(bulletTexture, startPos, direction, 200.f);
+}
+
+void Player::gravitation(float deltaTime) {
+    if (isJumping) {
+        verticalVelocity += GRAVITY * deltaTime;
+        playerSprite.move(0, verticalVelocity);
+
+        // Sprawdzanie, czy postaæ dotknê³a ziemi
+        if (playerSprite.getPosition().y >= playerPosition.y) {
+            playerSprite.setPosition(playerSprite.getPosition().x, playerPosition.y);
+            verticalVelocity = 0;
+            isJumping = false;
+        }
+    }
+}
+
+
+
+void Player::update(float deltaTime, sf::Event &event) {
+    //Animowanie textur
+    updateAnimations(deltaTime);
+
+    // Zatrzymywanie postaci gdy dojdzie do krawedzi
+    holdPlayerAtEdges();
 
 
     // Ruch w prawo
@@ -144,18 +164,9 @@ void Player::update(float deltaTime, sf::Event &event) {
     }
 
     // Dodawanie grawitacji, aby postaæ wraca³a na ziemiê
-    if (isJumping) {
-        verticalVelocity += GRAVITY * deltaTime;
-        playerSprite.move(0, verticalVelocity);
+    gravitation(deltaTime);
 
-        // Sprawdzanie, czy postaæ dotknê³a ziemi
-        if (playerSprite.getPosition().y >= playerPosition.y) {
-            playerSprite.setPosition(playerSprite.getPosition().x, playerPosition.y);
-            verticalVelocity = 0;
-            isJumping = false;
-        }
-    }
-
+    //Akutalizacja pociskow
     for (auto it = bullets.begin(); it != bullets.end(); ) {
         it->update(deltaTime);
         if (it->isOffScreen()) {  // Dodaj metodê `isOffScreen()` w klasie Bullet

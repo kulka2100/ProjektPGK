@@ -6,9 +6,7 @@ private:
 	sf::Sprite playerSprite;
 	std::vector<sf::Texture> rightTextures;
 	std::vector<sf::Texture> leftTextures;
-	std::vector<sf::Texture> upTextures;
-	std::vector<sf::Texture> downTextures;
-	sf::Texture upTexture;
+
 
 	std::vector<Bullet> bullets;
 	sf::Texture bulletTexture;
@@ -56,10 +54,17 @@ public:
 		return characterSpeed;
 	}
 
+	void updateAnimations(float deltaTime);
+
 	void shoot();
 
+	// Dodawanie grawitacji, aby postaæ wraca³a na ziemiê
+	void gravitation(float deltaTime);
 
+	//Zatrzymanie postaci gdy dojdzie do krawedzi
+	void holdPlayerAtEdges();
 
+	//Aktualizacja ruchu postaci
 	void update(float deltaTime,sf::Event &event);
 
 	void render(sf::RenderTarget& target);
