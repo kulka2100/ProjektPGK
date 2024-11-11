@@ -7,11 +7,14 @@ private:
 	std::vector<sf::Texture> rightTextures;
 	std::vector<sf::Texture> leftTextures;
 
+	//Grawitacja
+	const float GRAVITY = 980.f;
+	const float JUMP_STRENGTH = -350.f;
+	float verticalVelocity = 0.0f;
 
 	std::vector<Bullet> bullets;
 	sf::Texture bulletTexture;
 	float bulletDir;
-
 
 	// Zegar animacji
 	float animationTimer;               
@@ -23,11 +26,9 @@ private:
 	sf::Vector2f playerPosition;
 	// Szybkoœæ poruszania postaci
 	float characterSpeed; 
-	//Grawitacja
-	const float GRAVITY = 5.7f;
-	const float JUMP_STRENGTH = -0.75f;
-	float verticalVelocity = 0.0f;
+	//Zmienne stanu
 	bool isJumping = false;
+	bool isOnGround = false;
 
 
 	void initSprite();
@@ -37,9 +38,6 @@ public:
 	Player(sf::Vector2f playerPosition,float speed);
 
 	~Player();
-
-
-
 
 	//Metoda zwracajaca biezaca pozycje postaci
 	sf::Vector2f getPlayerPosition() {
@@ -54,6 +52,10 @@ public:
 		return characterSpeed;
 	}
 
+	sf::FloatRect getPlayerBounds() {
+		return playerSprite.getGlobalBounds();
+	}
+
 	void updateAnimations(float deltaTime);
 
 	void shoot();
@@ -63,6 +65,10 @@ public:
 
 	//Zatrzymanie postaci gdy dojdzie do krawedzi
 	void holdPlayerAtEdges();
+
+	void setOnGround(bool isOnGround);
+
+	void setVerticalVelocity(float verticalVelocity);
 
 	//Aktualizacja ruchu postaci
 	void update(float deltaTime,sf::Event &event);

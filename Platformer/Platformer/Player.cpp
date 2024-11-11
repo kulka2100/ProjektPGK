@@ -23,7 +23,7 @@ void Player::initTexture() {
 
 }
 
-void Player::initSprite() {
+void Player::initSprite() { 
     // SprawdŸ, czy wektor tekstur nie jest pusty
     if (!this->rightTextures.empty()) {
         // Ustaw pierwsz¹ klatkê animacji ruchu w prawo jako pocz¹tkow¹ teksturê
@@ -98,22 +98,32 @@ void Player::shoot() {
 }
 
 void Player::gravitation(float deltaTime) {
-    if (isJumping) {
+    // Jeœli gracz nie dotyka ziemi ani platformy, zastosuj grawitacjê
+    if (!isOnGround) {
         verticalVelocity += GRAVITY * deltaTime;
-        playerSprite.move(0, verticalVelocity);
+        playerSprite.move(0, verticalVelocity * deltaTime);
 
         // Sprawdzanie, czy postaæ dotknê³a ziemi
         if (playerSprite.getPosition().y >= playerPosition.y) {
             playerSprite.setPosition(playerSprite.getPosition().x, playerPosition.y);
             verticalVelocity = 0;
             isJumping = false;
+            isOnGround = true;
         }
     }
 }
 
+void Player::setOnGround(bool isOnGround) {
+    this->isOnGround = isOnGround;
+}
+
+void Player::setVerticalVelocity(float verticalVelocity) {
+    this->verticalVelocity = verticalVelocity;
+}
 
 
 void Player::update(float deltaTime, sf::Event &event) {
+    bool isOnPlatform = false;
     //Animowanie textur
     updateAnimations(deltaTime);
 
@@ -144,9 +154,10 @@ void Player::update(float deltaTime, sf::Event &event) {
         bulletDir = -1.0;
     }
     //Skok
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         verticalVelocity = JUMP_STRENGTH;
         isJumping = true;
+        isOnGround = false;
      
     }
     //Strzaly
@@ -177,14 +188,19 @@ void Player::update(float deltaTime, sf::Event &event) {
         }
     }
 
+    // Jeœli gracz nie jest na ¿adnej platformie, w³¹cz grawitacjê
+    if (!isOnPlatform) {
+        setOnGround(false);
+    }
+
 }
 
-    void Player::render(sf::RenderTarget &target) {
+void Player::render(sf::RenderTarget &target) {
         target.draw(this->playerSprite);
 
         for (auto& bullet : bullets) {
             bullet.render(&target);
         }
-    }
+}
 
 

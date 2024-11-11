@@ -22,6 +22,13 @@ Background::Background(const std::string& filename) {
 }
 
 
+sf::Sprite& Background::getBackgroundSprite() {
+    return backgroundSprite;
+}
+
+sf::Texture& Background::getBackgroundTexture() {
+    return textureBackground;
+}
 
 void Background::update(float deltaTime, float characterSpeed) {
     // Aktualizujemy pozycjê sprite'a na podstawie nowej pozycji
@@ -31,11 +38,22 @@ void Background::update(float deltaTime, float characterSpeed) {
         position.x -= characterSpeed * deltaTime;
         // Aktualizujemy pozycjê sprite'a na podstawie nowej pozycji
         backgroundSprite.setPosition(position);
+        isUpdated = true;
+        moveRight = true;
+
     }
     else if (player->getPlayerPosition().x < 10  && position.x < 0) {
         position.x += characterSpeed * deltaTime;
         // Aktualizujemy pozycjê sprite'a na podstawie nowej pozycji
         backgroundSprite.setPosition(position);
+        isUpdated = true;
+        moveLeft = true;
+    }
+    else {
+        isUpdated = false;
+        moveLeft = false;
+        moveRight = false;
+
     }
 
     backgroundSprite.setPosition(position);

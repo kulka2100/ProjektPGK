@@ -14,14 +14,27 @@ void Game::initBackground() {
 	this->background->setSpeed(200.0f);
 }
 
-Game::Game(int width, int height) {
-	this->width = width;
-	this->height = height;
-	this->menu = new Menu(800, 600);
-	isMenuActive = true;
+void Game::initObstacles() {
+	// £adowanie tekstury za pomoc¹ TextureManager
+	textureManager.loadTexture("textury/platforma.png", "platforma");
+	// Pobieranie wskaŸnika do tekstury
+	sf::Texture* platformTexture = textureManager.getTexture("platforma");
 
+	if (platformTexture) {
+		// Dodawanie przeszkód z za³adowan¹ tekstur¹
+		obstacles.emplace_back(*platformTexture, sf::Vector2f(100, 150.f));
+		obstacles.emplace_back(*platformTexture, sf::Vector2f(200.f, 340.f));
+	}
+	else {
+		std::cerr << "Tekstura platforma nie zosta³a poprawnie za³adowana." << std::endl;
+	}
+}
+
+Game::Game(int width, int height) : width(width), height(height), isMenuActive(true){
+	this->menu = new Menu(800, 600);
 	this->initWindow();
 	this->initPlayer();
+	this->initObstacles();
 	this->initBackground();
 }
 
@@ -35,12 +48,50 @@ sf::RenderWindow& Game::getWindow() {
 }
 
 void Game::updatePlayer(float deltaTime) {
-
 	this->player->update(deltaTime, event);
 }
 
 void Game::renderPlayer() {
 	this->player->render(this->window);
+}
+
+void Game::updateObstacles() {
+	sf::Vector2f playerPosition = player->getPlayerPosition();
+	// Sprawdzamy kolizjê miêdzy graczem a ka¿d¹ przeszkod¹
+	for (auto& obstacle : obstacles) {
+		bool isOnPlatform = false;
+		if (player->getPlayerBounds().intersects(obstacle.getObstacleBounds())) {
+			if (playerPosition.y + player->getPlayerBounds().height <= obstacle.getObstaclePosition().y + 10.f) {
+				std::cout << "Gracz wyl¹dowa³ na platformie!" << std::endl;
+				player->getPlayerSprite().setPosition(player->getPlayerPosition().x, obstacle.getObstaclePosition().y - player->getPlayerBounds().height);
+				player->setOnGround(true);
+				isOnPlatform = true;
+				player->setVerticalVelocity(0.0f);
+			}
+		}
+	}
+}
+
+void Game::renderObstacles() {
+	for (auto& obstacle : obstacles) {
+		obstacle.render(window);
+	}
+}
+
+void Game::updateBackground(float deltaTime, float characterSpeed){
+	// Przesuñ wszystkie przeszkody o tê sam¹ wartoœæ
+	if (this->background->isUpdated == true && this->background->moveRight == true) {
+		for (auto& obstacle : obstacles) {
+			obstacle.update(sf::Vector2f(-player->getCharacterSpeed() * deltaTime, 0));
+		}
+	}
+	else if (this->background->isUpdated == true && this->background->moveLeft == true) {
+		for (auto& obstacle : obstacles) {
+			obstacle.update(sf::Vector2f(player->getCharacterSpeed() * deltaTime, 0));
+		}
+	}
+
+	this->background->update(deltaTime, characterSpeed);
 }
 
 void Game::renderBackground() {
@@ -54,9 +105,6 @@ void Game::update() {
 		if (event.type == sf::Event::Closed) {
 			this->window.close();
 		}
-
-
-
 
 		if(isMenuActive) {
 			if (event.type == sf::Event::KeyPressed) {
@@ -88,11 +136,13 @@ void Game::update() {
 		}
 	}
 
-	sf::Vector2f playerPosition = player->getPlayerPosition();	
+
 	this->updatePlayer(deltaTime);
+
+	this->updateObstacles();
+
 	// T³o pod¹¿a za postaci¹
-	this->background->update(deltaTime, player->getCharacterSpeed());
-	
+	this->updateBackground(deltaTime, player->getCharacterSpeed());
 }
 
 void Game::render() {
@@ -106,9 +156,9 @@ void Game::render() {
 	else if(isPlayed){
 		// Rysowanie stanu gry, gdy menu jest wy³¹czone
 		this->renderBackground();
+		this->renderObstacles();
 		this->renderPlayer();
 	}
-
 
 
 	this->window.display();

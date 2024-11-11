@@ -7,12 +7,15 @@ private:
 	sf::Sprite backgroundSprite;
 	float speed;
 	sf::Vector2f position;
-
 	Player* player;
+
 
 public:
 	Background(const std::string& filname, Player *player);
 	Background(const std::string& filname);
+	bool isUpdated = false;
+	bool moveLeft = false;
+	bool moveRight = false;
 
 	void update(float deltaTime, float characterSpeed);
 
@@ -24,14 +27,9 @@ public:
 	}
 
 
+	sf::Sprite& getBackgroundSprite();
 
-	sf::Sprite& getBackgroundSprite() {
-		return backgroundSprite;
-	}
-
-	sf::Texture& getBackgroundTexture() {
-		return textureBackground;
-	}
+	sf::Texture& getBackgroundTexture();
 
 
 };
