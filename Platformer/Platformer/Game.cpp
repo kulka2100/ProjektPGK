@@ -26,7 +26,7 @@ void Game::initObstacles() {
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(200.f, 340.f));
 	}
 	else {
-		std::cerr << "Tekstura platforma nie zosta³a poprawnie za³adowana." << std::endl;
+		std::cerr << "Tekstura platforma nie zosta³a poprawnie za³adowana." << platformTexture <<std::endl;
 	}
 }
 
