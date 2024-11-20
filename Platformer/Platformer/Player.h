@@ -9,7 +9,7 @@ private:
 
 	//Grawitacja
 	const float GRAVITY = 980.f;
-	const float JUMP_STRENGTH = -350.f;
+	const float JUMP_STRENGTH = -550.f;
 	float verticalVelocity = 0.0f;
 
 	std::vector<Bullet> bullets;
@@ -33,6 +33,10 @@ private:
 
 	void initSprite();
 	void initTexture();
+
+	//Strzaly
+	float shootCooldown;
+	float shootCooldownMax;
 
 public:
 	Player(sf::Vector2f playerPosition,float speed);
@@ -74,5 +78,10 @@ public:
 	void update(float deltaTime,sf::Event &event);
 
 	void render(sf::RenderTarget& target);
+
+	bool getIsJumping() const;
+	void setIsJumping(bool jumping);
+	float getVerticalVelocity() const;
+
 };
 

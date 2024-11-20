@@ -46,10 +46,16 @@ Player::Player(sf::Vector2f playerPosition, float speed) {
     bulletTexture.loadFromFile("textury/bullet1.png");
 	this->initTexture();
 	this->initSprite();
+    this->isJumping = false;  
+    this->isOnGround = true;
 
     this->animationTimer = 0.0f;
     this->animationTimerMax = 0.1f; // Zmieniaj klatkê co 10 jednostek czasu
     this->animationIndex = 0;
+
+    //Strzaly
+    this->shootCooldown = 0.0f;
+    this->shootCooldownMax = 0.5f;
 }
 
 Player::~Player()
@@ -110,7 +116,11 @@ void Player::gravitation(float deltaTime) {
             isJumping = false;
             isOnGround = true;
         }
+    
+    } else {
+        verticalVelocity = 0; // Utrzymuj brak ruchu pionowego, gdy gracz jest na platformie
     }
+
 }
 
 void Player::setOnGround(bool isOnGround) {
@@ -154,15 +164,19 @@ void Player::update(float deltaTime, sf::Event &event) {
         bulletDir = -1.0;
     }
     //Skok
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
         verticalVelocity = JUMP_STRENGTH;
         isJumping = true;
         isOnGround = false;
-     
     }
+
     //Strzaly
+    if (this->shootCooldown > 0.0f) {
+        this->shootCooldown -= deltaTime;
+    }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
         shoot();
+        this->shootCooldown = this->shootCooldownMax;
     }
 
     if (event.type == sf::Event::KeyReleased) {
@@ -202,5 +216,20 @@ void Player::render(sf::RenderTarget &target) {
             bullet.render(&target);
         }
 }
+
+bool Player::getIsJumping() const {
+    return this->isJumping;
+}
+
+void Player::setIsJumping(bool jumping) {
+    this->isJumping = jumping;
+}
+
+float Player::getVerticalVelocity() const {
+    return this->verticalVelocity;
+}
+
+
+
 
 
