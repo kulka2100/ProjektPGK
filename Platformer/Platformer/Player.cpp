@@ -117,9 +117,7 @@ void Player::gravitation(float deltaTime) {
             isOnGround = true;
         }
     
-    } else {
-        verticalVelocity = 0; // Utrzymuj brak ruchu pionowego, gdy gracz jest na platformie
-    }
+    } 
 
 }
 

@@ -67,6 +67,7 @@ void Game::updateObstacles() {
 				player->setOnGround(true);
 				isOnPlatform = true;
 				player->setVerticalVelocity(0.0f);
+				player->setIsJumping(false);
 			}
 		}
 	}
