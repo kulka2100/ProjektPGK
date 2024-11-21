@@ -36,6 +36,7 @@ Game::Game(int width, int height) : width(width), height(height), isMenuActive(t
 	this->initPlayer();
 	this->initObstacles();
 	this->initBackground();
+	this->initEnemies();
 }
 
 Game::~Game(){
@@ -99,6 +100,23 @@ void Game::renderBackground() {
 	this->background->render(this->window);
 }
 
+void Game::initEnemies() {
+	this->enemies.emplace_back(sf::Vector2f(400.f, 450.f), 100.f, 0.f, 800.f);
+	this->enemies.emplace_back(sf::Vector2f(600.f, 300.f), 150.f, 0.f, 800.f);
+}
+
+void Game::updateEnemies(float deltaTime) {
+	for (auto& enemy : this->enemies) {
+		enemy.update(deltaTime);
+	}
+}
+
+void Game::renderEnemies() {
+	for (auto& enemy : this->enemies) {
+		enemy.render(this->window);
+	}
+}
+
 void Game::update() {
 	// deltaTime w sekundach
 	float deltaTime = clock.restart().asSeconds();
@@ -142,6 +160,8 @@ void Game::update() {
 
 	this->updateObstacles();
 
+	this->updateEnemies(deltaTime);
+
 	// T³o pod¹¿a za postaci¹
 	this->updateBackground(deltaTime, player->getCharacterSpeed());
 }
@@ -159,6 +179,7 @@ void Game::render() {
 		this->renderBackground();
 		this->renderObstacles();
 		this->renderPlayer();
+		this->renderEnemies();
 	}
 
 

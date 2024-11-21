@@ -4,6 +4,7 @@
 #include "Menu.h"
 #include "Obstacle.h"
 #include "TextureManager.h"
+#include "Enemy.h"
 
 class Game
 {
@@ -13,6 +14,7 @@ private:
 	sf::Event event;
 	sf::RenderWindow window;
 	sf::Clock clock;
+	std::vector<Enemy> enemies;
 
 	Player *player;
 	Background* background;
@@ -26,6 +28,9 @@ private:
 	void initPlayer();
 	void initBackground();
 	void initObstacles();
+	void initEnemies();
+	void updateEnemies(float deltaTime);
+	void renderEnemies();
 
 public:
 	
