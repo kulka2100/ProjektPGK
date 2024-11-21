@@ -107,6 +107,7 @@ void Game::initEnemies() {
 
 void Game::updateEnemies(float deltaTime) {
 	for (auto& enemy : this->enemies) {
+		enemy.updateAttack(); 
 		enemy.update(deltaTime);
 	}
 }
@@ -114,6 +115,21 @@ void Game::updateEnemies(float deltaTime) {
 void Game::renderEnemies() {
 	for (auto& enemy : this->enemies) {
 		enemy.render(this->window);
+	}
+}
+
+void Game::checkPlayerEnemyCollision() {
+	for (auto& enemy : this->enemies) {
+		if (player->getPlayerBounds().intersects(enemy.getBounds())) {
+			if (enemy.canDealDamage()) {
+				enemy.startAttack(); // Rozpocznij animacjê ataku
+				player->reduceHealth(1); // Gracz traci ¿ycie
+				std::cout << "Gracz traci 1 ¿ycie! Pozosta³o: " << player->getHealth() << std::endl;
+			}
+		}
+		else {
+			enemy.resetAttack(); // Resetuj animacjê, jeœli nie ma kolizji
+		}
 	}
 }
 
@@ -161,6 +177,8 @@ void Game::update() {
 	this->updateObstacles();
 
 	this->updateEnemies(deltaTime);
+
+	this->checkPlayerEnemyCollision();
 
 	// T³o pod¹¿a za postaci¹
 	this->updateBackground(deltaTime, player->getCharacterSpeed());

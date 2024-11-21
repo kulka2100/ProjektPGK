@@ -3,6 +3,7 @@
 class Player
 {
 private:
+	int health;
 	sf::Sprite playerSprite;
 	std::vector<sf::Texture> rightTextures;
 	std::vector<sf::Texture> leftTextures;
@@ -60,6 +61,9 @@ public:
 		return playerSprite.getGlobalBounds();
 	}
 
+	int getHealth() const;
+	void reduceHealth(int amount);
+
 	void updateAnimations(float deltaTime);
 
 	void shoot();
@@ -85,3 +89,4 @@ public:
 
 };
 
+	

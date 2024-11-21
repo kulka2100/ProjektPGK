@@ -39,7 +39,7 @@ void Player::initSprite() {
 
 
 
-Player::Player(sf::Vector2f playerPosition, float speed) {
+Player::Player(sf::Vector2f playerPosition, float speed) : health(3) {
     this->playerPosition = playerPosition;
     this->characterSpeed = speed;
 
@@ -227,6 +227,17 @@ float Player::getVerticalVelocity() const {
     return this->verticalVelocity;
 }
 
+int Player::getHealth() const {
+    return this->health;
+}
+
+void Player::reduceHealth(int amount) {
+    this->health -= amount;
+    if (this->health <= 0) {
+        std::cout << "Gracz zgin¹³!" << std::endl;
+        // Implementacja zakoñczenia gry
+    }
+}
 
 
 

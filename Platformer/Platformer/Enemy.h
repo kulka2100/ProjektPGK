@@ -7,6 +7,16 @@ private:
     sf::Sprite sprite;
     std::vector<sf::Texture> rightTextures;
     std::vector<sf::Texture> leftTextures;
+    sf::Texture textureRightAttack1;
+    sf::Texture textureRightAttack2;
+    sf::Texture textureLeftAttack1;
+    sf::Texture textureLeftAttack2;
+    bool facingRight;
+    sf::Clock attackClock;
+    bool isAttacking;
+    int attackFrame;
+    sf::Clock damageClock; 
+    float damageInterval;
     float animationTimer;
     float animationTimerMax;
     unsigned int animationIndex;
@@ -36,4 +46,10 @@ public:
     // Settery
     void setPosition(const sf::Vector2f& newPosition);
     void setDirection(const sf::Vector2f& newDirection);
+
+    void startAttack();
+    void updateAttack();
+    void resetAttack();
+    bool getIsAttacking() const;
+    bool canDealDamage();
 };

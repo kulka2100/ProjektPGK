@@ -29,18 +29,29 @@ void Enemy::initTexture() {
 }
 
 Enemy::Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float rightBoundary)
-    : position(startPosition), speed(speed), leftBoundary(leftBoundary), rightBoundary(rightBoundary), direction(1.0f) {
+    : position(startPosition), speed(speed), leftBoundary(leftBoundary), rightBoundary(rightBoundary), direction(1.0f), facingRight(true) {
     this->animationTimer = 0.0f;
     this->animationTimerMax = 0.2f; 
     this->animationIndex = 0;
+    this->damageInterval = 0.5f;
     this->initTexture();
     this->position.y = GROUND_Y - this->sprite.getGlobalBounds().height;
     this->initSprite();
+    this->textureRightAttack1.loadFromFile("textury/mole9.png");
+    this->textureRightAttack2.loadFromFile("textury/mole10.png");
+    this->textureLeftAttack1.loadFromFile("textury/mole7.png");
+    this->textureLeftAttack2.loadFromFile("textury/mole8.png"); 
+    this->isAttacking = false;
+    this->attackFrame = 0;
 }
 
 Enemy::~Enemy() {}
 
 void Enemy::update(float deltaTime) {
+    if (isAttacking) {
+        this->updateAttack();
+        return; 
+    }
     this->animationTimer += deltaTime;
     if (this->animationTimer >= this->animationTimerMax) {
         this->animationIndex++;
@@ -65,9 +76,11 @@ void Enemy::update(float deltaTime) {
     // Zmiana kierunku przy dotarciu do granicy
     if (this->position.x <= this->leftBoundary) {
         this->direction = 1.0f;
+        this->facingRight = true;
     }
     else if (this->position.x >= this->rightBoundary) {
         this->direction = -1.0f;
+        this->facingRight = false;
     }
     this->position.y = GROUND_Y - this->sprite.getGlobalBounds().height;
     this->sprite.setPosition(this->position);
@@ -75,7 +88,25 @@ void Enemy::update(float deltaTime) {
 }
 
 void Enemy::render(sf::RenderWindow& window) {
-    window.draw(this->sprite);
+    if (isAttacking) {
+        if (attackFrame == 0) {
+            if (this->facingRight) {
+                sprite.setTexture(textureRightAttack1);
+            }
+            else {
+                sprite.setTexture(textureLeftAttack1);
+            }
+        }
+        else {
+            if (this->facingRight) {
+                sprite.setTexture(textureRightAttack2);
+            }
+            else {
+                sprite.setTexture(textureLeftAttack2);
+            }
+        }
+    }
+    window.draw(sprite);
 }
 
 sf::FloatRect Enemy::getBounds() const {
@@ -92,3 +123,34 @@ void Enemy::initSprite() {
     this->sprite.setPosition(this->position);
 }
 
+void Enemy::startAttack() {
+    this->isAttacking = true;
+    this->attackClock.restart();
+}
+
+void Enemy::updateAttack() {
+    if (isAttacking) {
+        if (attackClock.getElapsedTime().asSeconds() > 0.2f) { // Co 0.2 sekundy zmiana klatki
+            attackFrame = (attackFrame + 1) % 2; // 2 klatki animacji
+            attackClock.restart();
+        }
+    }
+}
+
+void Enemy::resetAttack() {
+    this->isAttacking = false;
+    this->attackFrame = 0;
+}
+
+bool Enemy::getIsAttacking() const {
+    return this->isAttacking;
+}
+
+bool Enemy::canDealDamage() {
+    // Sprawdzanie, czy min¹³ czas od ostatniego zadania obra¿eñ
+    if (damageClock.getElapsedTime().asSeconds() >= damageInterval) {
+        damageClock.restart();
+        return true;
+    }
+    return false;
+}
