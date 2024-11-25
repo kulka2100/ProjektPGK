@@ -154,3 +154,8 @@ bool Enemy::canDealDamage() {
     }
     return false;
 }
+
+void Enemy::move(float offsetX) {
+    this->position.x += offsetX;
+    this->sprite.setPosition(this->position); // Aktualizuj pozycjê sprite'a
+}

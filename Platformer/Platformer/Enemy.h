@@ -52,4 +52,5 @@ public:
     void resetAttack();
     bool getIsAttacking() const;
     bool canDealDamage();
+    void move(float offsetX);
 };

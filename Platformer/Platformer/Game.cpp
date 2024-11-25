@@ -86,10 +86,18 @@ void Game::updateBackground(float deltaTime, float characterSpeed){
 		for (auto& obstacle : obstacles) {
 			obstacle.update(sf::Vector2f(-player->getCharacterSpeed() * deltaTime, 0));
 		}
+		// Przesuwanie wrogów w lewo
+		for (auto& enemy : this->enemies) {
+			enemy.move(-player->getCharacterSpeed() * deltaTime); // Przesuwaj wrogów
+		}
 	}
 	else if (this->background->isUpdated == true && this->background->moveLeft == true) {
 		for (auto& obstacle : obstacles) {
 			obstacle.update(sf::Vector2f(player->getCharacterSpeed() * deltaTime, 0));
+		}
+		// Przesuwanie wrogów w prawo
+		for (auto& enemy : this->enemies) {
+			enemy.move(player->getCharacterSpeed() * deltaTime); // Przesuwaj wrogów
 		}
 	}
 
