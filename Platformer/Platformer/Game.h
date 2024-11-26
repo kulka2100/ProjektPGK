@@ -5,6 +5,7 @@
 #include "Obstacle.h"
 #include "TextureManager.h"
 #include "Enemy.h"
+#include "GameState.h"
 
 class Game
 {
@@ -23,6 +24,7 @@ private:
 	std::vector<Obstacle> obstacles;
 	bool isMenuActive;
 	bool isPlayed;
+	GameState gameState;
 
 	void initWindow();
 	void initPlayer();

@@ -30,7 +30,7 @@ void Game::initObstacles() {
 	}
 }
 
-Game::Game(int width, int height) : width(width), height(height), isMenuActive(true){
+Game::Game(int width, int height) : width(width), height(height), gameState(GameState::Menu), isMenuActive(true) {
 	this->menu = new Menu(800, 600);
 	this->initWindow();
 	this->initPlayer();
@@ -39,13 +39,14 @@ Game::Game(int width, int height) : width(width), height(height), isMenuActive(t
 	this->initEnemies();
 }
 
-Game::~Game(){
+Game::~Game() {
 	delete this->player;
 	delete this->background;
+	delete this->menu;
 }
 
 sf::RenderWindow& Game::getWindow() {
-		return this->window;
+	return this->window;
 }
 
 void Game::updatePlayer(float deltaTime) {
@@ -63,7 +64,6 @@ void Game::updateObstacles() {
 		bool isOnPlatform = false;
 		if (player->getPlayerBounds().intersects(obstacle.getObstacleBounds())) {
 			if (playerPosition.y + player->getPlayerBounds().height <= obstacle.getObstaclePosition().y + 10.f) {
-				std::cout << "Gracz wyl¹dowa³ na platformie!" << std::endl;
 				player->getPlayerSprite().setPosition(player->getPlayerPosition().x, obstacle.getObstaclePosition().y - player->getPlayerBounds().height);
 				player->setOnGround(true);
 				isOnPlatform = true;
@@ -149,7 +149,7 @@ void Game::update() {
 			this->window.close();
 		}
 
-		if(isMenuActive) {
+		if(gameState == GameState::Menu) {
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::Up) {
 					menu->moveUp();
@@ -161,9 +161,9 @@ void Game::update() {
 					int selected = menu->getSelectedIndex();
 					if(selected == 0) {
 						// Play
-						isPlayed = true;
+						gameState = GameState::Playing;
 						std::cout << "Wybrano Play!\n";
-						isMenuActive = false;  // Zamkniêcie menu, start gry
+						isMenuActive = false;
 					}
 					else if (selected == 1) {
 						std::cout << "Wybrano Maps!\n";
@@ -178,29 +178,25 @@ void Game::update() {
 			}
 		}
 	}
-
-
-	this->updatePlayer(deltaTime);
-
-	this->updateObstacles();
-
-	this->updateEnemies(deltaTime);
-
-	this->checkPlayerEnemyCollision();
-
-	// T³o pod¹¿a za postaci¹
-	this->updateBackground(deltaTime, player->getCharacterSpeed());
+	// Aktualizacja logiki gry, gdy gra jest w trybie Playing
+	if (gameState == GameState::Playing) {
+		this->updatePlayer(deltaTime);
+		this->updateObstacles();
+		this->updateEnemies(deltaTime);
+		this->checkPlayerEnemyCollision();
+		this->updateBackground(deltaTime, player->getCharacterSpeed());
+	}
 }
 
 void Game::render() {
 	this->window.clear();
 	
 	//render game
-	if (isMenuActive) {
+	if (gameState == GameState::Menu) {
 		// Rysuj menu, gdy jest aktywne
 		menu->draw(window);
 	}
-	else if(isPlayed){
+	else if(gameState == GameState::Playing){
 		// Rysowanie stanu gry, gdy menu jest wy³¹czone
 		this->renderBackground();
 		this->renderObstacles();
