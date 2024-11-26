@@ -179,13 +179,13 @@ void Game::update() {
 		}
 	}
 	// Aktualizacja logiki gry, gdy gra jest w trybie Playing
-	if (gameState == GameState::Playing) {
-		this->updatePlayer(deltaTime);
-		this->updateObstacles();
-		this->updateEnemies(deltaTime);
-		this->checkPlayerEnemyCollision();
-		this->updateBackground(deltaTime, player->getCharacterSpeed());
-	}
+    if (gameState == GameState::Playing) {
+        this->updatePlayer(deltaTime);
+        this->updateObstacles();
+        this->updateEnemies(deltaTime);
+        this->checkPlayerEnemyCollision();
+        this->updateBackground(deltaTime, player->getCharacterSpeed());
+    }
 }
 
 void Game::render() {
