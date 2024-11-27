@@ -159,3 +159,16 @@ void Enemy::move(float offsetX) {
     this->position.x += offsetX;
     this->sprite.setPosition(this->position); // Aktualizuj pozycjê sprite'a
 }
+
+float Enemy::getLeftBoundary() const {
+    return this->leftBoundary;
+}
+
+float Enemy::getRightBoundary() const {
+    return this->rightBoundary;
+}
+
+void Enemy::setBoundaries(float left, float right) {
+    this->leftBoundary = left;
+    this->rightBoundary = right;
+}

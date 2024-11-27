@@ -80,24 +80,27 @@ void Game::renderObstacles() {
 	}
 }
 
-void Game::updateBackground(float deltaTime, float characterSpeed){
-	// Przesuñ wszystkie przeszkody o tê sam¹ wartoœæ
+void Game::updateBackground(float deltaTime, float characterSpeed) {
+	float offset = player->getCharacterSpeed() * deltaTime;
+
+	// Przesuwanie przeszkód i wrogów w lewo
 	if (this->background->isUpdated == true && this->background->moveRight == true) {
 		for (auto& obstacle : obstacles) {
-			obstacle.update(sf::Vector2f(-player->getCharacterSpeed() * deltaTime, 0));
+			obstacle.update(sf::Vector2f(-offset, 0));
 		}
-		// Przesuwanie wrogów w lewo
 		for (auto& enemy : this->enemies) {
-			enemy.move(-player->getCharacterSpeed() * deltaTime); // Przesuwaj wrogów
+			enemy.move(-offset); // Przesuwanie pozycji wroga
+			enemy.setBoundaries(enemy.getLeftBoundary() - offset, enemy.getRightBoundary() - offset);
 		}
 	}
+	// Przesuwanie przeszkód i wrogów w prawo
 	else if (this->background->isUpdated == true && this->background->moveLeft == true) {
 		for (auto& obstacle : obstacles) {
-			obstacle.update(sf::Vector2f(player->getCharacterSpeed() * deltaTime, 0));
+			obstacle.update(sf::Vector2f(offset, 0));
 		}
-		// Przesuwanie wrogów w prawo
 		for (auto& enemy : this->enemies) {
-			enemy.move(player->getCharacterSpeed() * deltaTime); // Przesuwaj wrogów
+			enemy.move(offset); // Przesuwanie pozycji wroga
+			enemy.setBoundaries(enemy.getLeftBoundary() + offset, enemy.getRightBoundary() + offset);
 		}
 	}
 
@@ -109,13 +112,12 @@ void Game::renderBackground() {
 }
 
 void Game::initEnemies() {
-	this->enemies.emplace_back(sf::Vector2f(400.f, 450.f), 100.f, 0.f, 800.f);
-	this->enemies.emplace_back(sf::Vector2f(600.f, 300.f), 150.f, 0.f, 800.f);
+	this->enemies.emplace_back(sf::Vector2f(650.f, 450.f), 100.f, 400.f, 700.f);
+	this->enemies.emplace_back(sf::Vector2f(800.f, 300.f), 150.f, 800.f, 1200.f);
 }
 
 void Game::updateEnemies(float deltaTime) {
 	for (auto& enemy : this->enemies) {
-		enemy.updateAttack(); 
 		enemy.update(deltaTime);
 	}
 }

@@ -53,4 +53,7 @@ public:
     bool getIsAttacking() const;
     bool canDealDamage();
     void move(float offsetX);
+    float getLeftBoundary() const;
+    float getRightBoundary() const;
+    void setBoundaries(float left, float right);
 };
