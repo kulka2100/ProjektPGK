@@ -16,6 +16,7 @@ private:
 	sf::RenderWindow window;
 	sf::Clock clock;
 	std::vector<Enemy> enemies;
+	float deltaTime;
 
 	Player *player;
 	Background* background;
@@ -68,6 +69,8 @@ public:
 	void update();
 
 	void render();
+
+	void updateDeltaTime();
 
 };
 

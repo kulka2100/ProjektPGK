@@ -24,6 +24,7 @@ void Game::initObstacles() {
 		// Dodawanie przeszkód z za³adowan¹ tekstur¹
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(100, 150.f));
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(200.f, 340.f));
+		obstacles.emplace_back(*platformTexture, sf::Vector2f(400.f, 250.f));
 	}
 	else {
 		std::cerr << "Tekstura platforma nie zosta³a poprawnie za³adowana." << platformTexture <<std::endl;
@@ -112,8 +113,8 @@ void Game::renderBackground() {
 }
 
 void Game::initEnemies() {
-	this->enemies.emplace_back(sf::Vector2f(650.f, 450.f), 100.f, 400.f, 700.f);
-	//this->enemies.emplace_back(sf::Vector2f(800.f, 300.f), 150.f, 800.f, 1200.f);
+	this->enemies.emplace_back(sf::Vector2f(650.f, 250.f), 100.f, 400.f, 700.f);
+	this->enemies.emplace_back(sf::Vector2f(800.f, 300.f), 150.f, 800.f, 1200.f);
 }
 
 void Game::updateEnemies(float deltaTime) {
@@ -212,24 +213,41 @@ void Game::render() {
 }
 
 void Game::checkBulletEnemyCollision() {
-	for (auto& enemy : this->enemies) {
+	for (auto enemyIt = this->enemies.begin(); enemyIt != this->enemies.end(); ) {
+		//bool enemyHit = false;
+
 		for (auto it = this->player->getBullets().begin(); it != this->player->getBullets().end(); ) {
-			if (enemy.getBounds().intersects(it->getBounds())) {
-				enemy.reduceHealth(1); // Wróg traci ¿ycie
-				std::cout << "Wróg traci 1 ¿ycie! Pozosta³o: " << enemy.getHealth() << std::endl;
+			if (enemyIt->getBounds().intersects(it->getBounds())) {
+				enemyIt->reduceHealth(1); // Wróg traci ¿ycie
+				std::cout << "Wróg traci 1 ¿ycie! Pozosta³o: " << enemyIt->getHealth() << std::endl;
 
 				// Usuñ pocisk po kolizji
 				it = this->player->getBullets().erase(it);
+				//enemyHit = true;
 
-				// Jeœli wróg ginie, mo¿na dodaæ tu dodatkow¹ logikê np. usuniêcie wroga
-				if (enemy.getHealth() <= 0) {
-					std::cout << "Wróg zosta³ pokonany!" << std::endl;
-					// Opcjonalnie usuñ wroga z listy enemies
+				// Jeœli wróg ginie, wyjdŸ z pêtli pocisków
+				if (enemyIt->getHealth() <= 0) {
+					enemyIt->startDeathAnimation(); // Uruchom animacjê œmierci
+					break;
 				}
 			}
 			else {
 				++it; // PrzejdŸ do nastêpnego pocisku
 			}
 		}
+
+		// Jeœli wróg ma byæ usuniêty po animacji œmierci
+		if (enemyIt->isDead() && enemyIt->updateDeathAnimation(this->deltaTime)) {
+			std::cout << "Wróg zosta³ pokonany i usuniêty!" << std::endl;
+			enemyIt = this->enemies.erase(enemyIt);
+		}
+		else {
+			++enemyIt; // PrzejdŸ do nastêpnego wroga
+		}
 	}
+}
+
+void Game::updateDeltaTime() {
+	static sf::Clock clock;
+	this->deltaTime = clock.restart().asSeconds();
 }
