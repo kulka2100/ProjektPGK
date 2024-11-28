@@ -37,7 +37,6 @@ Enemy::Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float 
     this->animationIndex = 0;
     this->damageInterval = 0.5f;
     this->initTexture();
-    this->position.y = GROUND_Y - this->sprite.getGlobalBounds().height;
     this->initSprite();
     this->textureRightAttack1.loadFromFile("textury/mole9.png");
     this->textureRightAttack2.loadFromFile("textury/mole10.png");
@@ -56,8 +55,10 @@ void Enemy::update(float deltaTime) {
     }
     if (isAttacking) {
         this->updateAttack();
-        return; 
+        return;
     }
+
+    // Obs³uga animacji chodzenia
     this->animationTimer += deltaTime;
     if (this->animationTimer >= this->animationTimerMax) {
         this->animationIndex++;
@@ -76,6 +77,7 @@ void Enemy::update(float deltaTime) {
             this->sprite.setTexture(this->leftTextures[this->animationIndex]);
         }
     }
+
     // Przeciwnik porusza siê w ustalonym kierunku
     this->position.x += this->speed * this->direction * deltaTime;
 
@@ -88,9 +90,9 @@ void Enemy::update(float deltaTime) {
         this->direction = -1.0f;
         this->facingRight = false;
     }
-    this->position.y = GROUND_Y - this->sprite.getGlobalBounds().height;
-    this->sprite.setPosition(this->position);
 
+    // Zaktualizuj pozycjê sprite'a (bez wymuszania pozycji Y)
+    this->sprite.setPosition(this->position);
 }
 
 void Enemy::render(sf::RenderWindow& window) {

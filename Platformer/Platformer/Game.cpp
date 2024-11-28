@@ -113,8 +113,8 @@ void Game::renderBackground() {
 }
 
 void Game::initEnemies() {
-	this->enemies.emplace_back(sf::Vector2f(650.f, 250.f), 100.f, 400.f, 700.f);
-	this->enemies.emplace_back(sf::Vector2f(800.f, 300.f), 150.f, 800.f, 1200.f);
+	this->enemies.emplace_back(sf::Vector2f(400.f, 170.f), 100.f, 400.f, 550.f);
+	this->enemies.emplace_back(sf::Vector2f(600.f, 390.f), 150.f, 600.f, 800.f);
 }
 
 void Game::updateEnemies(float deltaTime) {
