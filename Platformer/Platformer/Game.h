@@ -34,6 +34,7 @@ private:
 	void updateEnemies(float deltaTime);
 	void renderEnemies();
 	void checkPlayerEnemyCollision();
+	void checkBulletEnemyCollision();
 
 public:
 	

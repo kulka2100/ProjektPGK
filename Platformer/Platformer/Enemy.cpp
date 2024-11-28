@@ -172,3 +172,12 @@ void Enemy::setBoundaries(float left, float right) {
     this->leftBoundary = left;
     this->rightBoundary = right;
 }
+
+void Enemy::reduceHealth(int damage) {
+    this->health -= damage;
+    if (this->health < 0) this->health = 0; // ¯ycie nie mo¿e byæ ujemne
+}
+
+int Enemy::getHealth() const {
+    return this->health;
+}

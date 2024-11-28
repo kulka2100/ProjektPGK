@@ -31,6 +31,8 @@ private:
     void initSprite();
     void initTexture();
 
+    int health = 3;
+
 public:
     Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float rightBoundary);
     ~Enemy();
@@ -56,4 +58,6 @@ public:
     float getLeftBoundary() const;
     float getRightBoundary() const;
     void setBoundaries(float left, float right);
+    void reduceHealth(int damage);
+    int getHealth() const;
 };

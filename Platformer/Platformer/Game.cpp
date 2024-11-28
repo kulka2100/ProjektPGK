@@ -113,7 +113,7 @@ void Game::renderBackground() {
 
 void Game::initEnemies() {
 	this->enemies.emplace_back(sf::Vector2f(650.f, 450.f), 100.f, 400.f, 700.f);
-	this->enemies.emplace_back(sf::Vector2f(800.f, 300.f), 150.f, 800.f, 1200.f);
+	//this->enemies.emplace_back(sf::Vector2f(800.f, 300.f), 150.f, 800.f, 1200.f);
 }
 
 void Game::updateEnemies(float deltaTime) {
@@ -187,6 +187,7 @@ void Game::update() {
         this->updateEnemies(deltaTime);
         this->checkPlayerEnemyCollision();
         this->updateBackground(deltaTime, player->getCharacterSpeed());
+		this->checkBulletEnemyCollision();
     }
 }
 
@@ -210,4 +211,25 @@ void Game::render() {
 	this->window.display();
 }
 
+void Game::checkBulletEnemyCollision() {
+	for (auto& enemy : this->enemies) {
+		for (auto it = this->player->getBullets().begin(); it != this->player->getBullets().end(); ) {
+			if (enemy.getBounds().intersects(it->getBounds())) {
+				enemy.reduceHealth(1); // Wróg traci ¿ycie
+				std::cout << "Wróg traci 1 ¿ycie! Pozosta³o: " << enemy.getHealth() << std::endl;
 
+				// Usuñ pocisk po kolizji
+				it = this->player->getBullets().erase(it);
+
+				// Jeœli wróg ginie, mo¿na dodaæ tu dodatkow¹ logikê np. usuniêcie wroga
+				if (enemy.getHealth() <= 0) {
+					std::cout << "Wróg zosta³ pokonany!" << std::endl;
+					// Opcjonalnie usuñ wroga z listy enemies
+				}
+			}
+			else {
+				++it; // PrzejdŸ do nastêpnego pocisku
+			}
+		}
+	}
+}

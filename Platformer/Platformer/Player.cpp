@@ -56,6 +56,7 @@ Player::Player(sf::Vector2f playerPosition, float speed) : health(3) {
     //Strzaly
     this->shootCooldown = 0.0f;
     this->shootCooldownMax = 0.5f;
+    bulletDir = 1.0;
 }
 
 Player::~Player()
@@ -204,7 +205,6 @@ void Player::update(float deltaTime, sf::Event &event) {
     if (!isOnPlatform) {
         setOnGround(false);
     }
-
 }
 
 void Player::render(sf::RenderTarget &target) {
@@ -239,6 +239,8 @@ void Player::reduceHealth(int amount) {
     }
 }
 
-
+std::vector<Bullet>& Player::getBullets() {
+    return this->bullets;
+}
 
 

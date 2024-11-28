@@ -86,6 +86,7 @@ public:
 	bool getIsJumping() const;
 	void setIsJumping(bool jumping);
 	float getVerticalVelocity() const;
+	std::vector<Bullet>& getBullets();
 
 };
 
