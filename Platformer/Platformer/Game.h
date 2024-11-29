@@ -6,6 +6,7 @@
 #include "TextureManager.h"
 #include "Enemy.h"
 #include "GameState.h"
+#include "CollectableItem.h"
 
 class Game
 {
@@ -22,6 +23,7 @@ private:
 	Menu* menu;
 	TextureManager textureManager;
 	std::vector<Obstacle> obstacles;
+	std::vector<CollectableItem> collectableItems;
 	bool isMenuActive;
 	bool isPlayed;
 	GameState gameState;
@@ -30,7 +32,9 @@ private:
 	void initPlayer();
 	void initBackground();
 	void initObstacles();
+	void initCollectableItems();
 	void initEnemies();
+	void initInterface();
 	void updateEnemies(float deltaTime);
 	void renderEnemies();
 	void checkPlayerEnemyCollision();
@@ -56,6 +60,10 @@ public:
 
 	void renderPlayer();
 
+	void updateCollectableItems();
+	
+	void renderCollectableItems();
+	
 	void updateObstacles();
 
 	void renderObstacles();

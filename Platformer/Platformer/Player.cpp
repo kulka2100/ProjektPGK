@@ -4,22 +4,56 @@
 
 
 void Player::initTexture() {
-	sf::Texture tempTexture;
-
+    // £adowanie tekstur ruchu w prawo
     for (int i = 1; i <= 5; i++) {
-        if (!tempTexture.loadFromFile("textury/prawo" + std::to_string(i) + ".png")) {
-            std::cout << "Nie uda³o siê za³adowaæ tekstury prawo" + std::to_string(i) + ".png\n";
+        std::string textureKey = "prawo" + std::to_string(i);
+        std::string filePath = "textury/" + textureKey + ".png";
+
+        textureManager.loadTexture(filePath, textureKey);
+
+        // Pobranie tekstury z managera i dodanie do wektora
+        sf::Texture* texture = textureManager.getTexture(textureKey);
+        if (texture) {
+            rightTextures.push_back(*texture);
         }
-        this->rightTextures.push_back(tempTexture);
+        else {
+            std::cout << "Nie uda³o siê za³adowaæ tekstury: " << filePath << "\n";
+        }
     }
 
+    // £adowanie tekstur ruchu w lewo
     for (int i = 1; i <= 5; i++) {
-        if (!tempTexture.loadFromFile("textury/lewo" + std::to_string(i) + ".png")) {
-            std::cout << "Nie uda³o siê za³adowaæ tekstury lewo" + std::to_string(i) + ".png\n";
+        std::string textureKey = "lewo" + std::to_string(i);
+        std::string filePath = "textury/" + textureKey + ".png";
+
+        textureManager.loadTexture(filePath, textureKey);
+
+        // Pobranie tekstury z managera i dodanie do wektora
+        sf::Texture* texture = textureManager.getTexture(textureKey);
+        if (texture) {
+            leftTextures.push_back(*texture);
         }
-        this->leftTextures.push_back(tempTexture);
+        else {
+            std::cout << "Nie uda³o siê za³adowaæ tekstury: " << filePath << "\n";
+        }
+    }
+    
+    // £adowanie tekstury HP
+    textureManager.loadTexture("textury/hp.png", "hp");
+
+    sf::Texture* hpTexture = textureManager.getTexture("hp");
+    if (hpTexture) {
+        for (int i = 0; i < 3; i++) {
+            hpTextures.push_back(*hpTexture);
+        }
+    }
+    else {
+        std::cout << "Nie uda³o siê za³adowaæ tekstury HP: " << "textury/hp.png" << "\n";
     }
 
+    if (!amuTexture.loadFromFile("textury/amu.png")) {
+        std::cout << "Nie uda³o siê za³adowaæ tekstury amunicji" << std::endl;
+    }
 
 }
 
@@ -29,14 +63,37 @@ void Player::initSprite() {
         // Ustaw pierwsz¹ klatkê animacji ruchu w prawo jako pocz¹tkow¹ teksturê
         this->playerSprite.setTexture(this->rightTextures[0]);
     }
+    if (!this->hpTextures.empty()) {
+        this->hpSprite.resize(3); // Zainicjujemy 3 sprite'y
+        for (int i = 0; i < hpTextures.size(); i++) {
+            this->hpSprite[i].setTexture(this->hpTextures[i]);
+            float step = i * 45;
+            this->hpSprite[i].setPosition(sf::Vector2f(30.f + step, 25.f));
+        }     
+    }
     else {
         std::cout << "Brak tekstur do ustawienia dla sprite'a!\n";
     }
 
-    // Mo¿na ustawiæ domyœln¹ pozycjê sprite'a, jeœli chcesz
+
+
+    this->amuSprite.setTexture(amuTexture);
+    this->amuSprite.setPosition(sf::Vector2f(720.f, 25.f));
     this->playerSprite.setPosition(sf::Vector2f(playerPosition));
+
 }
 
+
+void Player::initText() {
+    if (!font.loadFromFile("font.ttf")) {
+        std::cout << "Nie uda³o siê za³adowaæ czcionki!" << std::endl;
+    }
+    ammoText.setFont(font);
+    ammoText.setCharacterSize(26);        // Rozmiar tekstu
+    ammoText.setString(std::to_string(currentAmmo));
+    ammoText.setFillColor(sf::Color::White); // Kolor tekstu
+    ammoText.setPosition(770.f, 25.f);    // Pozycja tekstu obok amuSprite
+}
 
 
 Player::Player(sf::Vector2f playerPosition, float speed) : health(3) {
@@ -45,6 +102,7 @@ Player::Player(sf::Vector2f playerPosition, float speed) : health(3) {
 
     bulletTexture.loadFromFile("textury/bullet1.png");
 	this->initTexture();
+    this->initText();
 	this->initSprite();
     this->isJumping = false;  
     this->isOnGround = true;
@@ -100,7 +158,13 @@ void Player::shoot() {
     sf::Vector2f startPos = this->playerSprite.getPosition();
     // Kierunek, np. strza³ w prawo
     sf::Vector2f direction(bulletDir, 0.0f);
-    bullets.emplace_back(bulletTexture, startPos, direction, 200.f);
+
+    if (currentAmmo > 0) {
+        bullets.emplace_back(bulletTexture, startPos, direction, 200.f);
+        std::cout << currentAmmo;
+        currentAmmo--;
+        updateAmmoText(currentAmmo);
+    }
 }
 
 void Player::gravitation(float deltaTime) {
@@ -146,7 +210,10 @@ void Player::update(float deltaTime, sf::Event &event) {
             verticalVelocity = JUMP_STRENGTH;
             isJumping = true;
         }
-        this->playerSprite.move(characterSpeed * deltaTime, 0.0);
+
+        if (canMoveRight) {
+            this->playerSprite.move(characterSpeed * deltaTime, 0.0);
+        }
         this->playerSprite.setTexture(this->rightTextures[this->animationIndex]);
         bulletDir = 1.0;
     }
@@ -157,7 +224,10 @@ void Player::update(float deltaTime, sf::Event &event) {
             verticalVelocity = JUMP_STRENGTH;
             isJumping = true;
         }
-        this->playerSprite.move(-characterSpeed * deltaTime, 0.0);
+
+        if (canMoveLeft) {
+            this->playerSprite.move(-characterSpeed * deltaTime, 0.0);
+        }
         this->playerSprite.setTexture(this->leftTextures[this->animationIndex]);
         bulletDir = -1.0;
     }
@@ -209,6 +279,11 @@ void Player::update(float deltaTime, sf::Event &event) {
 
 void Player::render(sf::RenderTarget &target) {
         target.draw(this->playerSprite);
+        target.draw(this->ammoText);
+        target.draw(this->amuSprite);
+        for (auto& hp : hpSprite) {
+            target.draw(hp);
+        }
 
         for (auto& bullet : bullets) {
             bullet.render(&target);

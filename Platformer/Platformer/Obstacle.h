@@ -17,6 +17,18 @@ public:
 	void update(sf::Vector2f pos);
 
 	void render(sf::RenderWindow& window) const;
+
+	// Metoda do uzyskania referencji do sprite'a (w celu kolizji pikselowej)
+	sf::Sprite& getSprite() {
+		return obstacleSprite;
+	}
+
+	// Metoda do uzyskania referencji do tekstury (w celu kolizji pikselowej)
+	sf::Texture& getTexture() {
+		return *obstacleTexture;
+	}
+
+
 	
 };
 

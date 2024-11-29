@@ -1,5 +1,6 @@
 #pragma once
 #include "Bullet.h"
+#include "TextureManager.h"
 class Player
 {
 private:
@@ -7,6 +8,16 @@ private:
 	sf::Sprite playerSprite;
 	std::vector<sf::Texture> rightTextures;
 	std::vector<sf::Texture> leftTextures;
+	std::vector<sf::Texture> hpTextures;
+	std::vector<sf::Sprite> hpSprite;
+
+	int currentAmmo = 5;
+	sf::Text ammoText;
+	sf::Font font;
+	sf::Texture amuTexture;
+	sf::Sprite amuSprite;
+
+	TextureManager textureManager;
 
 	//Grawitacja
 	const float GRAVITY = 980.f;
@@ -30,8 +41,10 @@ private:
 	//Zmienne stanu
 	bool isJumping = false;
 	bool isOnGround = false;
+	bool canMoveRight = true;
+	bool canMoveLeft = true;
 
-
+	void initText();
 	void initSprite();
 	void initTexture();
 
@@ -87,6 +100,25 @@ public:
 	void setIsJumping(bool jumping);
 	float getVerticalVelocity() const;
 
+	void setCanMoveRight(bool canMove) {
+		this->canMoveRight = canMove;
+	}
+
+	void incrementCurrentAmo() {
+		currentAmmo++;
+	}
+
+	void setCanMoveLeft(bool canMove) {
+		this->canMoveLeft = canMove;
+	}
+
+	void updateAmmoText(int currentAmmo) {
+		ammoText.setString(std::to_string(currentAmmo));
+	}
+
+	int getCurrentAmo() {
+		return currentAmmo;
+	}
 };
 
 	
