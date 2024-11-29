@@ -26,6 +26,7 @@ void Game::initObstacles() {
 		// Dodawanie przeszkód z za³adowan¹ tekstur¹
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(100, 200.f));
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(200.f, 340.f));
+		obstacles.emplace_back(*platformTexture, sf::Vector2f(400.f, 250.f));
 	}
 	if (kamykTexture) {
 		obstacles.emplace_back(*kamykTexture, sf::Vector2f(700.f, 400.0f));
@@ -155,24 +156,27 @@ void Game::renderObstacles() {
 	}
 }
 
-void Game::updateBackground(float deltaTime, float characterSpeed){
-	// Przesuñ wszystkie przeszkody o tê sam¹ wartoœæ
+void Game::updateBackground(float deltaTime, float characterSpeed) {
+	float offset = player->getCharacterSpeed() * deltaTime;
+
+	// Przesuwanie przeszkód i wrogów w lewo
 	if (this->background->isUpdated == true && this->background->moveRight == true) {
 		for (auto& obstacle : obstacles) {
-			obstacle.update(sf::Vector2f(-player->getCharacterSpeed() * deltaTime, 0));
+			obstacle.update(sf::Vector2f(-offset, 0));
 		}
-		// Przesuwanie wrogów w lewo
 		for (auto& enemy : this->enemies) {
-			enemy.move(-player->getCharacterSpeed() * deltaTime); // Przesuwaj wrogów
+			enemy.move(-offset); // Przesuwanie pozycji wroga
+			enemy.setBoundaries(enemy.getLeftBoundary() - offset, enemy.getRightBoundary() - offset);
 		}
 	}
+	// Przesuwanie przeszkód i wrogów w prawo
 	else if (this->background->isUpdated == true && this->background->moveLeft == true) {
 		for (auto& obstacle : obstacles) {
-			obstacle.update(sf::Vector2f(player->getCharacterSpeed() * deltaTime, 0));
+			obstacle.update(sf::Vector2f(offset, 0));
 		}
-		// Przesuwanie wrogów w prawo
 		for (auto& enemy : this->enemies) {
-			enemy.move(player->getCharacterSpeed() * deltaTime); // Przesuwaj wrogów
+			enemy.move(offset); // Przesuwanie pozycji wroga
+			enemy.setBoundaries(enemy.getLeftBoundary() + offset, enemy.getRightBoundary() + offset);
 		}
 	}
 
@@ -184,13 +188,12 @@ void Game::renderBackground() {
 }
 
 void Game::initEnemies() {
-	this->enemies.emplace_back(sf::Vector2f(400.f, 450.f), 100.f, 0.f, 800.f);
-	this->enemies.emplace_back(sf::Vector2f(600.f, 300.f), 150.f, 0.f, 800.f);
+	this->enemies.emplace_back(sf::Vector2f(400.f, 170.f), 100.f, 400.f, 550.f);
+	this->enemies.emplace_back(sf::Vector2f(600.f, 390.f), 150.f, 600.f, 800.f);
 }
 
 void Game::updateEnemies(float deltaTime) {
 	for (auto& enemy : this->enemies) {
-		enemy.updateAttack(); 
 		enemy.update(deltaTime);
 	}
 }
@@ -262,6 +265,7 @@ void Game::update() {
         //this->updateEnemies(deltaTime);
         this->checkPlayerEnemyCollision();
         this->updateBackground(deltaTime, player->getCharacterSpeed());
+		this->checkBulletEnemyCollision();
     }
 }
 
@@ -284,4 +288,42 @@ void Game::render() {
 	this->window.display();
 }
 
+void Game::checkBulletEnemyCollision() {
+	for (auto enemyIt = this->enemies.begin(); enemyIt != this->enemies.end(); ) {
+		//bool enemyHit = false;
 
+		for (auto it = this->player->getBullets().begin(); it != this->player->getBullets().end(); ) {
+			if (enemyIt->getBounds().intersects(it->getBounds())) {
+				enemyIt->reduceHealth(1); // Wróg traci ¿ycie
+				std::cout << "Wróg traci 1 ¿ycie! Pozosta³o: " << enemyIt->getHealth() << std::endl;
+
+				// Usuñ pocisk po kolizji
+				it = this->player->getBullets().erase(it);
+				//enemyHit = true;
+
+				// Jeœli wróg ginie, wyjdŸ z pêtli pocisków
+				if (enemyIt->getHealth() <= 0) {
+					enemyIt->startDeathAnimation(); // Uruchom animacjê œmierci
+					break;
+				}
+			}
+			else {
+				++it; // PrzejdŸ do nastêpnego pocisku
+			}
+		}
+
+		// Jeœli wróg ma byæ usuniêty po animacji œmierci
+		if (enemyIt->isDead() && enemyIt->updateDeathAnimation(this->deltaTime)) {
+			std::cout << "Wróg zosta³ pokonany i usuniêty!" << std::endl;
+			enemyIt = this->enemies.erase(enemyIt);
+		}
+		else {
+			++enemyIt; // PrzejdŸ do nastêpnego wroga
+		}
+	}
+}
+
+void Game::updateDeltaTime() {
+	static sf::Clock clock;
+	this->deltaTime = clock.restart().asSeconds();
+}

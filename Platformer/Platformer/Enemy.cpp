@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Enemy.h"
 
+const float Enemy::GROUND_Y = 480.0f;
+
 void Enemy::initTexture() {
     std::unique_ptr<sf::Texture> tempTexture;
     for (int i = 5; i <= 6; i++) {
@@ -35,7 +37,6 @@ Enemy::Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float 
     this->animationIndex = 0;
     this->damageInterval = 0.5f;
     this->initTexture();
-    this->position.y = GROUND_Y - this->sprite.getGlobalBounds().height;
     this->initSprite();
     this->textureRightAttack1.loadFromFile("textury/mole9.png");
     this->textureRightAttack2.loadFromFile("textury/mole10.png");
@@ -48,10 +49,16 @@ Enemy::Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float 
 Enemy::~Enemy() {}
 
 void Enemy::update(float deltaTime) {
+    if (this->isDying) {
+        this->updateDeathAnimation(deltaTime);
+        return; // Nie wykonuj standardowych operacji ruchu
+    }
     if (isAttacking) {
         this->updateAttack();
-        return; 
+        return;
     }
+
+    // Obs³uga animacji chodzenia
     this->animationTimer += deltaTime;
     if (this->animationTimer >= this->animationTimerMax) {
         this->animationIndex++;
@@ -70,6 +77,7 @@ void Enemy::update(float deltaTime) {
             this->sprite.setTexture(this->leftTextures[this->animationIndex]);
         }
     }
+
     // Przeciwnik porusza siê w ustalonym kierunku
     this->position.x += this->speed * this->direction * deltaTime;
 
@@ -82,9 +90,9 @@ void Enemy::update(float deltaTime) {
         this->direction = -1.0f;
         this->facingRight = false;
     }
-    this->position.y = GROUND_Y - this->sprite.getGlobalBounds().height;
-    this->sprite.setPosition(this->position);
 
+    // Zaktualizuj pozycjê sprite'a (bez wymuszania pozycji Y)
+    this->sprite.setPosition(this->position);
 }
 
 void Enemy::render(sf::RenderWindow& window) {
@@ -158,4 +166,55 @@ bool Enemy::canDealDamage() {
 void Enemy::move(float offsetX) {
     this->position.x += offsetX;
     this->sprite.setPosition(this->position); // Aktualizuj pozycjê sprite'a
+}
+
+float Enemy::getLeftBoundary() const {
+    return this->leftBoundary;
+}
+
+float Enemy::getRightBoundary() const {
+    return this->rightBoundary;
+}
+
+void Enemy::setBoundaries(float left, float right) {
+    this->leftBoundary = left;
+    this->rightBoundary = right;
+}
+
+void Enemy::reduceHealth(int damage) {
+    this->health -= damage;
+    if (this->health <= 0) {
+        this->health = 0;
+        this->isDying = true; // Wróg umiera
+    }
+}
+
+int Enemy::getHealth() const {
+    return this->health;
+}
+
+bool Enemy::updateDeathAnimation(float deltaTime) {
+    if (!this->isDying) return false;
+
+    // Animacja obracania
+    this->sprite.rotate(this->rotationSpeed * deltaTime);
+
+    // Ruch w dó³
+    this->sprite.move(0.f, this->velocity.y * deltaTime);
+
+    // Jeœli wróg opuœci ekran, zwróæ true, aby mo¿na go by³o usun¹æ
+    if (this->sprite.getPosition().y > 600.f) { // Dolna krawêdŸ ekranu
+        return true;
+    }
+    return false;
+}
+
+void Enemy::startDeathAnimation() {
+    this->isDying = true; // Flaga oznaczaj¹ca, ¿e wróg umiera
+    this->velocity = sf::Vector2f(0.0f, 150.0f); // Prêdkoœæ opadania wroga w dó³
+    this->rotationSpeed = 90.0f; // Prêdkoœæ obracania siê (stopnie na sekundê)
+}
+
+bool Enemy::isDead() const {
+    return isDying;
 }

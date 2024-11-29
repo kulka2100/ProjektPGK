@@ -23,7 +23,7 @@ private:
     sf::Vector2f position;
     float speed;
     float direction;
-    const float GROUND_Y = 480.0f;
+    static const float GROUND_Y;
 
     float leftBoundary;
     float rightBoundary;
@@ -31,9 +31,17 @@ private:
     void initSprite();
     void initTexture();
 
+    int health = 3;
+    float deathAnimationSpeed = 200.f;
+    bool isDying = false; // Flaga oznaczaj¹ca, ¿e wróg umiera
+    float deathTimer = 0.0f; // Licznik czasu animacji œmierci
+    sf::Vector2f velocity; // Prêdkoœæ ruchu wroga podczas œmierci
+    float rotationSpeed = 0.0f; // Prêdkoœæ obracania siê wroga
+
 public:
     Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float rightBoundary);
     ~Enemy();
+
 
     // Metody
     void update(float deltaTime);
@@ -53,4 +61,12 @@ public:
     bool getIsAttacking() const;
     bool canDealDamage();
     void move(float offsetX);
+    float getLeftBoundary() const;
+    float getRightBoundary() const;
+    void setBoundaries(float left, float right);
+    void reduceHealth(int damage);
+    int getHealth() const;
+    bool updateDeathAnimation(float deltaTime);
+    void startDeathAnimation();
+    bool isDead() const;
 };

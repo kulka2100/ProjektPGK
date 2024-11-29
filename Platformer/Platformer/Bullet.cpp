@@ -11,8 +11,9 @@ Bullet::Bullet(sf::Texture& texture, sf::Vector2f startPos, sf::Vector2f directi
 	this->bulletSprite.setPosition(startPos.x + 35, startPos.y + 50);
 }
 
-
-
+Bullet::~Bullet()
+{
+}
 
 bool Bullet::isOffScreen() {
 	// Za³ó¿my, ¿e ekran koñczy siê na szerokoœci 800 i wysokoœci 600
@@ -22,6 +23,7 @@ bool Bullet::isOffScreen() {
 
 
 void Bullet::update(float deltaTime) {
+	sf::Vector2f position = bulletSprite.getPosition();
 	bulletSprite.move(velocity * deltaTime);
 }
 
@@ -33,6 +35,8 @@ void Bullet::render(sf::RenderTarget* target) const{
 
 
 
-Bullet::~Bullet()
-{
+
+
+sf::FloatRect Bullet::getBounds() const {
+	return this->bulletSprite.getGlobalBounds();
 }

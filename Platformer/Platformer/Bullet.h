@@ -29,6 +29,8 @@ public:
 
 
 	void render(sf::RenderTarget* target) const;
+
+	sf::FloatRect getBounds() const;
 };
 
 
