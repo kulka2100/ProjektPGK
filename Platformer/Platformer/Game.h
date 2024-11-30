@@ -35,7 +35,6 @@ private:
 	void initObstacles();
 	void initCollectableItems();
 	void initEnemies();
-	void initInterface();
 	void updateEnemies(float deltaTime);
 	void renderEnemies();
 	void checkPlayerEnemyCollision();

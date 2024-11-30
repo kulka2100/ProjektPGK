@@ -74,7 +74,6 @@ public:
 		return playerSprite.getGlobalBounds();
 	}
 
-	int getHealth() const;
 	void reduceHealth(int amount);
 
 	void updateAnimations(float deltaTime);
@@ -101,25 +100,26 @@ public:
 	float getVerticalVelocity() const;
 	std::vector<Bullet>& getBullets();
 
+	//Umozliwienie ruchu w prawo
 	void setCanMoveRight(bool canMove) {
 		this->canMoveRight = canMove;
 	}
 
-	void incrementCurrentAmo() {
-		currentAmmo++;
-	}
-
+	//Umozliwienie ruchu w lewo
 	void setCanMoveLeft(bool canMove) {
 		this->canMoveLeft = canMove;
 	}
 
-	void updateAmmoText(int currentAmmo) {
-		ammoText.setString(std::to_string(currentAmmo));
-	}
 
-	int getCurrentAmo() {
-		return currentAmmo;
-	}
+	void incrementCurrentAmo();
+
+	void updateAmmoText(int currentAmmo);
+
+	int getCurrentAmo();
+
+	void updateHealth();
+
+	int getCurrentHealth() const;
 };
 
 	

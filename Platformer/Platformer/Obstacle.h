@@ -1,34 +1,18 @@
 #pragma once
 #include "stdafx.h"
+#include "Item.h"
 
-class Obstacle
+class Obstacle : public Item
 {
 private:
 	sf::Texture *obstacleTexture;
-	sf::Sprite obstacleSprite;
 
 public:
 	Obstacle(sf::Texture& obstacleTexture, sf::Vector2f position);
 
-	sf::FloatRect getObstacleBounds();
-
-	sf::Vector2f getObstaclePosition();
-
-	void update(sf::Vector2f pos);
-
-	void render(sf::RenderWindow& window) const;
-
-	// Metoda do uzyskania referencji do sprite'a (w celu kolizji pikselowej)
-	sf::Sprite& getSprite() {
-		return obstacleSprite;
-	}
-
-	// Metoda do uzyskania referencji do tekstury (w celu kolizji pikselowej)
-	sf::Texture& getTexture() {
+	// Metoda do uzyskania referencji do tekstury
+	sf::Texture& getTexture() override {
 		return *obstacleTexture;
 	}
-
-
-	
 };
 

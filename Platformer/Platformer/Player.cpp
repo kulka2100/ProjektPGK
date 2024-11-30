@@ -74,15 +74,10 @@ void Player::initSprite() {
     else {
         std::cout << "Brak tekstur do ustawienia dla sprite'a!\n";
     }
-
-
-
     this->amuSprite.setTexture(amuTexture);
     this->amuSprite.setPosition(sf::Vector2f(720.f, 25.f));
     this->playerSprite.setPosition(sf::Vector2f(playerPosition));
-
 }
-
 
 void Player::initText() {
     if (!font.loadFromFile("font.ttf")) {
@@ -136,7 +131,6 @@ void Player::updateAnimations(float deltaTime) {
     }
 }
 
-
 void Player::holdPlayerAtEdges() {
     if (getPlayerPosition().x > 700) {
         this->playerSprite.setPosition(700.f, getPlayerPosition().y);
@@ -152,7 +146,6 @@ void Player::holdPlayerAtEdges() {
         this->playerSprite.setPosition(getPlayerPosition().x, 490);
     }
 }
-
 
 void Player::shoot() {
     // Pozycja pocisku zaczyna siê przy postaci
@@ -194,6 +187,31 @@ void Player::setVerticalVelocity(float verticalVelocity) {
     this->verticalVelocity = verticalVelocity;
 }
 
+void Player::setIsJumping(bool jumping) {
+    this->isJumping = jumping;
+}
+
+
+void Player::updateHealth() {
+    if (!hpTextures.empty()) {
+        health++;
+        sf::Sprite newSprite;
+        newSprite.setTexture(hpTextures[0]);
+
+        //Pobranie pozycji ostaniego sprita z vectora hpSprite
+        sf::Vector2f lastPosition = hpSprite.back().getPosition();
+        newSprite.setPosition(sf::Vector2f(lastPosition.x + 45, 25.f));
+        hpSprite.push_back(newSprite);
+
+    }
+    else {
+        std::cerr << "hpTextures jest pusty! Nie mo¿na dodaæ sprite'a." << std::endl;
+    }
+}
+
+void Player::updateAmmoText(int currentAmmo) {
+    ammoText.setString(std::to_string(currentAmmo));
+}
 
 void Player::update(float deltaTime, sf::Event &event) {
     bool isOnPlatform = false;
@@ -290,32 +308,42 @@ void Player::render(sf::RenderTarget &target) {
         }
 }
 
+
+void Player::reduceHealth(int amount) {
+    this->health -= amount;
+    if(!hpSprite.empty())
+        hpSprite.pop_back();
+
+    if (this->health <= 0) {
+        std::cout << "Gracz zgin¹³! " << getCurrentHealth() << std::endl;
+        // Implementacja zakoñczenia gry
+    }
+}
+
+void Player::incrementCurrentAmo() {
+    currentAmmo++;
+}
+
 bool Player::getIsJumping() const {
     return this->isJumping;
 }
 
-void Player::setIsJumping(bool jumping) {
-    this->isJumping = jumping;
+std::vector<Bullet>& Player::getBullets() {
+    return this->bullets;
 }
 
 float Player::getVerticalVelocity() const {
     return this->verticalVelocity;
 }
 
-int Player::getHealth() const {
+int Player::getCurrentHealth() const {
     return this->health;
 }
 
-void Player::reduceHealth(int amount) {
-    this->health -= amount;
-    if (this->health <= 0) {
-        std::cout << "Gracz zgin¹³!" << std::endl;
-        // Implementacja zakoñczenia gry
-    }
+int Player::getCurrentAmo(){
+    return currentAmmo;
 }
 
-std::vector<Bullet>& Player::getBullets() {
-    return this->bullets;
-}
+
 
 

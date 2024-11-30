@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CollectableItem.h"
 
-CollectableItem::CollectableItem(sf::Texture& colltectableTexture, sf::Vector2f position){
+CollectableItem::CollectableItem(sf::Texture& colltectableTexture, sf::Vector2f position, ItemType itemType) : type(itemType){
     // Ustawienie wskaŸnika do tekstury
     this->collectableItemTexture = &colltectableTexture;
 
@@ -12,6 +12,23 @@ CollectableItem::CollectableItem(sf::Texture& colltectableTexture, sf::Vector2f 
 
     // Ustawienie pozycji sprite'a
     this->itemSprite.setPosition(position);
-
 }
+
+sf::Texture& CollectableItem::getTexture() {
+    return *collectableItemTexture;
+}
+
+void CollectableItem::setIsCollected(bool isCollected) {
+    this->isCollected = isCollected;
+}
+
+bool CollectableItem::getIsCollected() const {
+    return isCollected;
+}
+
+ItemType CollectableItem::getType() const {
+    return type;
+}
+
+
 

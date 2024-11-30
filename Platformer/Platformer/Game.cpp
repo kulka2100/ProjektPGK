@@ -42,14 +42,31 @@ void Game::initCollectableItems(){
 	textureManager.loadTexture("textury/marchewka.png", "marchewka");
 	sf::Texture* marchewkaTexture = textureManager.getTexture("marchewka");
 
+	textureManager.loadTexture("textury/hp.png", "health");
+	sf::Texture* healthTexture = textureManager.getTexture("health");
+
 	if (marchewkaTexture) {
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(400.f, 400.0f));
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(400.f, 400.0f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(200.f, 400.0f), ItemType::Carrot);
 	}
 	else {
 		std::cerr << "Tekstura marchewki nie zosta³a poprawnie za³adowana." << marchewkaTexture << std::endl;
 	}
+	if (healthTexture) {
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(400.f, 230.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 230.f), ItemType::Health);
+	}
+	else {
+		std::cerr << "Tekstura hp nie zosta³a poprawnie za³adowana." << healthTexture << std::endl;
+	}
 
 }
+
+void Game::initEnemies() {
+	this->enemies.emplace_back(sf::Vector2f(400.f, 170.f), 100.f, 400.f, 550.f);
+	this->enemies.emplace_back(sf::Vector2f(600.f, 390.f), 150.f, 600.f, 800.f);
+}
+
 
 Game::Game(int width, int height) : width(width), height(height), gameState(GameState::Menu), isMenuActive(true) {
 	this->menu = new Menu(800, 600);
@@ -75,25 +92,30 @@ void Game::updatePlayer(float deltaTime) {
 	this->player->update(deltaTime, event);
 }
 
-void Game::renderPlayer() {
-	this->player->render(this->window);
-}
-
 void Game::updateCollectableItems(){
 	sf::Vector2f playerPosition = player->getPlayerPosition();
 	sf::FloatRect playerBounds = player->getPlayerBounds();
 
 	for (auto& item : collectableItems) {
 		sf::FloatRect itemBounds = item.getObstacleBounds();
-		if (playerBounds.intersects(itemBounds)) {
-			if (playerPosition.x + playerBounds.width > itemBounds.left ) {
-				std::cout << "zebrales marchew" << std::endl;
-				item.setIsCollected(true); // Oznacz przedmiot jako zebrany
-				player->incrementCurrentAmo(); 
-				player->updateAmmoText(player->getCurrentAmo());
+			if (playerBounds.intersects(itemBounds)) {
+				if (playerPosition.x + playerBounds.width > itemBounds.left) {
+					if (item.getType() == ItemType::Carrot) {
+						std::cout << "zebrales marchew" << std::endl;
+						item.setIsCollected(true); // Oznacz przedmiot jako zebrany
+						player->incrementCurrentAmo();
+						player->updateAmmoText(player->getCurrentAmo());
+					}
+					else if (item.getType() == ItemType::Health) {
+						std::cout << "zebrales zycie" << std::endl;
+						item.setIsCollected(true);
+						player->updateHealth();
+						//player->incrementHealth();
+						std::cout << player->getCurrentHealth() << std::endl;
+
+					}
+				}
 			}
-			
-		}
 	}
 	// Usuñ wszystkie zebrane przedmioty
 	collectableItems.erase(
@@ -105,12 +127,6 @@ void Game::updateCollectableItems(){
 
 }
 
-void Game::renderCollectableItems() {
-	for (auto& item : collectableItems) {
-		item.render(window);
-	}
-}
-
 void Game::updateObstacles() {
 	sf::Vector2f playerPosition = player->getPlayerPosition();
 	sf::FloatRect playerBounds = player->getPlayerBounds();
@@ -120,39 +136,30 @@ void Game::updateObstacles() {
 	for (auto& obstacle : obstacles) {
 		sf::FloatRect obstacleBounds = obstacle.getObstacleBounds();
 
-		//std::cout << "pozycja y" << playerPosition.y << " wysokosc postaci: " << playerBounds.height << std::endl;
 		if (playerBounds.intersects(obstacleBounds)) {
 			bool isOnPlatform = false;
+			//Kolizja z gory
 			if (playerPosition.y + playerBounds.height <= obstacleBounds.top + obstacleBounds.height) {
-				std::cout << playerPosition.y + playerBounds.height<<" " << obstacleBounds.top + obstacleBounds.height<< std::endl;
 				player->setOnGround(true);
 				isOnPlatform = true;
 				player->setVerticalVelocity(0.0f);
 				player->setIsJumping(false);
 			}
+			//Kolizja z lewej strony
 			if ((playerPosition.x + playerBounds.width > obstacleBounds.left &&
 				playerPosition.x < obstacleBounds.left &&
 				playerPosition.y + playerBounds.height > obstacleBounds.top &&
 				playerPosition.y < obstacleBounds.top + obstacleBounds.height)) {
-				//std::cout << "Kolizja z lewej" << std::endl;
 				player->setCanMoveRight(false);
 			}
+			//Kolizja z prawej strony
 			if ((playerBounds.left < obstacleBounds.left + obstacleBounds.width &&
 				playerBounds.left + playerBounds.width > obstacleBounds.left + obstacleBounds.width &&
 				playerPosition.y + playerBounds.height > obstacleBounds.top &&
 				playerPosition.y < obstacleBounds.top + obstacleBounds.height )) {
-				//std::cout << "Kolizja z prawej" << std::endl;
 				player->setCanMoveLeft(false);
 			}
-	
-
 		}
-	}
-}
-
-void Game::renderObstacles() {
-	for (auto& obstacle : obstacles) {
-		obstacle.render(window);
 	}
 }
 
@@ -168,6 +175,9 @@ void Game::updateBackground(float deltaTime, float characterSpeed) {
 			enemy.move(-offset); // Przesuwanie pozycji wroga
 			enemy.setBoundaries(enemy.getLeftBoundary() - offset, enemy.getRightBoundary() - offset);
 		}
+		for (auto& item : this->collectableItems) {
+			item.update(sf::Vector2f(-offset, 0));
+		}
 	}
 	// Przesuwanie przeszkód i wrogów w prawo
 	else if (this->background->isUpdated == true && this->background->moveLeft == true) {
@@ -178,44 +188,17 @@ void Game::updateBackground(float deltaTime, float characterSpeed) {
 			enemy.move(offset); // Przesuwanie pozycji wroga
 			enemy.setBoundaries(enemy.getLeftBoundary() + offset, enemy.getRightBoundary() + offset);
 		}
+		for (auto& item : collectableItems) {
+			item.update(sf::Vector2f(offset, 0));
+		}
 	}
 
 	this->background->update(deltaTime, characterSpeed);
 }
 
-void Game::renderBackground() {
-	this->background->render(this->window);
-}
-
-void Game::initEnemies() {
-	this->enemies.emplace_back(sf::Vector2f(400.f, 170.f), 100.f, 400.f, 550.f);
-	this->enemies.emplace_back(sf::Vector2f(600.f, 390.f), 150.f, 600.f, 800.f);
-}
-
 void Game::updateEnemies(float deltaTime) {
 	for (auto& enemy : this->enemies) {
 		enemy.update(deltaTime);
-	}
-}
-
-void Game::renderEnemies() {
-	for (auto& enemy : this->enemies) {
-		enemy.render(this->window);
-	}
-}
-
-void Game::checkPlayerEnemyCollision() {
-	for (auto& enemy : this->enemies) {
-		if (player->getPlayerBounds().intersects(enemy.getBounds())) {
-			if (enemy.canDealDamage()) {
-				enemy.startAttack(); // Rozpocznij animacjê ataku
-				player->reduceHealth(1); // Gracz traci ¿ycie
-				std::cout << "Gracz traci 1 ¿ycie! Pozosta³o: " << player->getHealth() << std::endl;
-			}
-		}
-		else {
-			enemy.resetAttack(); // Resetuj animacjê, jeœli nie ma kolizji
-		}
 	}
 }
 
@@ -227,7 +210,7 @@ void Game::update() {
 		if (event.type == sf::Event::Closed) {
 			this->window.close();
 		}
-
+		
 		if(gameState == GameState::Menu) {
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::Up) {
@@ -241,7 +224,7 @@ void Game::update() {
 					if(selected == 0) {
 						// Play
 						gameState = GameState::Playing;
-						std::cout << "Wybrano Play!\n";
+						std::cout << "Wybrano Play!\n" << std::endl;
 						isMenuActive = false;
 					}
 					else if (selected == 1) {
@@ -262,11 +245,39 @@ void Game::update() {
         this->updatePlayer(deltaTime);
         this->updateObstacles();
 		this->updateCollectableItems();
-        //this->updateEnemies(deltaTime);
+        this->updateEnemies(deltaTime);
         this->checkPlayerEnemyCollision();
         this->updateBackground(deltaTime, player->getCharacterSpeed());
 		this->checkBulletEnemyCollision();
     }
+}
+
+
+
+void Game::renderBackground() {
+	this->background->render(this->window);
+}
+
+void Game::renderEnemies() {
+	for (auto& enemy : this->enemies) {
+		enemy.render(this->window);
+	}
+}
+
+void Game::renderObstacles() {
+	for (auto& obstacle : obstacles) {
+		obstacle.render(window);
+	}
+}
+
+void Game::renderCollectableItems() {
+	for (auto& item : collectableItems) {
+		item.render(window);
+	}
+}
+
+void Game::renderPlayer() {
+	this->player->render(this->window);
 }
 
 void Game::render() {
@@ -282,10 +293,25 @@ void Game::render() {
 		this->renderObstacles();
 		this->renderCollectableItems();
 		this->renderPlayer();
-		//this->renderEnemies();
+		this->renderEnemies();
 	}
 
 	this->window.display();
+}
+
+void Game::checkPlayerEnemyCollision() {
+	for (auto& enemy : this->enemies) {
+		if (player->getPlayerBounds().intersects(enemy.getBounds())) {
+			if (enemy.canDealDamage()) {
+				enemy.startAttack(); // Rozpocznij animacjê ataku
+				player->reduceHealth(1); // Gracz traci ¿ycie
+				std::cout << "Gracz traci 1 ¿ycie! Pozosta³o: " << player->getCurrentHealth() << std::endl;
+			}
+		}
+		else {
+			enemy.resetAttack(); // Resetuj animacjê, jeœli nie ma kolizji
+		}
+	}
 }
 
 void Game::checkBulletEnemyCollision() {
