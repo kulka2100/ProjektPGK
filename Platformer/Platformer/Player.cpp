@@ -293,10 +293,24 @@ void Player::update(float deltaTime, sf::Event &event) {
     if (!isOnPlatform) {
         setOnGround(false);
     }
+
+    if (isFalling) {
+        float fallSpeed = 200.f;
+        playerDeadSprite.move(0, fallSpeed * deltaTime);
+        
+        if (playerDeadSprite.getPosition().y >= 600) {
+            isFalling = false;
+        }
+    }
 }
 
 void Player::render(sf::RenderTarget &target) {
+    if (!isDead) {
         target.draw(this->playerSprite);
+    }
+    else {
+        target.draw(this->playerDeadSprite);
+    }
         target.draw(this->ammoText);
         target.draw(this->amuSprite);
         for (auto& hp : hpSprite) {
@@ -317,6 +331,20 @@ void Player::reduceHealth(int amount) {
     if (this->health <= 0) {
         std::cout << "Gracz zgin¹³! " << getCurrentHealth() << std::endl;
         // Implementacja zakoñczenia gry
+        setIsDead(true);
+        isFalling = true;
+        if (!isDeadSpriteSet) {
+            textureManager.loadTexture("textury/smierc.png", "smierc");
+            sf::Texture* smierc = textureManager.getTexture("smierc");
+            if (smierc) {
+                playerDeadSprite.setTexture(*smierc);
+                playerDeadSprite.setPosition(getPlayerPosition().x, getPlayerPosition().y + 40);
+            }
+            else {
+                std::cout << "Nie uda³o siê za³adowaæ tekstury smiercii: " << "textury/smierc.png" << "\n";
+            }
+            isDeadSpriteSet = true;
+        }
     }
 }
 

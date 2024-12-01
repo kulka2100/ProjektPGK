@@ -17,37 +17,47 @@ void Game::initBackground() {
 void Game::initObstacles() {
 	// £adowanie tekstury za pomoc¹ TextureManager
 	textureManager.loadTexture("textury/platforma.png", "platforma");
+	textureManager.loadTexture("textury/malaPlatforma.png", "malaPlatforma");
 	textureManager.loadTexture("textury/kamyk.png", "kamyk");
 	// Pobieranie wskaŸnika do tekstury
 	sf::Texture* platformTexture = textureManager.getTexture("platforma");
+	sf::Texture* smallPlatformTexture = textureManager.getTexture("malaPlatforma");
 	sf::Texture* kamykTexture = textureManager.getTexture("kamyk");
 
 	if (platformTexture) {
 		// Dodawanie przeszkód z za³adowan¹ tekstur¹
-		obstacles.emplace_back(*platformTexture, sf::Vector2f(100, 200.f));
-		obstacles.emplace_back(*platformTexture, sf::Vector2f(200.f, 340.f));
-		obstacles.emplace_back(*platformTexture, sf::Vector2f(400.f, 250.f));
+		obstacles.emplace_back(*platformTexture, sf::Vector2f(50, 200.f));
+		obstacles.emplace_back(*platformTexture, sf::Vector2f(500.f, 250.f));
 	}
 	if (kamykTexture) {
 		obstacles.emplace_back(*kamykTexture, sf::Vector2f(700.f, 400.0f));
-		//obstacles.emplace_back(*kamykTexture, sf::Vector2f(1400.f, 400.0f));
-
 	}
 	else {
 		std::cerr << "Tekstura platforma nie zosta³a poprawnie za³adowana." << platformTexture <<std::endl;
+	}
+	if (smallPlatformTexture) {
+		obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(250.f, 380.f));
 	}
 }
 
 void Game::initCollectableItems(){
 	textureManager.loadTexture("textury/marchewka.png", "marchewka");
-	sf::Texture* marchewkaTexture = textureManager.getTexture("marchewka");
-
 	textureManager.loadTexture("textury/hp.png", "health");
+	textureManager.loadTexture("textury/key.png", "key");
+	textureManager.loadTexture("textury/chest.png", "chest");
+	textureManager.loadTexture("textury/tree.png", "tree");
+
+	sf::Texture* marchewkaTexture = textureManager.getTexture("marchewka");
 	sf::Texture* healthTexture = textureManager.getTexture("health");
+	sf::Texture* keyTexture = textureManager.getTexture("key");
+	sf::Texture* chestTexture = textureManager.getTexture("chest");
+	sf::Texture* treeTexture = textureManager.getTexture("tree");
+
 
 	if (marchewkaTexture) {
 		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(400.f, 400.0f), ItemType::Carrot);
 		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(200.f, 400.0f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1400.f, 170.f), ItemType::Carrot);
 	}
 	else {
 		std::cerr << "Tekstura marchewki nie zosta³a poprawnie za³adowana." << marchewkaTexture << std::endl;
@@ -59,6 +69,31 @@ void Game::initCollectableItems(){
 	else {
 		std::cerr << "Tekstura hp nie zosta³a poprawnie za³adowana." << healthTexture << std::endl;
 	}
+	if (keyTexture) {
+		collectableItems.emplace_back(*keyTexture, sf::Vector2f(750.f, 330.f), ItemType::Key);
+	}
+	else {
+		std::cerr << "Tekstura key nie zosta³a poprawnie za³adowana." << keyTexture << std::endl;
+	}
+
+	if (chestTexture) {
+		collectableItems.emplace_back(*chestTexture, sf::Vector2f(1300.f, 330.f), ItemType::Chest);
+	}
+	else {
+		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << chestTexture << std::endl;
+	}
+
+	if (treeTexture && marchewkaTexture) {
+		collectableItems.emplace_back(*treeTexture, sf::Vector2f(1000.f, 150.f), ItemType::Tree);
+		// Uzyskanie referencji do ostatnio dodanego elementu (drzewa)
+		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1100.f, 170.f), ItemType::Carrot);
+		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1100.f, 270.f), ItemType::Carrot);
+		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1200.f, 200.f), ItemType::Carrot);
+	}
+	else {
+		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << treeTexture << std::endl;
+	}
+
 
 }
 
@@ -92,12 +127,13 @@ void Game::updatePlayer(float deltaTime) {
 	this->player->update(deltaTime, event);
 }
 
-void Game::updateCollectableItems(){
+void Game::updateCollectableItems(float deltaTime){
 	sf::Vector2f playerPosition = player->getPlayerPosition();
 	sf::FloatRect playerBounds = player->getPlayerBounds();
+	int keysCounter = 0;
 
 	for (auto& item : collectableItems) {
-		sf::FloatRect itemBounds = item.getObstacleBounds();
+		sf::FloatRect itemBounds = item.getBounds();
 			if (playerBounds.intersects(itemBounds)) {
 				if (playerPosition.x + playerBounds.width > itemBounds.left) {
 					if (item.getType() == ItemType::Carrot) {
@@ -110,13 +146,39 @@ void Game::updateCollectableItems(){
 						std::cout << "zebrales zycie" << std::endl;
 						item.setIsCollected(true);
 						player->updateHealth();
-						//player->incrementHealth();
 						std::cout << player->getCurrentHealth() << std::endl;
 
+					}
+					else if (item.getType() == ItemType::Key) {
+						std::cout << "zebrales klucz" << std::endl;
+						keysCounter++;
+						player->setKeys(keysCounter);
+						item.setIsCollected(true);
+					}
+					else if (item.getType() == ItemType::Chest) {				
+						if (player->getKeys() > 0) {
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+								item.setIsOpenChest(true);
+								std::cout << "Otwarles skrzynie " << item.getIsChestOpen() << std::endl;
+								setOpenChestTexture();
+							}
+						}
+					}
+					else if (item.getType() == ItemType::Tree) {
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
+							std::cout << "wcisnieto l" << std::endl;
+							for (auto& carot : carrotOnTree) {
+								if (carot.getType() == ItemType::Carrot) {
+									carot.getSprite().move(0, 200.f * deltaTime);
+									carot.setIsCollected(true);
+								}
+							}
+						}
 					}
 				}
 			}
 	}
+
 	// Usuñ wszystkie zebrane przedmioty
 	collectableItems.erase(
 		std::remove_if(collectableItems.begin(), collectableItems.end(),
@@ -134,7 +196,7 @@ void Game::updateObstacles() {
 	player->setCanMoveRight(true);
 	player->setCanMoveLeft(true);
 	for (auto& obstacle : obstacles) {
-		sf::FloatRect obstacleBounds = obstacle.getObstacleBounds();
+		sf::FloatRect obstacleBounds = obstacle.getBounds();
 
 		if (playerBounds.intersects(obstacleBounds)) {
 			bool isOnPlatform = false;
@@ -178,6 +240,9 @@ void Game::updateBackground(float deltaTime, float characterSpeed) {
 		for (auto& item : this->collectableItems) {
 			item.update(sf::Vector2f(-offset, 0));
 		}
+		for (auto& item : this->carrotOnTree) {
+			item.update(sf::Vector2f(-offset, 0));
+		}
 	}
 	// Przesuwanie przeszkód i wrogów w prawo
 	else if (this->background->isUpdated == true && this->background->moveLeft == true) {
@@ -189,6 +254,9 @@ void Game::updateBackground(float deltaTime, float characterSpeed) {
 			enemy.setBoundaries(enemy.getLeftBoundary() + offset, enemy.getRightBoundary() + offset);
 		}
 		for (auto& item : collectableItems) {
+			item.update(sf::Vector2f(offset, 0));
+		}
+		for (auto& item: carrotOnTree) {
 			item.update(sf::Vector2f(offset, 0));
 		}
 	}
@@ -244,7 +312,7 @@ void Game::update() {
     if (gameState == GameState::Playing) {
         this->updatePlayer(deltaTime);
         this->updateObstacles();
-		this->updateCollectableItems();
+		this->updateCollectableItems(deltaTime);
         this->updateEnemies(deltaTime);
         this->checkPlayerEnemyCollision();
         this->updateBackground(deltaTime, player->getCharacterSpeed());
@@ -271,9 +339,15 @@ void Game::renderObstacles() {
 }
 
 void Game::renderCollectableItems() {
+
+	for (auto& carrot : carrotOnTree) {
+		carrot.render(window);
+	}
+
 	for (auto& item : collectableItems) {
 		item.render(window);
 	}
+
 }
 
 void Game::renderPlayer() {
@@ -352,4 +426,24 @@ void Game::checkBulletEnemyCollision() {
 void Game::updateDeltaTime() {
 	static sf::Clock clock;
 	this->deltaTime = clock.restart().asSeconds();
+}
+
+void Game::setOpenChestTexture() {
+	textureManager.loadTexture("textury/openchest.png", "openChest");
+	sf::Texture* openChestTexture = textureManager.getTexture("openChest");
+
+	if (openChestTexture) {
+		//collectableItems.emplace_back(*openChestTexture, sf::Vector2f(1800.f, 400.f), ItemType::OpenChest);
+		for (auto& item : collectableItems) {
+			std::cout << item.getIsChestOpen() << std::endl;
+			if (item.getIsChestOpen()) {
+				std::cout << "Otwarta slkrznia" << std::endl;
+				item.setTexture(*openChestTexture);
+				item.setType(ItemType::OpenChest);
+			}
+		}
+	}
+	else {
+		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << openChestTexture << std::endl;
+	}
 }

@@ -5,7 +5,9 @@ class Player
 {
 private:
 	int health;
+	int keys = 0;
 	sf::Sprite playerSprite;
+	sf::Sprite playerDeadSprite;
 	std::vector<sf::Texture> rightTextures;
 	std::vector<sf::Texture> leftTextures;
 	std::vector<sf::Texture> hpTextures;
@@ -43,6 +45,9 @@ private:
 	bool isOnGround = false;
 	bool canMoveRight = true;
 	bool canMoveLeft = true;
+	bool isDead = false;
+	bool isFalling = false;
+	bool isDeadSpriteSet = false;
 
 	void initText();
 	void initSprite();
@@ -110,6 +115,9 @@ public:
 		this->canMoveLeft = canMove;
 	}
 
+	void setIsDead(bool isDead) {
+		this->isDead = isDead;
+	}
 
 	void incrementCurrentAmo();
 
@@ -120,6 +128,18 @@ public:
 	void updateHealth();
 
 	int getCurrentHealth() const;
+
+	bool getIsDead() {
+		return isDead;
+	}
+
+	void setKeys(int keys) {
+		this->keys = keys;
+	}
+
+	int getKeys() {
+		return keys;
+	}
 };
 
 	

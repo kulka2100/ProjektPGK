@@ -25,6 +25,7 @@ private:
 	TextureManager textureManager;
 	std::vector<Obstacle> obstacles;
 	std::vector<CollectableItem> collectableItems;
+	std::vector<CollectableItem> carrotOnTree;
 	bool isMenuActive;
 	bool isPlayed;
 	GameState gameState;
@@ -61,7 +62,7 @@ public:
 
 	void renderPlayer();
 
-	void updateCollectableItems();
+	void updateCollectableItems(float deltaTime);
 	
 	void renderCollectableItems();
 	
@@ -78,6 +79,8 @@ public:
 	void render();
 
 	void updateDeltaTime();
+
+	void setOpenChestTexture();
 
 };
 

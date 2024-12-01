@@ -6,11 +6,11 @@ protected:
 	sf::Sprite itemSprite;
 public:
 public:
-    virtual sf::FloatRect getObstacleBounds() {
+    virtual sf::FloatRect getBounds() {
         return itemSprite.getGlobalBounds();
     }
 
-    virtual sf::Vector2f getObstaclePosition() {
+    virtual sf::Vector2f getPosition() {
         return itemSprite.getPosition();
     }
 
