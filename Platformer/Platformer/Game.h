@@ -7,6 +7,7 @@
 #include "Enemy.h"
 #include "GameState.h"
 #include "CollectableItem.h"
+#include "Moles.h"
 
 class Game
 {
@@ -16,7 +17,7 @@ private:
 	sf::Event event;
 	sf::RenderWindow window;
 	sf::Clock clock;
-	std::vector<Enemy> enemies;
+	std::vector<Enemy*> enemies;
 	float deltaTime;
 
 	Player *player;

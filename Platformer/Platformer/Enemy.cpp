@@ -1,14 +1,14 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Enemy.h"
 
-const float Enemy::GROUND_Y = 480.0f;
 
 void Enemy::initTexture() {
     std::unique_ptr<sf::Texture> tempTexture;
+    std::string texturePrefix = getTexturePrefix();
     for (int i = 5; i <= 6; i++) {
         tempTexture = std::make_unique<sf::Texture>();
-        if (!tempTexture->loadFromFile("textury/mole" + std::to_string(i) + ".png")) {
-            std::cerr << "Nie uda³o siê za³adowaæ tekstury: mole" + std::to_string(i) + ".png" << std::endl;
+        if (!tempTexture->loadFromFile("textury/" + texturePrefix + std::to_string(i) + ".png")) {
+            std::cerr << "Nie udalo sie zaladowac tekstury:" + texturePrefix + std::to_string(i) + ".png" << std::endl;
         }
         else {
             this->rightTextures.push_back(std::move(*tempTexture));
@@ -17,8 +17,8 @@ void Enemy::initTexture() {
 
     for (int i = 2; i <= 3; i++) {
         tempTexture = std::make_unique<sf::Texture>();
-        if (!tempTexture->loadFromFile("textury/mole" + std::to_string(i) + ".png")) {
-            std::cerr << "Nie uda³o siê za³adowaæ tekstury: mole" + std::to_string(i) + ".png" << std::endl;
+        if (!tempTexture->loadFromFile("textury/" + texturePrefix + std::to_string(i) + ".png")) {
+            std::cerr << "Nie udalo sie zaladowac tekstury:" + texturePrefix + std::to_string(i) + ".png" << std::endl;
         }
         else {
             this->leftTextures.push_back(std::move(*tempTexture));
@@ -30,10 +30,14 @@ void Enemy::initTexture() {
     this->sprite.setScale(scaleFactor, scaleFactor);
 }
 
+std::string Enemy::getTexturePrefix() const {
+    return "mole"; 
+}
+
 Enemy::Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float rightBoundary)
     : position(startPosition), speed(speed), leftBoundary(leftBoundary), rightBoundary(rightBoundary), direction(1.0f), facingRight(true) {
     this->animationTimer = 0.0f;
-    this->animationTimerMax = 0.2f; 
+    this->animationTimerMax = 0.2f;
     this->animationIndex = 0;
     this->damageInterval = 0.5f;
     this->initTexture();
@@ -41,7 +45,7 @@ Enemy::Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float 
     this->textureRightAttack1.loadFromFile("textury/mole9.png");
     this->textureRightAttack2.loadFromFile("textury/mole10.png");
     this->textureLeftAttack1.loadFromFile("textury/mole7.png");
-    this->textureLeftAttack2.loadFromFile("textury/mole8.png"); 
+    this->textureLeftAttack2.loadFromFile("textury/mole8.png");
     this->isAttacking = false;
     this->attackFrame = 0;
 }
@@ -58,7 +62,7 @@ void Enemy::update(float deltaTime) {
         return;
     }
 
-    // Obs³uga animacji chodzenia
+    // ObsÂ³uga animacji chodzenia
     this->animationTimer += deltaTime;
     if (this->animationTimer >= this->animationTimerMax) {
         this->animationIndex++;
@@ -78,7 +82,7 @@ void Enemy::update(float deltaTime) {
         }
     }
 
-    // Przeciwnik porusza siê w ustalonym kierunku
+    // Przeciwnik porusza siÃª w ustalonym kierunku
     this->position.x += this->speed * this->direction * deltaTime;
 
     // Zmiana kierunku przy dotarciu do granicy
@@ -91,7 +95,7 @@ void Enemy::update(float deltaTime) {
         this->facingRight = false;
     }
 
-    // Zaktualizuj pozycjê sprite'a (bez wymuszania pozycji Y)
+    // Zaktualizuj pozycjÃª sprite'a (bez wymuszania pozycji Y)
     this->sprite.setPosition(this->position);
 }
 
@@ -123,7 +127,7 @@ sf::FloatRect Enemy::getBounds() const {
 
 void Enemy::initSprite() {
     if (!rightTextures.empty()) {
-        this->sprite.setTexture(rightTextures[0]); // Ustawienie domyœlnej tekstury
+        this->sprite.setTexture(rightTextures[0]); // Ustawienie domyÅ“lnej tekstury
     }
     else {
         std::cerr << "Brak tekstur w wektorze rightTextures podczas inicjalizacji sprite'a!" << std::endl;
@@ -155,7 +159,7 @@ bool Enemy::getIsAttacking() const {
 }
 
 bool Enemy::canDealDamage() {
-    // Sprawdzanie, czy min¹³ czas od ostatniego zadania obra¿eñ
+    // Sprawdzanie, czy minÂ¹Â³ czas od ostatniego zadania obraÂ¿eÃ±
     if (damageClock.getElapsedTime().asSeconds() >= damageInterval) {
         damageClock.restart();
         return true;
@@ -165,7 +169,7 @@ bool Enemy::canDealDamage() {
 
 void Enemy::move(float offsetX) {
     this->position.x += offsetX;
-    this->sprite.setPosition(this->position); // Aktualizuj pozycjê sprite'a
+    this->sprite.setPosition(this->position); // Aktualizuj pozycjÃª sprite'a
 }
 
 float Enemy::getLeftBoundary() const {
@@ -185,7 +189,7 @@ void Enemy::reduceHealth(int damage) {
     this->health -= damage;
     if (this->health <= 0) {
         this->health = 0;
-        this->isDying = true; // Wróg umiera
+        this->isDying = true; 
     }
 }
 
@@ -193,26 +197,27 @@ int Enemy::getHealth() const {
     return this->health;
 }
 
+
 bool Enemy::updateDeathAnimation(float deltaTime) {
     if (!this->isDying) return false;
 
     // Animacja obracania
     this->sprite.rotate(this->rotationSpeed * deltaTime);
 
-    // Ruch w dó³
+    // Ruch w dÃ³Â³
     this->sprite.move(0.f, this->velocity.y * deltaTime);
 
-    // Jeœli wróg opuœci ekran, zwróæ true, aby mo¿na go by³o usun¹æ
-    if (this->sprite.getPosition().y > 600.f) { // Dolna krawêdŸ ekranu
+    // JeÅ“li wrÃ³g opuÅ“ci ekran, zwrÃ³Ã¦ true, aby moÂ¿na go byÂ³o usunÂ¹Ã¦
+    if (this->sprite.getPosition().y > 600.f) { // Dolna krawÃªdÅ¸ ekranu
         return true;
     }
     return false;
 }
 
 void Enemy::startDeathAnimation() {
-    this->isDying = true; // Flaga oznaczaj¹ca, ¿e wróg umiera
-    this->velocity = sf::Vector2f(0.0f, 150.0f); // Prêdkoœæ opadania wroga w dó³
-    this->rotationSpeed = 90.0f; // Prêdkoœæ obracania siê (stopnie na sekundê)
+    this->isDying = true; // Flaga oznaczajÂ¹ca, Â¿e wrÃ³g umiera
+    this->velocity = sf::Vector2f(0.0f, 150.0f); // PrÃªdkoÅ“Ã¦ opadania wroga w dÃ³Â³
+    this->rotationSpeed = 90.0f; // PrÃªdkoÅ“Ã¦ obracania siÃª (stopnie na sekundÃª)
 }
 
 bool Enemy::isDead() const {
