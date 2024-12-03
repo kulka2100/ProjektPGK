@@ -13,7 +13,7 @@ Background::Background(const std::string& filename, Player *player){
 
 
 Background::Background(const std::string& filename) {
-    std::cout << "Próba za³adowania pliku: " << filename << std::endl;
+    std::cout << "Proba za³adowania pliku: " << filename << std::endl;
     if (!textureBackground.loadFromFile(filename)) {
         throw std::runtime_error("Nie mo¿na za³adowaæ tekstury: ");
     }

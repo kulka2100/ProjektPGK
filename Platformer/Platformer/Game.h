@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Background.h"
 #include "Menu.h"
+#include "Maps.h"
 #include "Obstacle.h"
 #include "TextureManager.h"
 #include "Enemy.h"
@@ -22,6 +23,7 @@ private:
 	Player *player;
 	Background* background;
 	Menu* menu;
+	Maps* maps;
 	TextureManager textureManager;
 	std::vector<Obstacle> obstacles;
 	std::vector<CollectableItem> collectableItems;
@@ -29,11 +31,12 @@ private:
 	bool isMenuActive;
 	bool isPlayed;
 	GameState gameState;
+	int currentMap = 1;
 
 	void initWindow();
 	void initPlayer();
-	void initBackground();
-	void initObstacles();
+	void initBackground(int mapIndex);
+	void initObstacles(int mapIndex);
 	void initCollectableItems();
 	void initEnemies();
 	void updateEnemies(float deltaTime);
@@ -81,6 +84,8 @@ public:
 	void updateDeltaTime();
 
 	void setOpenChestTexture();
+
+
 
 };
 

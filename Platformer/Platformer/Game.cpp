@@ -9,43 +9,71 @@ void Game::initPlayer() {
 	this->player = new Player(sf::Vector2f(100.f, 400.f), 500.0);
 }
 
-void Game::initBackground() {
-	this->background = new Background("textury/tlo3.png", this->player);
-	this->background->setSpeed(200.0f);
+void Game::initBackground(int mapIndex) {
+	switch (mapIndex) {
+	case 0:
+		this->background = new Background("textury/tlo3.png", this->player);
+		this->background->setSpeed(200.0f);
+		break;
+	case 1:
+		this->background = new Background("textury/tlo4.png", this->player);
+		this->background->setSpeed(200.0f);
+		break;
+	case 2:
+		this->background = new Background("textury/tlo5.png", this->player);
+		this->background->setSpeed(200.0f);
+		break;
+	case 3:
+		this->background = new Background("textury/tlo6.png", this->player);
+		this->background->setSpeed(200.0f);
+		break;
+	case 4:
+		this->background = new Background("textury/tlo7.png", this->player);
+		this->background->setSpeed(200.0f);
+		break;
+	default:
+		this->background = new Background("textury/tlo8.png", this->player);
+		this->background->setSpeed(200.0f);
+		break;
+	}
 }
 
-void Game::initObstacles() {
+void Game::initObstacles(int mapIndex) {
 	// £adowanie tekstury za pomocπ TextureManager
-	textureManager.loadTexture("textury/platforma.png", "platforma");
-	textureManager.loadTexture("textury/malaPlatforma.png", "malaPlatforma");
-	textureManager.loadTexture("textury/kamyk.png", "kamyk");
-	// Pobieranie wskaünika do tekstury
-	sf::Texture* platformTexture = textureManager.getTexture("platforma");
-	sf::Texture* smallPlatformTexture = textureManager.getTexture("malaPlatforma");
-	sf::Texture* kamykTexture = textureManager.getTexture("kamyk");
+	switch (mapIndex) {
+	case 0:
+		textureManager.loadTexture("textury/las/platforma.png", "platforma");
+		textureManager.loadTexture("textury/las/malaPlatforma.png", "malaPlatforma");
+		textureManager.loadTexture("textury/las/kamyk.png", "kamyk");
+		// Pobieranie wskaünika do tekstury
+		sf::Texture* platformTexture = textureManager.getTexture("platforma");
+		sf::Texture* smallPlatformTexture = textureManager.getTexture("malaPlatforma");
+		sf::Texture* kamykTexture = textureManager.getTexture("kamyk");
 
-	if (platformTexture) {
-		// Dodawanie przeszkÛd z za≥adowanπ teksturπ
-		obstacles.emplace_back(*platformTexture, sf::Vector2f(50, 200.f));
-		obstacles.emplace_back(*platformTexture, sf::Vector2f(500.f, 250.f));
-	}
-	if (kamykTexture) {
-		obstacles.emplace_back(*kamykTexture, sf::Vector2f(700.f, 400.0f));
-	}
-	else {
-		std::cerr << "Tekstura platforma nie zosta≥a poprawnie za≥adowana." << platformTexture <<std::endl;
-	}
-	if (smallPlatformTexture) {
-		obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(250.f, 380.f));
+		if (platformTexture) {
+			// Dodawanie przeszkÛd z za≥adowanπ teksturπ
+			obstacles.emplace_back(*platformTexture, sf::Vector2f(50, 200.f));
+			obstacles.emplace_back(*platformTexture, sf::Vector2f(500.f, 250.f));
+		}
+		if (kamykTexture) {
+			obstacles.emplace_back(*kamykTexture, sf::Vector2f(700.f, 400.0f));
+		}
+		else {
+			std::cerr << "Tekstura platforma nie zosta≥a poprawnie za≥adowana." << platformTexture << std::endl;
+		}
+		if (smallPlatformTexture) {
+			obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(250.f, 380.f));
+		}
+		break;
 	}
 }
 
 void Game::initCollectableItems(){
-	textureManager.loadTexture("textury/marchewka.png", "marchewka");
+	textureManager.loadTexture("textury/las/marchewka.png", "marchewka");
 	textureManager.loadTexture("textury/hp.png", "health");
-	textureManager.loadTexture("textury/key.png", "key");
-	textureManager.loadTexture("textury/chest.png", "chest");
-	textureManager.loadTexture("textury/tree.png", "tree");
+	textureManager.loadTexture("textury/las/key.png", "key");
+	textureManager.loadTexture("textury/las/chest.png", "chest");
+	textureManager.loadTexture("textury/las/tree.png", "tree");
 
 	sf::Texture* marchewkaTexture = textureManager.getTexture("marchewka");
 	sf::Texture* healthTexture = textureManager.getTexture("health");
@@ -93,8 +121,6 @@ void Game::initCollectableItems(){
 	else {
 		std::cerr << "Tekstura chest nie zosta≥a poprawnie za≥adowana." << treeTexture << std::endl;
 	}
-
-
 }
 
 void Game::initEnemies() {
@@ -104,12 +130,13 @@ void Game::initEnemies() {
 
 
 Game::Game(int width, int height) : width(width), height(height), gameState(GameState::Menu), isMenuActive(true) {
-	this->menu = new Menu(800, 600);
+	this->menu = new Menu(width, height);
+	this->maps = new Maps("textury/tloWyboru.jpg", width);
 	this->initWindow();
 	this->initPlayer();
-	this->initObstacles();
+	this->initObstacles(currentMap);
 	this->initCollectableItems();
-	this->initBackground();
+	this->initBackground(currentMap);
 	this->initEnemies();
 }
 
@@ -166,7 +193,6 @@ void Game::updateCollectableItems(float deltaTime){
 					}
 					else if (item.getType() == ItemType::Tree) {
 						if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
-							std::cout << "wcisnieto l" << std::endl;
 							for (auto& carot : carrotOnTree) {
 								if (carot.getType() == ItemType::Carrot) {
 									carot.getSprite().move(0, 200.f * deltaTime);
@@ -278,7 +304,7 @@ void Game::update() {
 		if (event.type == sf::Event::Closed) {
 			this->window.close();
 		}
-		
+
 		if(gameState == GameState::Menu) {
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::Up) {
@@ -297,6 +323,7 @@ void Game::update() {
 					}
 					else if (selected == 1) {
 						std::cout << "Wybrano Maps!\n";
+						gameState = GameState::ChoosingMaps;
 						isMenuActive = false;
 		
 					}
@@ -318,6 +345,17 @@ void Game::update() {
         this->updateBackground(deltaTime, player->getCharacterSpeed());
 		this->checkBulletEnemyCollision();
     }
+	
+	if (gameState == GameState::ChoosingMaps) {
+		maps->handleHover(window);
+
+		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+			currentMap = maps->getMapIndex(window); // Wywo≥anie metody obs≥ugi klikniÍcia
+			gameState = GameState::Playing; // ZmieÒ stan gry na Playing po wybraniu mapy
+			initBackground(currentMap);
+			initObstacles(currentMap);
+		}
+	}
 }
 
 
@@ -360,6 +398,9 @@ void Game::render() {
 	if (gameState == GameState::Menu) {
 		// Rysuj menu, gdy jest aktywne
 		menu->draw(window);
+	}
+	else if (gameState == GameState::ChoosingMaps) {
+		maps->draw(window);
 	}
 	else if(gameState == GameState::Playing){
 		// Rysowanie stanu gry, gdy menu jest wy≥πczone
