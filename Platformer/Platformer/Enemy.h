@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -15,7 +15,7 @@ private:
     sf::Clock attackClock;
     bool isAttacking;
     int attackFrame;
-    sf::Clock damageClock; 
+    sf::Clock damageClock;
     float damageInterval;
     float animationTimer;
     float animationTimerMax;
@@ -31,12 +31,15 @@ private:
     void initSprite();
     void initTexture();
 
-    int health = 3;
     float deathAnimationSpeed = 200.f;
-    bool isDying = false; // Flaga oznaczaj¹ca, ¿e wróg umiera
-    float deathTimer = 0.0f; // Licznik czasu animacji œmierci
-    sf::Vector2f velocity; // Prêdkoœæ ruchu wroga podczas œmierci
-    float rotationSpeed = 0.0f; // Prêdkoœæ obracania siê wroga
+    bool isDying = false; // Flaga oznaczajÂ¹ca, Â¿e wrÃ³g umiera
+    float deathTimer = 0.0f; // Licznik czasu animacji Å“mierci
+    sf::Vector2f velocity; // PrÃªdkoÅ“Ã¦ ruchu wroga podczas Å“mierci
+    float rotationSpeed = 0.0f; // PrÃªdkoÅ“Ã¦ obracania siÃª wroga
+
+protected:
+    int health;
+    virtual std::string getTexturePrefix() const;
 
 public:
     Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float rightBoundary);

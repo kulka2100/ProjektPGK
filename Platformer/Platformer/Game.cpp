@@ -124,8 +124,8 @@ void Game::initCollectableItems(){
 }
 
 void Game::initEnemies() {
-	this->enemies.emplace_back(sf::Vector2f(400.f, 170.f), 100.f, 400.f, 550.f);
-	this->enemies.emplace_back(sf::Vector2f(600.f, 390.f), 150.f, 600.f, 800.f);
+	enemies.emplace_back(new Moles(sf::Vector2f(400.f, 170.f), 100.f, 400.f, 550.f));
+	//this.enemies.emplace_back(sf::Vector2f(600.f, 390.f), 150.f, 600.f, 800.f);
 }
 
 
@@ -144,6 +144,10 @@ Game::~Game() {
 	delete this->player;
 	delete this->background;
 	delete this->menu;
+	for (Enemy* enemy : enemies) {
+		delete enemy;
+	}
+	enemies.clear();
 }
 
 sf::RenderWindow& Game::getWindow() {
@@ -260,8 +264,8 @@ void Game::updateBackground(float deltaTime, float characterSpeed) {
 			obstacle.update(sf::Vector2f(-offset, 0));
 		}
 		for (auto& enemy : this->enemies) {
-			enemy.move(-offset); // Przesuwanie pozycji wroga
-			enemy.setBoundaries(enemy.getLeftBoundary() - offset, enemy.getRightBoundary() - offset);
+			enemy->move(-offset); // Przesuwanie pozycji wroga
+			enemy->setBoundaries(enemy->getLeftBoundary() - offset, enemy->getRightBoundary() - offset);
 		}
 		for (auto& item : this->collectableItems) {
 			item.update(sf::Vector2f(-offset, 0));
@@ -276,8 +280,8 @@ void Game::updateBackground(float deltaTime, float characterSpeed) {
 			obstacle.update(sf::Vector2f(offset, 0));
 		}
 		for (auto& enemy : this->enemies) {
-			enemy.move(offset); // Przesuwanie pozycji wroga
-			enemy.setBoundaries(enemy.getLeftBoundary() + offset, enemy.getRightBoundary() + offset);
+			enemy->move(offset); // Przesuwanie pozycji wroga
+			enemy->setBoundaries(enemy->getLeftBoundary() + offset, enemy->getRightBoundary() + offset);
 		}
 		for (auto& item : collectableItems) {
 			item.update(sf::Vector2f(offset, 0));
@@ -292,7 +296,7 @@ void Game::updateBackground(float deltaTime, float characterSpeed) {
 
 void Game::updateEnemies(float deltaTime) {
 	for (auto& enemy : this->enemies) {
-		enemy.update(deltaTime);
+		enemy->update(deltaTime);
 	}
 }
 
@@ -366,7 +370,7 @@ void Game::renderBackground() {
 
 void Game::renderEnemies() {
 	for (auto& enemy : this->enemies) {
-		enemy.render(this->window);
+		enemy->render(this->window);
 	}
 }
 
@@ -416,15 +420,15 @@ void Game::render() {
 
 void Game::checkPlayerEnemyCollision() {
 	for (auto& enemy : this->enemies) {
-		if (player->getPlayerBounds().intersects(enemy.getBounds())) {
-			if (enemy.canDealDamage()) {
-				enemy.startAttack(); // Rozpocznij animacjê ataku
+		if (player->getPlayerBounds().intersects(enemy->getBounds())) {
+			if (enemy->canDealDamage()) {
+				enemy->startAttack(); // Rozpocznij animacjê ataku
 				player->reduceHealth(1); // Gracz traci ¿ycie
 				std::cout << "Gracz traci 1 ¿ycie! Pozosta³o: " << player->getCurrentHealth() << std::endl;
 			}
 		}
 		else {
-			enemy.resetAttack(); // Resetuj animacjê, jeœli nie ma kolizji
+			enemy->resetAttack(); // Resetuj animacjê, jeœli nie ma kolizji
 		}
 	}
 }
@@ -434,17 +438,17 @@ void Game::checkBulletEnemyCollision() {
 		//bool enemyHit = false;
 
 		for (auto it = this->player->getBullets().begin(); it != this->player->getBullets().end(); ) {
-			if (enemyIt->getBounds().intersects(it->getBounds())) {
-				enemyIt->reduceHealth(1); // Wróg traci ¿ycie
-				std::cout << "Wróg traci 1 ¿ycie! Pozosta³o: " << enemyIt->getHealth() << std::endl;
+			if ((*enemyIt)->getBounds().intersects(it->getBounds())) {
+				(*enemyIt)->reduceHealth(1); // Wróg traci ¿ycie
+				std::cout << "Wróg traci 1 ¿ycie! Pozosta³o: " << (*enemyIt)->getHealth() << std::endl;
 
 				// Usuñ pocisk po kolizji
 				it = this->player->getBullets().erase(it);
 				//enemyHit = true;
 
 				// Jeœli wróg ginie, wyjdŸ z pêtli pocisków
-				if (enemyIt->getHealth() <= 0) {
-					enemyIt->startDeathAnimation(); // Uruchom animacjê œmierci
+				if ((*enemyIt)->getHealth() <= 0) {
+					(*enemyIt)->startDeathAnimation(); // Uruchom animacjê œmierci
 					break;
 				}
 			}
@@ -454,7 +458,7 @@ void Game::checkBulletEnemyCollision() {
 		}
 
 		// Jeœli wróg ma byæ usuniêty po animacji œmierci
-		if (enemyIt->isDead() && enemyIt->updateDeathAnimation(this->deltaTime)) {
+		if ((*enemyIt)->isDead() && (*enemyIt)->updateDeathAnimation(this->deltaTime)) {
 			std::cout << "Wróg zosta³ pokonany i usuniêty!" << std::endl;
 			enemyIt = this->enemies.erase(enemyIt);
 		}
