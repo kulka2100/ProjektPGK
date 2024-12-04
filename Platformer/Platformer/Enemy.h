@@ -4,42 +4,48 @@
 
 class Enemy {
 private:
-    sf::Sprite sprite;
-    std::vector<sf::Texture> rightTextures;
-    std::vector<sf::Texture> leftTextures;
-    sf::Texture textureRightAttack1;
-    sf::Texture textureRightAttack2;
-    sf::Texture textureLeftAttack1;
-    sf::Texture textureLeftAttack2;
-    bool facingRight;
+    
     sf::Clock attackClock;
-    bool isAttacking;
+    
     int attackFrame;
     sf::Clock damageClock;
     float damageInterval;
-    float animationTimer;
-    float animationTimerMax;
-    unsigned int animationIndex;
-    sf::Vector2f position;
-    float speed;
-    float direction;
+    
+    
     static const float GROUND_Y;
 
-    float leftBoundary;
-    float rightBoundary;
+    
 
-    void initSprite();
-    void initTexture();
+    
+    
 
     float deathAnimationSpeed = 200.f;
-    bool isDying = false; // Flaga oznaczaj¹ca, ¿e wróg umiera
+    
     float deathTimer = 0.0f; // Licznik czasu animacji œmierci
     sf::Vector2f velocity; // Prêdkoœæ ruchu wroga podczas œmierci
     float rotationSpeed = 0.0f; // Prêdkoœæ obracania siê wroga
 
 protected:
+    bool facingRight;
+    unsigned int animationIndex;
+    float speed;
+    float direction;
+    float animationTimer;
+    float animationTimerMax;
+    float leftBoundary;
+    float rightBoundary;
+    bool isDying = false;
+    bool isAttacking;
+    sf::Vector2f position;
+    sf::Sprite sprite;
+    std::vector<sf::Texture> rightTextures;
+    std::vector<sf::Texture> leftTextures;
     int health;
-    virtual std::string getTexturePrefix() const;
+    sf::Texture textureRightAttack1;
+    sf::Texture textureRightAttack2;
+    sf::Texture textureLeftAttack1;
+    sf::Texture textureLeftAttack2;
+    void initSprite();
 
 public:
     Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float rightBoundary);
@@ -47,7 +53,7 @@ public:
 
 
     // Metody
-    void update(float deltaTime);
+    virtual void update(float deltaTime);
     void render(sf::RenderWindow& window);
 
     // Gettery

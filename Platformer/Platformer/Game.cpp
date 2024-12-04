@@ -98,8 +98,11 @@ void Game::initCollectableItems(){
 }
 
 void Game::initEnemies() {
-	enemies.emplace_back(new Moles(sf::Vector2f(400.f, 170.f), 100.f, 400.f, 550.f));
-	//this.enemies.emplace_back(sf::Vector2f(600.f, 390.f), 150.f, 600.f, 800.f);
+	enemies.emplace_back(new Moles(sf::Vector2f(400.f, 170.f), 70.f, 400.f, 550.f));
+	enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
+	enemies.emplace_back(new Cats(sf::Vector2f(900.f, 390.f), 150.f, 900.f, 1200.f));
+	enemies.emplace_back(new Bats(sf::Vector2f(1600.f, 100.f), 300.f, 1300.f, 1600.f));
+	enemies.emplace_back(new Bats(sf::Vector2f(1300.f, 200.f), 300.f, 400.f, 600.f));
 }
 
 

@@ -2,55 +2,30 @@
 #include "Enemy.h"
 
 
-void Enemy::initTexture() {
-    std::unique_ptr<sf::Texture> tempTexture;
-    std::string texturePrefix = getTexturePrefix();
-    for (int i = 5; i <= 6; i++) {
-        tempTexture = std::make_unique<sf::Texture>();
-        if (!tempTexture->loadFromFile("textury/" + texturePrefix + std::to_string(i) + ".png")) {
-            std::cerr << "Nie udalo sie zaladowac tekstury:" + texturePrefix + std::to_string(i) + ".png" << std::endl;
-        }
-        else {
-            this->rightTextures.push_back(std::move(*tempTexture));
-        }
-    }
 
-    for (int i = 2; i <= 3; i++) {
-        tempTexture = std::make_unique<sf::Texture>();
-        if (!tempTexture->loadFromFile("textury/" + texturePrefix + std::to_string(i) + ".png")) {
-            std::cerr << "Nie udalo sie zaladowac tekstury:" + texturePrefix + std::to_string(i) + ".png" << std::endl;
-        }
-        else {
-            this->leftTextures.push_back(std::move(*tempTexture));
-        }
-    }
-
-    // Skalowanie sprite'a
-    float scaleFactor = 0.17f;
-    this->sprite.setScale(scaleFactor, scaleFactor);
-}
-
-std::string Enemy::getTexturePrefix() const {
-    return "mole"; 
-}
 
 Enemy::Enemy(sf::Vector2f startPosition, float speed, float leftBoundary, float rightBoundary)
     : position(startPosition), speed(speed), leftBoundary(leftBoundary), rightBoundary(rightBoundary), direction(1.0f), facingRight(true) {
+    this->initSprite();
     this->animationTimer = 0.0f;
     this->animationTimerMax = 0.2f;
     this->animationIndex = 0;
     this->damageInterval = 0.5f;
-    this->initTexture();
-    this->initSprite();
-    this->textureRightAttack1.loadFromFile("textury/mole9.png");
-    this->textureRightAttack2.loadFromFile("textury/mole10.png");
-    this->textureLeftAttack1.loadFromFile("textury/mole7.png");
-    this->textureLeftAttack2.loadFromFile("textury/mole8.png");
     this->isAttacking = false;
     this->attackFrame = 0;
 }
 
 Enemy::~Enemy() {}
+
+void Enemy::initSprite() {
+    if (!rightTextures.empty()) {
+        this->sprite.setTexture(rightTextures[0]); // Ustawienie domyslnej tekstury
+    }
+    else {
+        std::cerr << "Brak tekstur w wektorze rightTextures podczas inicjalizacji sprite'a!" << std::endl;
+    }
+    this->sprite.setPosition(this->position);
+}
 
 void Enemy::update(float deltaTime) {
     if (this->isDying) {
@@ -125,15 +100,7 @@ sf::FloatRect Enemy::getBounds() const {
     return this->sprite.getGlobalBounds();
 }
 
-void Enemy::initSprite() {
-    if (!rightTextures.empty()) {
-        this->sprite.setTexture(rightTextures[0]); // Ustawienie domyœlnej tekstury
-    }
-    else {
-        std::cerr << "Brak tekstur w wektorze rightTextures podczas inicjalizacji sprite'a!" << std::endl;
-    }
-    this->sprite.setPosition(this->position);
-}
+
 
 void Enemy::startAttack() {
     this->isAttacking = true;

@@ -8,6 +8,8 @@
 #include "GameState.h"
 #include "CollectableItem.h"
 #include "Moles.h"
+#include "Cats.h"
+#include "Bats.h"
 
 class Game
 {
