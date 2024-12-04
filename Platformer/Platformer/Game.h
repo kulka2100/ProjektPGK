@@ -10,6 +10,9 @@
 #include "CollectableItem.h"
 #include "Moles.h"
 #include "MapInitializer.h"
+#include "Cats.h"
+#include "Bats.h"
+
 
 class Game
 {
