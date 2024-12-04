@@ -28,101 +28,76 @@ void Game::initBackground(int mapIndex) {
 		this->background->setSpeed(200.0f);
 		break;
 	case 4:
-		this->background = new Background("textury/tlo7.png", this->player);
+		this->background = new Background("textury/tloxd.png", this->player);
 		this->background->setSpeed(200.0f);
 		break;
 	default:
-		this->background = new Background("textury/tlo8.png", this->player);
+		this->background = new Background("textury/tlo3.png", this->player);
 		this->background->setSpeed(200.0f);
 		break;
 	}
 }
 
 void Game::initObstacles(int mapIndex) {
-	// £adowanie tekstury za pomoc¹ TextureManager
-	switch (mapIndex) {
-	case 0:
-		textureManager.loadTexture("textury/las/platforma.png", "platforma");
-		textureManager.loadTexture("textury/las/malaPlatforma.png", "malaPlatforma");
-		textureManager.loadTexture("textury/las/kamyk.png", "kamyk");
-		// Pobieranie wskaŸnika do tekstury
-		sf::Texture* platformTexture = textureManager.getTexture("platforma");
-		sf::Texture* smallPlatformTexture = textureManager.getTexture("malaPlatforma");
-		sf::Texture* kamykTexture = textureManager.getTexture("kamyk");
+	// Wyczyœæ przeszkody przed dodaniem nowych
+	obstacles.clear();
 
-		if (platformTexture) {
-			// Dodawanie przeszkód z za³adowan¹ tekstur¹
-			obstacles.emplace_back(*platformTexture, sf::Vector2f(50, 200.f));
-			obstacles.emplace_back(*platformTexture, sf::Vector2f(500.f, 250.f));
+	switch (mapIndex) {
+	case 0: {
+		mapInitializer->initMap1Obstacles(obstacles, textureManager);
+		break;
+	}
+	case 1: {
+		mapInitializer->initMap2Obstacles(obstacles, textureManager);
+		break;
 		}
-		if (kamykTexture) {
-			obstacles.emplace_back(*kamykTexture, sf::Vector2f(700.f, 400.0f));
-		}
-		else {
-			std::cerr << "Tekstura platforma nie zosta³a poprawnie za³adowana." << platformTexture << std::endl;
-		}
-		if (smallPlatformTexture) {
-			obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(250.f, 380.f));
-		}
+	case 2: {
+		mapInitializer->initMap3Obstacles(obstacles, textureManager);
+		break;
+	}
+	case 3: {
+		mapInitializer->initMap4Obstacles(obstacles, textureManager);
+		break;
+	}
+	case 4: {
+		mapInitializer->initMap5Obstacles(obstacles, textureManager);
+		break;
+	}
+	default:
+		std::cerr << "Nieobslugiwany indeks mapy : " << mapIndex << std::endl;
 		break;
 	}
 }
 
-void Game::initCollectableItems(){
-	textureManager.loadTexture("textury/las/marchewka.png", "marchewka");
-	textureManager.loadTexture("textury/hp.png", "health");
-	textureManager.loadTexture("textury/las/key.png", "key");
-	textureManager.loadTexture("textury/las/chest.png", "chest");
-	textureManager.loadTexture("textury/las/tree.png", "tree");
-
-	sf::Texture* marchewkaTexture = textureManager.getTexture("marchewka");
-	sf::Texture* healthTexture = textureManager.getTexture("health");
-	sf::Texture* keyTexture = textureManager.getTexture("key");
-	sf::Texture* chestTexture = textureManager.getTexture("chest");
-	sf::Texture* treeTexture = textureManager.getTexture("tree");
-
-
-	if (marchewkaTexture) {
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(400.f, 400.0f), ItemType::Carrot);
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(200.f, 400.0f), ItemType::Carrot);
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1400.f, 170.f), ItemType::Carrot);
-	}
-	else {
-		std::cerr << "Tekstura marchewki nie zosta³a poprawnie za³adowana." << marchewkaTexture << std::endl;
-	}
-	if (healthTexture) {
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(400.f, 230.f), ItemType::Health);
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 230.f), ItemType::Health);
-	}
-	else {
-		std::cerr << "Tekstura hp nie zosta³a poprawnie za³adowana." << healthTexture << std::endl;
-	}
-	if (keyTexture) {
-		collectableItems.emplace_back(*keyTexture, sf::Vector2f(750.f, 330.f), ItemType::Key);
-	}
-	else {
-		std::cerr << "Tekstura key nie zosta³a poprawnie za³adowana." << keyTexture << std::endl;
-	}
-
-	if (chestTexture) {
-		collectableItems.emplace_back(*chestTexture, sf::Vector2f(1300.f, 330.f), ItemType::Chest);
-	}
-	else {
-		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << chestTexture << std::endl;
-	}
-
-	if (treeTexture && marchewkaTexture) {
-		collectableItems.emplace_back(*treeTexture, sf::Vector2f(1000.f, 150.f), ItemType::Tree);
-		// Uzyskanie referencji do ostatnio dodanego elementu (drzewa)
-		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1100.f, 170.f), ItemType::Carrot);
-		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1100.f, 270.f), ItemType::Carrot);
-		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1200.f, 200.f), ItemType::Carrot);
-	}
-	else {
-		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << treeTexture << std::endl;
-	}
+void Game::initCollectableItems(int mapIndex){
+	collectableItems.clear();
+	carrotOnTree.clear();
+	switch (mapIndex) {
+		case 0: {
+			mapInitializer->initMap1CollectableItems(collectableItems,carrotOnTree, textureManager);
+			break;
+		}
+		case 1: {
+			mapInitializer->initMap2CollectableItems(collectableItems, carrotOnTree, textureManager);
+			break;
+		}
+		case 2: {
+			mapInitializer->initMap3CollectableItems(collectableItems, carrotOnTree, textureManager);
+			break;
+		}
+		case 3: {
+			break;
+		}
+		case 4: {
+			mapInitializer->initMap5CollectableItems(collectableItems, carrotOnTree, textureManager);
+			break;
+		}
+		default:
+			std::cerr << "Nieobslugiwany indeks mapy : " << mapIndex << std::endl;
+			break;
+	
+	}	
 }
-
 void Game::initEnemies() {
 	enemies.emplace_back(new Moles(sf::Vector2f(400.f, 170.f), 100.f, 400.f, 550.f));
 	//this.enemies.emplace_back(sf::Vector2f(600.f, 390.f), 150.f, 600.f, 800.f);
@@ -135,7 +110,7 @@ Game::Game(int width, int height) : width(width), height(height), gameState(Game
 	this->initWindow();
 	this->initPlayer();
 	this->initObstacles(currentMap);
-	this->initCollectableItems();
+	this->initCollectableItems(currentMap);
 	this->initBackground(currentMap);
 	this->initEnemies();
 }
@@ -241,14 +216,14 @@ void Game::updateObstacles() {
 			if ((playerPosition.x + playerBounds.width > obstacleBounds.left &&
 				playerPosition.x < obstacleBounds.left &&
 				playerPosition.y + playerBounds.height > obstacleBounds.top &&
-				playerPosition.y < obstacleBounds.top + obstacleBounds.height)) {
+				playerPosition.y < obstacleBounds.top + obstacleBounds.height) && obstacle.getType() == ObstacleType::Stone) {
 				player->setCanMoveRight(false);
 			}
 			//Kolizja z prawej strony
 			if ((playerBounds.left < obstacleBounds.left + obstacleBounds.width &&
 				playerBounds.left + playerBounds.width > obstacleBounds.left + obstacleBounds.width &&
 				playerPosition.y + playerBounds.height > obstacleBounds.top &&
-				playerPosition.y < obstacleBounds.top + obstacleBounds.height )) {
+				playerPosition.y < obstacleBounds.top + obstacleBounds.height) && obstacle.getType() == ObstacleType::Stone) {
 				player->setCanMoveLeft(false);
 			}
 		}
@@ -358,6 +333,7 @@ void Game::update() {
 			gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
 			initBackground(currentMap);
 			initObstacles(currentMap);
+			initCollectableItems(currentMap);
 		}
 	}
 }
@@ -474,7 +450,7 @@ void Game::updateDeltaTime() {
 }
 
 void Game::setOpenChestTexture() {
-	textureManager.loadTexture("textury/openchest.png", "openChest");
+	textureManager.loadTexture("textury/las/openchest.png", "openChest");
 	sf::Texture* openChestTexture = textureManager.getTexture("openChest");
 
 	if (openChestTexture) {

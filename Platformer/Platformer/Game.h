@@ -9,6 +9,7 @@
 #include "GameState.h"
 #include "CollectableItem.h"
 #include "Moles.h"
+#include "MapInitializer.h"
 
 class Game
 {
@@ -25,6 +26,7 @@ private:
 	Background* background;
 	Menu* menu;
 	Maps* maps;
+	MapInitializer* mapInitializer;
 	TextureManager textureManager;
 	std::vector<Obstacle> obstacles;
 	std::vector<CollectableItem> collectableItems;
@@ -32,13 +34,13 @@ private:
 	bool isMenuActive;
 	bool isPlayed;
 	GameState gameState;
-	int currentMap = 1;
+	int currentMap = 0;
 
 	void initWindow();
 	void initPlayer();
 	void initBackground(int mapIndex);
 	void initObstacles(int mapIndex);
-	void initCollectableItems();
+	void initCollectableItems(int mapIndex);
 	void initEnemies();
 	void updateEnemies(float deltaTime);
 	void renderEnemies();
@@ -60,7 +62,6 @@ public:
 	int getHeight() {
 		return height;
 	}
-
 
 	void updatePlayer(float deltaTime);
 
@@ -85,8 +86,6 @@ public:
 	void updateDeltaTime();
 
 	void setOpenChestTexture();
-
-
 
 };
 
