@@ -2,15 +2,18 @@
 #include "Player.h"
 #include "Background.h"
 #include "Menu.h"
+#include "Maps.h"
 #include "Obstacle.h"
 #include "TextureManager.h"
 #include "Enemy.h"
 #include "GameState.h"
 #include "CollectableItem.h"
 #include "Moles.h"
+#include "MapInitializer.h"
 #include "Cats.h"
 #include "Bats.h"
 #include "Boss.h"
+
 
 class Game
 {
@@ -27,6 +30,8 @@ private:
 	Player *player;
 	Background* background;
 	Menu* menu;
+	Maps* maps;
+	MapInitializer* mapInitializer;
 	TextureManager textureManager;
 	std::vector<Obstacle> obstacles;
 	std::vector<CollectableItem> collectableItems;
@@ -34,12 +39,13 @@ private:
 	bool isMenuActive;
 	bool isPlayed;
 	GameState gameState;
+	int currentMap = 0;
 
 	void initWindow();
 	void initPlayer();
-	void initBackground();
-	void initObstacles();
-	void initCollectableItems();
+	void initBackground(int mapIndex);
+	void initObstacles(int mapIndex);
+	void initCollectableItems(int mapIndex);
 	void initEnemies();
 	void updateEnemies(float deltaTime);
 	void renderEnemies();
@@ -62,7 +68,6 @@ public:
 	int getHeight() {
 		return height;
 	}
-
 
 	void updatePlayer(float deltaTime);
 

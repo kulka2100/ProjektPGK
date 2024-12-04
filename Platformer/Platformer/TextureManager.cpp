@@ -7,9 +7,12 @@ void TextureManager::loadTexture(const std::string filename, const std::string t
 		if (texture.loadFromFile(filename)) {
 			textures[textureName] = texture;
 		}
+		else {
+			std::cerr << "Nie udalo sie zaladowac textury " << filename << std::endl;
+		}
 	}
 	else {
-		std::cerr << "Nie udalo sie zaladowac textury " << filename << std::endl;
+		std::cerr << "Textura juz istnieje " << filename << std::endl;
 	}
 }
 
