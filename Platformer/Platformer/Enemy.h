@@ -7,7 +7,7 @@ private:
     
     sf::Clock attackClock;
     
-    int attackFrame;
+    
     sf::Clock damageClock;
     float damageInterval;
     
@@ -26,6 +26,7 @@ private:
     float rotationSpeed = 0.0f; // Prêdkoœæ obracania siê wroga
 
 protected:
+    int attackFrame;
     bool facingRight;
     unsigned int animationIndex;
     float speed;
@@ -54,7 +55,7 @@ public:
 
     // Metody
     virtual void update(float deltaTime);
-    void render(sf::RenderWindow& window);
+    virtual void render(sf::RenderWindow& window);
 
     // Gettery
     sf::FloatRect getBounds() const;

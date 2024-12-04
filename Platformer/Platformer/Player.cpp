@@ -154,7 +154,7 @@ void Player::shoot() {
     sf::Vector2f direction(bulletDir, 0.0f);
 
     if (currentAmmo > 0) {
-        bullets.emplace_back(bulletTexture, startPos, direction, 200.f);
+        bullets.emplace_back(bulletTexture, startPos, direction, 400.f);
         std::cout << currentAmmo;
         currentAmmo--;
         updateAmmoText(currentAmmo);

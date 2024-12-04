@@ -33,10 +33,7 @@ void Bullet::render(sf::RenderTarget* target) const{
 		target->draw(bulletSprite);
 }
 
-
-
-
-
 sf::FloatRect Bullet::getBounds() const {
 	return this->bulletSprite.getGlobalBounds();
 }
+

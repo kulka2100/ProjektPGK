@@ -13,7 +13,7 @@ private:
 	std::vector<sf::Texture> hpTextures;
 	std::vector<sf::Sprite> hpSprite;
 
-	int currentAmmo = 5;
+	int currentAmmo = 15;
 	sf::Text ammoText;
 	sf::Font font;
 	sf::Texture amuTexture;

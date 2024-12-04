@@ -103,6 +103,7 @@ void Game::initEnemies() {
 	enemies.emplace_back(new Cats(sf::Vector2f(900.f, 390.f), 150.f, 900.f, 1200.f));
 	enemies.emplace_back(new Bats(sf::Vector2f(1600.f, 100.f), 300.f, 1300.f, 1600.f));
 	enemies.emplace_back(new Bats(sf::Vector2f(1300.f, 200.f), 300.f, 400.f, 600.f));
+	enemies.emplace_back(new Boss(sf::Vector2f(2000.f, 200.f), 70.f, 2000.f, 2000.f));
 }
 
 
@@ -324,6 +325,7 @@ void Game::update() {
         this->checkPlayerEnemyCollision();
         this->updateBackground(deltaTime, player->getCharacterSpeed());
 		this->checkBulletEnemyCollision();
+		this->checkBulletPlayerCollision();
     }
 }
 
@@ -404,28 +406,43 @@ void Game::checkBulletEnemyCollision() {
 				(*enemyIt)->reduceHealth(1); // Wróg traci ¿ycie
 				std::cout << "Wróg traci 1 ¿ycie! Pozosta³o: " << (*enemyIt)->getHealth() << std::endl;
 
-				// Usuñ pocisk po kolizji
 				it = this->player->getBullets().erase(it);
 				//enemyHit = true;
 
-				// Jeœli wróg ginie, wyjdŸ z pêtli pocisków
 				if ((*enemyIt)->getHealth() <= 0) {
-					(*enemyIt)->startDeathAnimation(); // Uruchom animacjê œmierci
+					(*enemyIt)->startDeathAnimation();
 					break;
 				}
 			}
 			else {
-				++it; // PrzejdŸ do nastêpnego pocisku
+				++it; 
 			}
 		}
 
-		// Jeœli wróg ma byæ usuniêty po animacji œmierci
 		if ((*enemyIt)->isDead() && (*enemyIt)->updateDeathAnimation(this->deltaTime)) {
 			std::cout << "Wróg zosta³ pokonany i usuniêty!" << std::endl;
 			enemyIt = this->enemies.erase(enemyIt);
 		}
 		else {
-			++enemyIt; // PrzejdŸ do nastêpnego wroga
+			++enemyIt; 
+		}
+	}
+}
+
+void Game::checkBulletPlayerCollision() {
+	for (auto* enemy : enemies) {
+		Boss* boss = dynamic_cast<Boss*>(enemy); 
+		if (boss) {
+			// Sprawdzanie kolizji pocisków bossa z graczem
+			for (auto it = boss->getBullets().begin(); it != boss->getBullets().end(); ) {
+				if (it->getBounds().intersects(player->getPlayerBounds())) { 
+					player->reduceHealth(1); 
+					it = boss->getBullets().erase(it); 
+				}
+				else {
+					++it; 
+				}
+			}
 		}
 	}
 }
