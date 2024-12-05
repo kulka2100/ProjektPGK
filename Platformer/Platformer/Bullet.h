@@ -20,6 +20,8 @@ public:
 
 	~Bullet();
 
+	
+
 	// Sprawdzanie, czy pocisk znajduje siê poza ekranem (dla usuniêcia go z listy)
 	bool isOffScreen();
 

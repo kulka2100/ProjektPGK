@@ -4,7 +4,7 @@
 
 
 void Player::initTexture() {
-    // £adowanie tekstur ruchu w prawo
+    // ï¿½adowanie tekstur ruchu w prawo
     for (int i = 1; i <= 5; i++) {
         std::string textureKey = "prawo" + std::to_string(i);
         std::string filePath = "textury/" + textureKey + ".png";
@@ -17,11 +17,11 @@ void Player::initTexture() {
             rightTextures.push_back(*texture);
         }
         else {
-            std::cout << "Nie uda³o siê za³adowaæ tekstury: " << filePath << "\n";
+            std::cout << "Nie udaï¿½o siï¿½ zaï¿½adowaï¿½ tekstury: " << filePath << "\n";
         }
     }
 
-    // £adowanie tekstur ruchu w lewo
+    // ï¿½adowanie tekstur ruchu w lewo
     for (int i = 1; i <= 5; i++) {
         std::string textureKey = "lewo" + std::to_string(i);
         std::string filePath = "textury/" + textureKey + ".png";
@@ -34,11 +34,11 @@ void Player::initTexture() {
             leftTextures.push_back(*texture);
         }
         else {
-            std::cout << "Nie uda³o siê za³adowaæ tekstury: " << filePath << "\n";
+            std::cout << "Nie udaï¿½o siï¿½ zaï¿½adowaï¿½ tekstury: " << filePath << "\n";
         }
     }
     
-    // £adowanie tekstury HP
+    // ï¿½adowanie tekstury HP
     textureManager.loadTexture("textury/hp.png", "hp");
 
     sf::Texture* hpTexture = textureManager.getTexture("hp");
@@ -48,19 +48,19 @@ void Player::initTexture() {
         }
     }
     else {
-        std::cout << "Nie uda³o siê za³adowaæ tekstury HP: " << "textury/hp.png" << "\n";
+        std::cout << "Nie udaï¿½o siï¿½ zaï¿½adowaï¿½ tekstury HP: " << "textury/hp.png" << "\n";
     }
 
     if (!amuTexture.loadFromFile("textury/amu.png")) {
-        std::cout << "Nie uda³o siê za³adowaæ tekstury amunicji" << std::endl;
+        std::cout << "Nie udaï¿½o siï¿½ zaï¿½adowaï¿½ tekstury amunicji" << std::endl;
     }
 
 }
 
 void Player::initSprite() { 
-    // SprawdŸ, czy wektor tekstur nie jest pusty
+    // Sprawdï¿½, czy wektor tekstur nie jest pusty
     if (!this->rightTextures.empty()) {
-        // Ustaw pierwsz¹ klatkê animacji ruchu w prawo jako pocz¹tkow¹ teksturê
+        // Ustaw pierwszï¿½ klatkï¿½ animacji ruchu w prawo jako poczï¿½tkowï¿½ teksturï¿½
         this->playerSprite.setTexture(this->rightTextures[0]);
     }
     if (!this->hpTextures.empty()) {
@@ -81,7 +81,7 @@ void Player::initSprite() {
 
 void Player::initText() {
     if (!font.loadFromFile("font.ttf")) {
-        std::cout << "Nie uda³o siê za³adowaæ czcionki!" << std::endl;
+        std::cout << "Nie udaï¿½o siï¿½ zaï¿½adowaï¿½ czcionki!" << std::endl;
     }
     ammoText.setFont(font);
     ammoText.setCharacterSize(26);        // Rozmiar tekstu
@@ -104,7 +104,7 @@ Player::Player(sf::Vector2f playerPosition, float speed) : health(3) {
     this->isOnGround = true;
 
     this->animationTimer = 0.0f;
-    this->animationTimerMax = 0.1f; // Zmieniaj klatkê co 10 jednostek czasu
+    this->animationTimerMax = 0.1f; // Zmieniaj klatkï¿½ co 10 jednostek czasu
     this->animationIndex = 0;
 
     //Strzaly
@@ -118,8 +118,8 @@ Player::~Player()
 
 void Player::updateAnimations(float deltaTime) {
     {
-        this->animationTimer += deltaTime; // Zwiêkszamy timer co klatkê
-        // SprawdŸ, czy nale¿y zmieniæ klatkê
+        this->animationTimer += deltaTime; // Zwiï¿½kszamy timer co klatkï¿½
+        // Sprawdï¿½, czy naleï¿½y zmieniï¿½ klatkï¿½
         if (this->animationTimer >= this->animationTimerMax) {
             this->animationIndex++;
             if (this->animationIndex >= this->rightTextures.size()) {
@@ -148,11 +148,12 @@ void Player::holdPlayerAtEdges() {
 }
 
 void Player::shoot() {
-    // Pozycja pocisku zaczyna siê przy postaci
+    // Pozycja pocisku zaczyna siï¿½ przy postaci
     sf::Vector2f startPos = this->playerSprite.getPosition();
 
     if (currentAmmo > 0) {
         bullets.emplace_back(bulletTexture, startPos, bullet->getDirection(), bullet->getBulletSpeed());
+        bullets.emplace_back(bulletTexture, startPos, direction, 400.f);
         std::cout << currentAmmo;
         currentAmmo--;
         updateAmmoText(currentAmmo);
@@ -160,12 +161,12 @@ void Player::shoot() {
 }
 
 void Player::gravitation(float deltaTime) {
-    // Jeœli gracz nie dotyka ziemi ani platformy, zastosuj grawitacjê
+    // Jeï¿½li gracz nie dotyka ziemi ani platformy, zastosuj grawitacjï¿½
     if (!isOnGround) {
         verticalVelocity += GRAVITY * deltaTime;
         playerSprite.move(0, verticalVelocity * deltaTime);
 
-        // Sprawdzanie, czy postaæ dotknê³a ziemi
+        // Sprawdzanie, czy postaï¿½ dotknï¿½a ziemi
         if (playerSprite.getPosition().y >= playerPosition.y) {
             playerSprite.setPosition(playerSprite.getPosition().x, playerPosition.y);
             verticalVelocity = 0;
@@ -203,7 +204,7 @@ void Player::updateHealth() {
 
     }
     else {
-        std::cerr << "hpTextures jest pusty! Nie mo¿na dodaæ sprite'a." << std::endl;
+        std::cerr << "hpTextures jest pusty! Nie moï¿½na dodaï¿½ sprite'a." << std::endl;
     }
 }
 
@@ -273,21 +274,21 @@ void Player::update(float deltaTime, sf::Event &event) {
         }
     }
 
-    // Dodawanie grawitacji, aby postaæ wraca³a na ziemiê
+    // Dodawanie grawitacji, aby postaï¿½ wracaï¿½a na ziemiï¿½
     gravitation(deltaTime);
 
     //Akutalizacja pociskow
     for (auto it = bullets.begin(); it != bullets.end(); ) {
         it->update(deltaTime);
         if (it->isOffScreen()) {
-            it = bullets.erase(it); // Usuñ pocisk, jeœli jest poza ekranem
+            it = bullets.erase(it); // Usuï¿½ pocisk, jeï¿½li jest poza ekranem
         }
         else {
             ++it;
         }
     }
 
-    // Jeœli gracz nie jest na ¿adnej platformie, w³¹cz grawitacjê
+    // Jeï¿½li gracz nie jest na ï¿½adnej platformie, wï¿½ï¿½cz grawitacjï¿½
     if (!isOnPlatform) {
         setOnGround(false);
     }
@@ -327,8 +328,8 @@ void Player::reduceHealth(int amount) {
         hpSprite.pop_back();
 
     if (this->health <= 0) {
-        std::cout << "Gracz zgin¹³! " << getCurrentHealth() << std::endl;
-        // Implementacja zakoñczenia gry
+        std::cout << "Gracz zginï¿½ï¿½! " << getCurrentHealth() << std::endl;
+        // Implementacja zakoï¿½czenia gry
         setIsDead(true);
         isFalling = true;
         if (!isDeadSpriteSet) {
@@ -339,7 +340,7 @@ void Player::reduceHealth(int amount) {
                 playerDeadSprite.setPosition(getPlayerPosition().x, getPlayerPosition().y + 40);
             }
             else {
-                std::cout << "Nie uda³o siê za³adowaæ tekstury smiercii: " << "textury/smierc.png" << "\n";
+                std::cout << "Nie udaï¿½o siï¿½ zaï¿½adowaï¿½ tekstury smiercii: " << "textury/smierc.png" << "\n";
             }
             isDeadSpriteSet = true;
         }

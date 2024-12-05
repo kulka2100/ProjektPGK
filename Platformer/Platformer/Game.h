@@ -13,6 +13,8 @@
 #include "Cats.h"
 #include "Bats.h"
 #include "Settings.h"
+#include "Boss.h"
+
 
 
 class Game
@@ -25,6 +27,7 @@ private:
 	sf::Clock clock;
 	std::vector<Enemy*> enemies;
 	float deltaTime;
+	
 
 	Player *player;
 	Background* background;
@@ -51,6 +54,7 @@ private:
 	void renderEnemies();
 	void checkPlayerEnemyCollision();
 	void checkBulletEnemyCollision();
+	void checkBulletPlayerCollision();
 
 public:
 	
