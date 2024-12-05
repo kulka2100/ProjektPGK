@@ -3,6 +3,7 @@ enum class GameState {
     Menu,
     Playing,
     Exiting,
-    ChoosingMaps
+    ChoosingMaps,
+    Settings
 };
 

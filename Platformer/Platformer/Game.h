@@ -12,6 +12,7 @@
 #include "MapInitializer.h"
 #include "Cats.h"
 #include "Bats.h"
+#include "Settings.h"
 
 
 class Game
@@ -29,6 +30,7 @@ private:
 	Background* background;
 	Menu* menu;
 	Maps* maps;
+	Settings* settings;
 	MapInitializer* mapInitializer;
 	TextureManager textureManager;
 	std::vector<Obstacle> obstacles;

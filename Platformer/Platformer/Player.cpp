@@ -99,6 +99,7 @@ Player::Player(sf::Vector2f playerPosition, float speed) : health(3) {
 	this->initTexture();
     this->initText();
 	this->initSprite();
+    this->initBullets();
     this->isJumping = false;  
     this->isOnGround = true;
 
@@ -109,7 +110,6 @@ Player::Player(sf::Vector2f playerPosition, float speed) : health(3) {
     //Strzaly
     this->shootCooldown = 0.0f;
     this->shootCooldownMax = 0.5f;
-    bulletDir = 1.0;
 }
 
 Player::~Player()
@@ -150,11 +150,9 @@ void Player::holdPlayerAtEdges() {
 void Player::shoot() {
     // Pozycja pocisku zaczyna siê przy postaci
     sf::Vector2f startPos = this->playerSprite.getPosition();
-    // Kierunek, np. strza³ w prawo
-    sf::Vector2f direction(bulletDir, 0.0f);
 
     if (currentAmmo > 0) {
-        bullets.emplace_back(bulletTexture, startPos, direction, 200.f);
+        bullets.emplace_back(bulletTexture, startPos, bullet->getDirection(), bullet->getBulletSpeed());
         std::cout << currentAmmo;
         currentAmmo--;
         updateAmmoText(currentAmmo);
@@ -234,7 +232,7 @@ void Player::update(float deltaTime, sf::Event &event) {
             this->playerSprite.move(characterSpeed * deltaTime, 0.0);
         }
         this->playerSprite.setTexture(this->rightTextures[this->animationIndex]);
-        bulletDir = 1.0;
+        bullet->setBulletDir(sf::Vector2f(1.0, 0.f));
     }
     // Ruch w lewo
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
@@ -248,7 +246,7 @@ void Player::update(float deltaTime, sf::Event &event) {
             this->playerSprite.move(-characterSpeed * deltaTime, 0.0);
         }
         this->playerSprite.setTexture(this->leftTextures[this->animationIndex]);
-        bulletDir = -1.0;
+        bullet->setBulletDir(sf::Vector2f(-1.0, 0.f));
     }
     //Skok
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
@@ -281,7 +279,7 @@ void Player::update(float deltaTime, sf::Event &event) {
     //Akutalizacja pociskow
     for (auto it = bullets.begin(); it != bullets.end(); ) {
         it->update(deltaTime);
-        if (it->isOffScreen()) {  // Dodaj metodê `isOffScreen()` w klasie Bullet
+        if (it->isOffScreen()) {
             it = bullets.erase(it); // Usuñ pocisk, jeœli jest poza ekranem
         }
         else {

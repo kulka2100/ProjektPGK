@@ -32,8 +32,7 @@ void Game::initBackground(int mapIndex) {
 		this->background->setSpeed(200.0f);
 		break;
 	default:
-		this->background = new Background("textury/tlo3.png", this->player);
-		this->background->setSpeed(200.0f);
+		maps->draw(window);
 		break;
 	}
 }
@@ -110,6 +109,7 @@ void Game::initEnemies() {
 Game::Game(int width, int height) : width(width), height(height), gameState(GameState::Menu), isMenuActive(true) {
 	this->menu = new Menu(width, height);
 	this->maps = new Maps("textury/tloWyboru.jpg", width);
+	this->settings = new Settings(width, height);
 	this->initWindow();
 	this->initPlayer();
 	this->initObstacles(currentMap);
@@ -311,12 +311,14 @@ void Game::update() {
 					}
 					else if (selected == 2) {
 						std::cout << "Wybrano Settings!\n";
+						gameState = GameState::Settings;
 						isMenuActive = false;
 					}
 				}
 			}
 		}
 	}
+
 	// Aktualizacja logiki gry, gdy gra jest w trybie Playing
     if (gameState == GameState::Playing) {
         this->updatePlayer(deltaTime);
@@ -333,12 +335,19 @@ void Game::update() {
 
 		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
 			currentMap = maps->getMapIndex(window); // Wywo³anie metody obs³ugi klikniêcia
-			gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
-			initBackground(currentMap);
-			initObstacles(currentMap);
-			initCollectableItems(currentMap);
+			if (currentMap < 5) {
+				gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
+				initBackground(currentMap);
+				initObstacles(currentMap);
+				initCollectableItems(currentMap);
+			}
+			else if (currentMap == 5) {
+				std::cout << currentMap << " x" << std::endl;
+				gameState = GameState::Menu;
+			}
 		}
 	}
+
 }
 
 
@@ -384,6 +393,9 @@ void Game::render() {
 	}
 	else if (gameState == GameState::ChoosingMaps) {
 		maps->draw(window);
+	}
+	else if (gameState == GameState::Settings) {
+		settings->draw(window);
 	}
 	else if(gameState == GameState::Playing){
 		// Rysowanie stanu gry, gdy menu jest wy³¹czone

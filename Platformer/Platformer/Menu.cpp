@@ -32,13 +32,16 @@ Menu::Menu(float width, float height) {
 	selectedIndex = 0;  // Domyœlnie wybrany pierwszy element
 }
 
+Menu::Menu()
+{
+}
+
 
 void Menu::draw(sf::RenderWindow& window) {
 	background->render(window);
 	for (const auto& item : menuItems) {
 		window.draw(item);
 	}
-
 }
 
 

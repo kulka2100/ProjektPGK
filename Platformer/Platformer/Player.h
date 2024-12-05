@@ -26,9 +26,9 @@ private:
 	const float JUMP_STRENGTH = -550.f;
 	float verticalVelocity = 0.0f;
 
+	Bullet* bullet;
 	std::vector<Bullet> bullets;
 	sf::Texture bulletTexture;
-	float bulletDir;
 
 	// Zegar animacji
 	float animationTimer;               
@@ -52,6 +52,10 @@ private:
 	void initText();
 	void initSprite();
 	void initTexture();
+
+	void initBullets() {
+		this->bullet = new Bullet(sf::Vector2f(1.f, 0.f), 200.f);
+	}
 
 	//Strzaly
 	float shootCooldown;

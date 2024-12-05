@@ -5,11 +5,18 @@ private:
 	sf::Sprite bulletSprite;
 	sf::Vector2f startPos;
 	sf::Vector2f direction;
-	sf::Vector2f velocity;  // Prêdkoœæ pocisku
+	sf::Vector2f velocity;
 	float bulletSpeed;
+
 
 public:
 	Bullet(sf::Texture& texture, sf::Vector2f startPos, sf::Vector2f direction, float bulletSpeed);
+
+	Bullet(sf::Vector2f direction, float bulletSpeed) {
+		this->direction = direction;
+		this->bulletSpeed = bulletSpeed;
+
+	}
 
 	~Bullet();
 
@@ -27,10 +34,21 @@ public:
 
 	void update(float deltaTime);
 
-
 	void render(sf::RenderTarget* target) const;
 
 	sf::FloatRect getBounds() const;
+
+	float getBulletSpeed() {
+		return this->bulletSpeed;
+	}
+
+	sf::Vector2f getDirection() {
+		return this->direction;
+	}
+
+	void setBulletDir(sf::Vector2f dir) {
+		this->direction = dir;
+	}
 };
 
 

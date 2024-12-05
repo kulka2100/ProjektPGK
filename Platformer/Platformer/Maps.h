@@ -7,6 +7,7 @@ class Maps
 private:
 	std::vector <sf::Sprite> mapsItems;
 	std::vector <sf::Texture> mapsTextures;
+	sf::Sprite backSprite;
 	Background* mapsBackground;
 	TextureManager textureManager;
 

@@ -9,6 +9,7 @@ void Maps::initMaps(int width) {
 	textureManager.loadTexture("textury/map3.png", "map3");
 	textureManager.loadTexture("textury/map4.png", "map4");
 	textureManager.loadTexture("textury/map5.png", "map5");
+	textureManager.loadTexture("textury/back.png", "back");
 
 	// Dodanie tekstur do wektora mapsTextures
 	mapsTextures = {
@@ -18,6 +19,10 @@ void Maps::initMaps(int width) {
 		*textureManager.getTexture("map4"),
 		*textureManager.getTexture("map5")
 	};
+
+	sf::Texture *backTexture = textureManager.getTexture("back");
+	backSprite.setTexture(*backTexture);
+	backSprite.setPosition(sf::Vector2f(50.f, 35.f));
 
 	int margin = 100; // Odstêp miêdzy elementami
 	int rowHeight = 200; // Wysokoœæ jednego wiersza (wysokoœæ sprite'ów + odstêp)
@@ -69,6 +74,12 @@ void Maps::handleHover(sf::RenderWindow& window) {
 			sprite.setColor(sf::Color::White); // Przywróæ domyœlny kolor
 		}
 	}
+	if (isMouseHover(backSprite, window)) {
+		backSprite.setColor(sf::Color::Yellow);
+	}
+	else {
+		backSprite.setColor(sf::Color(165, 42, 42));
+	}
 }
 
 bool Maps::isMouseHover(const sf::Sprite& sprite, const sf::RenderWindow& window) {
@@ -82,6 +93,7 @@ bool Maps::isMouseHover(const sf::Sprite& sprite, const sf::RenderWindow& window
 
 void Maps::draw(sf::RenderWindow& window) {
 	mapsBackground->render(window);
+	window.draw(backSprite);
 	// Rysowanie sprite'ów
 	for (size_t i = 0; i < mapsItems.size(); i++) {
 		window.draw(mapsItems[i]);

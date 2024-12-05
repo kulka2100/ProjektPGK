@@ -2,7 +2,7 @@
 #include "Background.h"
 class Menu
 {
-private:
+protected:
 	sf::Font font;
 	std::vector<sf::Text> menuItems;
 	int selectedIndex;
@@ -13,6 +13,8 @@ private:
 
 public:
 	Menu(float width, float height);
+
+	Menu();
 
 	void draw(sf::RenderWindow& window);
 
