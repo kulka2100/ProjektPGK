@@ -98,6 +98,11 @@ void Game::initCollectableItems(int mapIndex){
 	}	
 }
 void Game::initEnemies() {
+	// Usuwanie istniej¹cych przeciwników (jeœli s¹)
+	for (auto enemy : enemies) {
+		delete enemy; // Zwolnienie pamiêci dla ka¿dego przeciwnika
+	}
+	enemies.clear(); // Opró¿nianie wektora
 	enemies.emplace_back(new Moles(sf::Vector2f(400.f, 170.f), 70.f, 400.f, 550.f));
 	enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
 	enemies.emplace_back(new Cats(sf::Vector2f(900.f, 390.f), 150.f, 900.f, 1200.f));
@@ -116,6 +121,7 @@ Game::Game(int width, int height) : width(width), height(height), gameState(Game
 	this->initObstacles(currentMap);
 	this->initCollectableItems(currentMap);
 	this->initBackground(currentMap);
+	this->pause = new Pause(width, height);
 	this->initEnemies();
 }
 
@@ -123,6 +129,7 @@ Game::~Game() {
 	delete this->player;
 	delete this->background;
 	delete this->menu;
+	delete this->pause;
 	for (Enemy* enemy : enemies) {
 		delete enemy;
 	}
@@ -198,7 +205,7 @@ void Game::updateCollectableItems(float deltaTime){
 
 }
 
-void Game::updateObstacles() {
+void Game::updateObstacles(float deltaTime) {
 	sf::Vector2f playerPosition = player->getPlayerPosition();
 	sf::FloatRect playerBounds = player->getPlayerBounds();
 	// Sprawdzamy kolizjê miêdzy graczem a ka¿d¹ przeszkod¹
@@ -206,6 +213,24 @@ void Game::updateObstacles() {
 	player->setCanMoveLeft(true);
 	for (auto& obstacle : obstacles) {
 		sf::FloatRect obstacleBounds = obstacle.getBounds();
+
+		if (obstacle.getType() == ObstacleType::Scythe) {
+			if (moveLeftObstacle) {
+				obstacle.getSprite().move(-100.0 * deltaTime, 10 * deltaTime);
+			}
+			if (moveRightObstacle) {
+				obstacle.getSprite().move(100.0 * deltaTime, 0);
+			}
+			//std::cout << deltaTime << " dt" << std::endl;
+			if (obstacle.getSprite().getPosition().x < 200) {
+				moveRightObstacle = true;
+				moveLeftObstacle = false;
+			}
+			else if (obstacle.getSprite().getPosition().x > 400) {
+				moveRightObstacle = false;
+				moveLeftObstacle = true;
+			}
+		}
 
 		if (playerBounds.intersects(obstacleBounds)) {
 			bool isOnPlatform = false;
@@ -229,6 +254,18 @@ void Game::updateObstacles() {
 				playerPosition.y + playerBounds.height > obstacleBounds.top &&
 				playerPosition.y < obstacleBounds.top + obstacleBounds.height) && obstacle.getType() == ObstacleType::Stone) {
 				player->setCanMoveLeft(false);
+			}
+
+			if (playerPosition.y + playerBounds.height > obstacleBounds.top &&
+				playerPosition.y < obstacleBounds.top + obstacleBounds.height && obstacle.getType() == ObstacleType::Spikes) {
+				if (obstacle.canDealDamage()) {
+					player->reduceHealth(1);
+				}
+			}
+			if (playerPosition.x + playerBounds.width >  obstacleBounds.left && obstacle.getType() == ObstacleType::Scythe) {
+				if (obstacle.canDealDamage()) {
+					player->reduceHealth(1);
+				}
 			}
 		}
 	}
@@ -288,7 +325,7 @@ void Game::update() {
 			this->window.close();
 		}
 
-		if(gameState == GameState::Menu) {
+		if (gameState == GameState::Menu) {
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::Up) {
 					menu->moveUp();
@@ -308,7 +345,6 @@ void Game::update() {
 						std::cout << "Wybrano Maps!\n";
 						gameState = GameState::ChoosingMaps;
 						isMenuActive = false;
-		
 					}
 					else if (selected == 2) {
 						std::cout << "Wybrano Settings!\n";
@@ -318,12 +354,16 @@ void Game::update() {
 				}
 			}
 		}
+
+		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape && gameState == GameState::Playing) {
+			gameState = GameState::Pause;
+		}
 	}
 
 	// Aktualizacja logiki gry, gdy gra jest w trybie Playing
     if (gameState == GameState::Playing) {
         this->updatePlayer(deltaTime);
-        this->updateObstacles();
+        this->updateObstacles(deltaTime);
 		this->updateCollectableItems(deltaTime);
         this->updateEnemies(deltaTime);
         this->checkPlayerEnemyCollision();
@@ -331,7 +371,26 @@ void Game::update() {
 		this->checkBulletEnemyCollision();
 		this->checkBulletPlayerCollision();
     }
-	
+
+	if (gameState == GameState::Pause) {
+		// Gra nie jest aktualizowana, tylko rysowanie t³a pauzy
+		pause->draw(window);
+		pause->handleHover(window);
+
+		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+			if (pause->getPauseIndex(window) == 0) {
+				gameState = GameState::Playing;
+			}
+			else if (pause->getPauseIndex(window) == 2) {
+				gameState = GameState::Menu;
+				this->initPlayer();               // Inicjowanie postaci
+				this->initObstacles(currentMap);  // Inicjowanie przeszkód
+				this->initCollectableItems(currentMap); // Inicjowanie przedmiotów
+				this->initBackground(currentMap); // Inicjowanie t³a
+			}
+		}
+	}
+
 	if (gameState == GameState::ChoosingMaps) {
 		maps->handleHover(window);
 
@@ -350,6 +409,14 @@ void Game::update() {
 		}
 	}
 
+	if (player->getIsDead() == true) {
+		this->initPlayer();               // Inicjowanie postaci
+		this->initObstacles(currentMap);  // Inicjowanie przeszkód
+		this->initCollectableItems(currentMap); // Inicjowanie przedmiotów
+		this->initBackground(currentMap); // Inicjowanie t³a
+		this->initEnemies();
+		gameState = GameState::Menu;
+	}
 }
 
 
@@ -406,6 +473,9 @@ void Game::render() {
 		this->renderCollectableItems();
 		this->renderPlayer();
 		this->renderEnemies();
+	}
+	else if (gameState == GameState::Pause) {
+		pause->draw(window);
 	}
 
 	this->window.display();

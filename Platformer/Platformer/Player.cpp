@@ -2,7 +2,6 @@
 #include "Player.h"
 
 
-
 void Player::initTexture() {
     // �adowanie tekstur ruchu w prawo
     for (int i = 1; i <= 5; i++) {
@@ -58,9 +57,9 @@ void Player::initTexture() {
 }
 
 void Player::initSprite() { 
-    // Sprawd�, czy wektor tekstur nie jest pusty
+    // Sprawdz, czy wektor tekstur nie jest pusty
     if (!this->rightTextures.empty()) {
-        // Ustaw pierwsz� klatk� animacji ruchu w prawo jako pocz�tkow� tekstur�
+        // Ustaw pierwsza klatke animacji ruchu w prawo jako pocz�tkow� tekstur�
         this->playerSprite.setTexture(this->rightTextures[0]);
     }
     if (!this->hpTextures.empty()) {
@@ -99,7 +98,6 @@ Player::Player(sf::Vector2f playerPosition, float speed) : health(3) {
 	this->initTexture();
     this->initText();
 	this->initSprite();
-    this->initBullets();
     this->isJumping = false;  
     this->isOnGround = true;
 
@@ -132,8 +130,8 @@ void Player::updateAnimations(float deltaTime) {
 }
 
 void Player::holdPlayerAtEdges() {
-    if (getPlayerPosition().x > 700) {
-        this->playerSprite.setPosition(700.f, getPlayerPosition().y);
+    if (getPlayerPosition().x > 600) {
+        this->playerSprite.setPosition(600.f, getPlayerPosition().y);
     }
     else if (getPlayerPosition().x < 10) {
         this->playerSprite.setPosition(10.f, getPlayerPosition().y);
@@ -151,8 +149,10 @@ void Player::shoot() {
     // Pozycja pocisku zaczyna si� przy postaci
     sf::Vector2f startPos = this->playerSprite.getPosition();
 
+    // Kierunek, np. strza� w prawo
+    sf::Vector2f direction(bulletDir, 0.0f);
+
     if (currentAmmo > 0) {
-        bullets.emplace_back(bulletTexture, startPos, bullet->getDirection(), bullet->getBulletSpeed());
         bullets.emplace_back(bulletTexture, startPos, direction, 400.f);
         std::cout << currentAmmo;
         currentAmmo--;
@@ -233,7 +233,7 @@ void Player::update(float deltaTime, sf::Event &event) {
             this->playerSprite.move(characterSpeed * deltaTime, 0.0);
         }
         this->playerSprite.setTexture(this->rightTextures[this->animationIndex]);
-        bullet->setBulletDir(sf::Vector2f(1.0, 0.f));
+        bulletDir = 1.0;
     }
     // Ruch w lewo
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
@@ -247,7 +247,7 @@ void Player::update(float deltaTime, sf::Event &event) {
             this->playerSprite.move(-characterSpeed * deltaTime, 0.0);
         }
         this->playerSprite.setTexture(this->leftTextures[this->animationIndex]);
-        bullet->setBulletDir(sf::Vector2f(-1.0, 0.f));
+        bulletDir = -1.0;
     }
     //Skok
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
@@ -296,10 +296,15 @@ void Player::update(float deltaTime, sf::Event &event) {
     if (isFalling) {
         float fallSpeed = 200.f;
         playerDeadSprite.move(0, fallSpeed * deltaTime);
-        
+
         if (playerDeadSprite.getPosition().y >= 600) {
             isFalling = false;
         }
+    }
+
+
+    if (damageCooldown > 0) {
+        damageCooldown -= deltaTime; // Zmniejsz cooldown
     }
 }
 
@@ -323,6 +328,7 @@ void Player::render(sf::RenderTarget &target) {
 
 
 void Player::reduceHealth(int amount) {
+
     this->health -= amount;
     if(!hpSprite.empty())
         hpSprite.pop_back();

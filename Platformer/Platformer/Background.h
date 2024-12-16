@@ -31,6 +31,5 @@ public:
 
 	sf::Texture& getBackgroundTexture();
 
-
 };
 

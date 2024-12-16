@@ -33,8 +33,10 @@ sf::Texture& Background::getBackgroundTexture() {
 void Background::update(float deltaTime, float characterSpeed) {
     // Aktualizujemy pozycjê sprite'a na podstawie nowej pozycji
     //Przesuwanie tla
+    float maxScroll = textureBackground.getSize().x - 800; // Maksymalny przesuw
+    bool hasScrolled = false;
 
-    if (player->getPlayerPosition().x > 700  && abs(position.x) < textureBackground.getSize().x) {
+    if (player->getPlayerPosition().x > 600  && abs(position.x) < textureBackground.getSize().x) {
         position.x -= characterSpeed * deltaTime;
         // Aktualizujemy pozycjê sprite'a na podstawie nowej pozycji
         backgroundSprite.setPosition(position);

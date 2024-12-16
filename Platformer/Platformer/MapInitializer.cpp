@@ -71,23 +71,27 @@ void MapInitializer::initMap4Obstacles(std::vector<Obstacle>& obstacles, Texture
 	textureManager.loadTexture("textury/pieklo/platforma.png", "platformaPielko");
 	textureManager.loadTexture("textury/pieklo/kolce.png", "kolce");
 	textureManager.loadTexture("textury/pieklo/kosa.png", "kosa");
+	textureManager.loadTexture("textury/pieklo/lawa.png", "lawa");
 
 	sf::Texture* platformTexture = textureManager.getTexture("platformaPielko");
 	sf::Texture* kolceTexture = textureManager.getTexture("kolce");
 	sf::Texture* kosaWulkan = textureManager.getTexture("kosa");
+	sf::Texture* lawaTexture = textureManager.getTexture("lawa");
 
 	if (platformTexture) {
 		// Dodawanie przeszkód z za³adowan¹ tekstur¹
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(50, 200.f), ObstacleType::Platform);
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(500.f, 250.f), ObstacleType::Platform);
 	}
-	//Dodaæ osobny ObstacleItem
 	if (kolceTexture) {
-		obstacles.emplace_back(*kolceTexture, sf::Vector2f(550.f, 450.f), ObstacleType::Stone);
+		obstacles.emplace_back(*kolceTexture, sf::Vector2f(550.f, 450.f), ObstacleType::Spikes);
 	}
 	//Zrobic poruszanie kos¹
 	if (kosaWulkan) {
-		obstacles.emplace_back(*kosaWulkan, sf::Vector2f(800.f, 100.f), ObstacleType::Stone);
+		obstacles.emplace_back(*kosaWulkan, sf::Vector2f(400.f, 200.f), ObstacleType::Scythe);
+	}
+	if (lawaTexture) {
+		obstacles.emplace_back(*lawaTexture, sf::Vector2f(400.f, 450.f), ObstacleType::Lava);
 	}
 }
 

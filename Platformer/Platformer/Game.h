@@ -14,6 +14,7 @@
 #include "Bats.h"
 #include "Settings.h"
 #include "Boss.h"
+#include "Pause.h"
 
 
 
@@ -34,6 +35,7 @@ private:
 	Menu* menu;
 	Maps* maps;
 	Settings* settings;
+	Pause* pause;
 	MapInitializer* mapInitializer;
 	TextureManager textureManager;
 	std::vector<Obstacle> obstacles;
@@ -43,6 +45,9 @@ private:
 	bool isPlayed;
 	GameState gameState;
 	int currentMap = 0;
+
+	bool moveLeftObstacle = true;
+	bool moveRightObstacle = false;
 
 	void initWindow();
 	void initPlayer();
@@ -80,7 +85,7 @@ public:
 	
 	void renderCollectableItems();
 	
-	void updateObstacles();
+	void updateObstacles(float deltaTime);
 
 	void renderObstacles();
 

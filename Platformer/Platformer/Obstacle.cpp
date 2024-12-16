@@ -7,8 +7,8 @@ Obstacle::Obstacle(sf::Texture& obstacleTexture, sf::Vector2f position, Obstacle
 	if (this->obstacleTexture) { // Sprawdzenie, czy wskaŸnik nie jest pusty
 		this->itemSprite.setTexture(obstacleTexture);
 	}
+	this->damageInterval = 0.5f;
 	this->itemSprite.setPosition(position);
-
 }
 
 

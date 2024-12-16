@@ -1,10 +1,12 @@
 #pragma once
 #include "Bullet.h"
 #include "TextureManager.h"
+#include "GameState.h"
 class Player
 {
 private:
 	int health;
+	float damageCooldown; // Czas do nastêpnego mo¿liwego otrzymania obra¿eñ
 	int keys = 0;
 	sf::Sprite playerSprite;
 	sf::Sprite playerDeadSprite;
@@ -26,9 +28,10 @@ private:
 	const float JUMP_STRENGTH = -550.f;
 	float verticalVelocity = 0.0f;
 
-	Bullet* bullet;
+	GameState gameState;
 	std::vector<Bullet> bullets;
 	sf::Texture bulletTexture;
+	float bulletDir;
 
 	// Zegar animacji
 	float animationTimer;               
@@ -53,9 +56,6 @@ private:
 	void initSprite();
 	void initTexture();
 
-	void initBullets() {
-		this->bullet = new Bullet(sf::Vector2f(1.f, 0.f), 200.f);
-	}
 
 	//Strzaly
 	float shootCooldown;
@@ -143,6 +143,10 @@ public:
 
 	int getKeys() {
 		return keys;
+	}
+
+	bool canTakeDamage() const {
+		return damageCooldown <= 0;
 	}
 };
 

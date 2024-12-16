@@ -4,6 +4,7 @@ enum class GameState {
     Playing,
     Exiting,
     ChoosingMaps,
-    Settings
+    Settings,
+    Pause,
 };
 

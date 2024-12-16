@@ -12,12 +12,6 @@ private:
 public:
 	Bullet(sf::Texture& texture, sf::Vector2f startPos, sf::Vector2f direction, float bulletSpeed);
 
-	Bullet(sf::Vector2f direction, float bulletSpeed) {
-		this->direction = direction;
-		this->bulletSpeed = bulletSpeed;
-
-	}
-
 	~Bullet();
 
 	
@@ -40,17 +34,7 @@ public:
 
 	sf::FloatRect getBounds() const;
 
-	float getBulletSpeed() {
-		return this->bulletSpeed;
-	}
 
-	sf::Vector2f getDirection() {
-		return this->direction;
-	}
-
-	void setBulletDir(sf::Vector2f dir) {
-		this->direction = dir;
-	}
 };
 
 
