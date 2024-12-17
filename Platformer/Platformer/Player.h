@@ -50,6 +50,7 @@ private:
 	bool canMoveLeft = true;
 	bool isDead = false;
 	bool isFalling = false;
+	bool fallen = false;
 	bool isDeadSpriteSet = false;
 
 	void initText();
@@ -143,6 +144,13 @@ public:
 
 	int getKeys() {
 		return keys;
+	}
+
+	bool getIsFallen() {
+		return fallen;
+	}
+	void setFallen() {
+		this->fallen = fallen;
 	}
 
 	bool canTakeDamage() const {

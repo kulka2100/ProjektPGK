@@ -355,6 +355,28 @@ void Game::update() {
 			}
 		}
 
+		if (gameState == GameState::Settings) {
+			settings->handleHover(window);
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+				difficultyLvel = settings->getLevelIndex(window); // Wywo³anie metody obs³ugi klikniêcia
+				if (difficultyLvel == 0) {
+					std::cout << "wybrano latwy" << std::endl;
+					gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
+				}
+				else if (difficultyLvel == 1) {
+					std::cout << "wybrano sredni" << std::endl;
+					gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
+				}
+				else if (difficultyLvel == 2) {
+					std::cout << "wybrano trudny" << std::endl;
+					gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
+				}
+				else if (difficultyLvel == 3) {
+					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
+				}
+			}
+		}
+
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape && gameState == GameState::Playing) {
 			gameState = GameState::Pause;
 		}
@@ -380,6 +402,11 @@ void Game::update() {
 		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
 			if (pause->getPauseIndex(window) == 0) {
 				gameState = GameState::Playing;
+			}
+			else if (pause->getPauseIndex(window) == 1) {
+				std::cout << "Saving game to file..." << std::endl;
+				saveToBinaryFile("game_save.txt");
+				std::cout << "Game saved successfully." << std::endl;
 			}
 			else if (pause->getPauseIndex(window) == 2) {
 				gameState = GameState::Menu;
@@ -409,7 +436,7 @@ void Game::update() {
 		}
 	}
 
-	if (player->getIsDead() == true) {
+	if (player->getIsFallen() == true) {
 		this->initPlayer();               // Inicjowanie postaci
 		this->initObstacles(currentMap);  // Inicjowanie przeszkód
 		this->initCollectableItems(currentMap); // Inicjowanie przedmiotów

@@ -6,5 +6,6 @@ enum class GameState {
     ChoosingMaps,
     Settings,
     Pause,
+    Loading,
 };
 

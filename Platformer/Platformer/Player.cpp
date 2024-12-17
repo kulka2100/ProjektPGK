@@ -299,6 +299,7 @@ void Player::update(float deltaTime, sf::Event &event) {
 
         if (playerDeadSprite.getPosition().y >= 600) {
             isFalling = false;
+            fallen = true;
         }
     }
 
