@@ -6,7 +6,7 @@ void Game::initWindow(){
 }
 
 void Game::initPlayer() {
-	this->player = new Player(sf::Vector2f(100.f, 400.f), 500.0);
+	this->player = new Player(sf::Vector2f(100.f, 400.f), 500.0, 3);
 }
 
 void Game::initBackground(int mapIndex) {
@@ -356,20 +356,29 @@ void Game::update() {
 		}
 
 		if (gameState == GameState::Settings) {
-			settings->handleHover(window);
+			settings->handleHover(window, settings->getItems());
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-				difficultyLvel = settings->getLevelIndex(window); // Wywo³anie metody obs³ugi klikniêcia
+				difficultyLvel = settings->getHoverIndex(window, settings->getItems()); // Wywo³anie metody obs³ugi klikniêcia
 				if (difficultyLvel == 0) {
 					std::cout << "wybrano latwy" << std::endl;
-					gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
+					player->setCurrentAmo(50);
+					player->setHealth(5);
+					player->updateAmmoText(player->getCurrentAmo());
+					player->updateHealthVector();
+					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
+
 				}
 				else if (difficultyLvel == 1) {
 					std::cout << "wybrano sredni" << std::endl;
-					gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
+					player->setCurrentAmo(20);
+					player->setHealth(4);
+					player->updateAmmoText(player->getCurrentAmo());
+					player->updateHealthVector();
+					gameState = GameState:: Menu; // Zmieñ stan gry na Playing po wybraniu mapy
 				}
 				else if (difficultyLvel == 2) {
 					std::cout << "wybrano trudny" << std::endl;
-					gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
+					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
 				}
 				else if (difficultyLvel == 3) {
 					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
@@ -393,6 +402,7 @@ void Game::update() {
 		this->checkBulletEnemyCollision();
 		this->checkBulletPlayerCollision();
     }
+
 
 	if (gameState == GameState::Pause) {
 		// Gra nie jest aktualizowana, tylko rysowanie t³a pauzy
@@ -419,10 +429,10 @@ void Game::update() {
 	}
 
 	if (gameState == GameState::ChoosingMaps) {
-		maps->handleHover(window);
+		maps->handleHover(window, maps->getItems());
 
 		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-			currentMap = maps->getMapIndex(window); // Wywo³anie metody obs³ugi klikniêcia
+			currentMap = maps->getHoverIndex(window, maps->getItems()); // Wywo³anie metody obs³ugi klikniêcia
 			if (currentMap < 5) {
 				gameState = GameState::Playing; // Zmieñ stan gry na Playing po wybraniu mapy
 				initBackground(currentMap);

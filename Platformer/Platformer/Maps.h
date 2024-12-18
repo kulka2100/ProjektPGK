@@ -1,38 +1,26 @@
 #pragma once
 #include "stdafx.h"
 #include "Background.h"
+#include "Button.h"
+#include "Menu.h"
 #include "TextureManager.h"
-class Maps
+class Maps : public Button, Menu
 {
 private:
 	std::vector <sf::Sprite> mapsItems;
 	std::vector <sf::Texture> mapsTextures;
-	sf::Sprite backSprite;
-	Background* mapsBackground;
 	TextureManager textureManager;
 
 public:
 
-	Maps(const std::string& filename, int width) {
-		mapsBackground = new Background(filename);
-		initMaps(width);
-	}
+	Maps(const std::string& filename, int width);
 
-	~Maps() {
-		delete mapsBackground;
-	}
+	~Maps() {}
 
 	//Inicjalizacja miniaturek map
 	void initMaps(int width);
 
-	//Metoda zwracajaca index kliknietego elementu
-	int getMapIndex(sf::RenderWindow& window);
-
-	//Zmiana koloru po najechaniu na dany sprite
-	void handleHover(sf::RenderWindow& window);
-
-	//Sprawdzenie czy akutalna pozycja myszy pokrwa sie ze sprite
-	bool isMouseHover(const sf::Sprite& sprite, const sf::RenderWindow& window);
+	std::vector <sf::Sprite>& getItems();
 
 	void draw(sf::RenderWindow& window);
 

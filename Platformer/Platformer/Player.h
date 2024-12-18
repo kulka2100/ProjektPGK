@@ -63,7 +63,7 @@ private:
 	float shootCooldownMax;
 
 public:
-	Player(sf::Vector2f playerPosition,float speed);
+	Player(sf::Vector2f playerPosition,float speed, int hp);
 
 	~Player();
 
@@ -105,7 +105,6 @@ public:
 
 	void render(sf::RenderTarget& target);
 
-	bool getIsJumping() const;
 	void setIsJumping(bool jumping);
 	float getVerticalVelocity() const;
 	std::vector<Bullet>& getBullets();
@@ -124,22 +123,62 @@ public:
 		this->isDead = isDead;
 	}
 
+	void setFallen() {
+		this->fallen = fallen;
+	}
+
+	void setKeys(int keys) {
+		this->keys = keys;
+	}
+
+	void setCurrentAmo(int amo) {
+		this->currentAmmo = amo;
+	}
+
+	void setHealth(int health) {
+		hpSprite.clear();
+		this->health = health;
+	}
+
+	void updateHealthVector() {
+		hpSprite.clear(); // Wyczyœæ aktualny stan wektora
+
+		if (!hpTextures.empty()) {
+			for (int i = 0; i < health; ++i) {
+				sf::Sprite newSprite;
+				newSprite.setTexture(hpTextures[0]);
+
+				sf::Vector2f position;
+				if (i == 0) {
+					position = sf::Vector2f(10.f, 25.f); // Pierwszy sprite
+				}
+				else {
+					position = sf::Vector2f(hpSprite.back().getPosition().x + 45, 25.f);
+				}
+				newSprite.setPosition(position);
+				hpSprite.push_back(newSprite);
+			}
+		}
+		else {
+			std::cerr << "hpTextures jest pusty! Nie mo¿na dodaæ sprite'a." << std::endl;
+		}
+	}
+
+
 	void incrementCurrentAmo();
 
 	void updateAmmoText(int currentAmmo);
 
-	int getCurrentAmo();
+	void updateHealth(int count = 1);
 
-	void updateHealth();
+	bool getIsJumping() const;
+
+	int getCurrentAmo();
 
 	int getCurrentHealth() const;
 
 	bool getIsDead() {
 		return isDead;
-	}
-
-	void setKeys(int keys) {
-		this->keys = keys;
 	}
 
 	int getKeys() {
@@ -148,9 +187,6 @@ public:
 
 	bool getIsFallen() {
 		return fallen;
-	}
-	void setFallen() {
-		this->fallen = fallen;
 	}
 
 	bool canTakeDamage() const {

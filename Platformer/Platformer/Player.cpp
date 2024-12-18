@@ -42,7 +42,7 @@ void Player::initTexture() {
 
     sf::Texture* hpTexture = textureManager.getTexture("hp");
     if (hpTexture) {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < getCurrentHealth(); i++) {
             hpTextures.push_back(*hpTexture);
         }
     }
@@ -63,7 +63,7 @@ void Player::initSprite() {
         this->playerSprite.setTexture(this->rightTextures[0]);
     }
     if (!this->hpTextures.empty()) {
-        this->hpSprite.resize(3); // Zainicjujemy 3 sprite'y
+        this->hpSprite.resize(getCurrentHealth()); // Zainicjujemy 3 sprite'y
         for (int i = 0; i < hpTextures.size(); i++) {
             this->hpSprite[i].setTexture(this->hpTextures[i]);
             float step = i * 45;
@@ -90,7 +90,7 @@ void Player::initText() {
 }
 
 
-Player::Player(sf::Vector2f playerPosition, float speed) : health(3) {
+Player::Player(sf::Vector2f playerPosition, float speed, int hp) : health(hp) {
     this->playerPosition = playerPosition;
     this->characterSpeed = speed;
 
@@ -191,17 +191,25 @@ void Player::setIsJumping(bool jumping) {
 }
 
 
-void Player::updateHealth() {
+void Player::updateHealth(int count) {
     if (!hpTextures.empty()) {
-        health++;
-        sf::Sprite newSprite;
-        newSprite.setTexture(hpTextures[0]);
+        for (int i = 0; i < count; ++i) {
+            health++;
+            sf::Sprite newSprite;
+            newSprite.setTexture(hpTextures[0]);
 
-        //Pobranie pozycji ostaniego sprita z vectora hpSprite
-        sf::Vector2f lastPosition = hpSprite.back().getPosition();
-        newSprite.setPosition(sf::Vector2f(lastPosition.x + 45, 25.f));
-        hpSprite.push_back(newSprite);
+            // Pobranie pozycji ostatniego sprita z vectora hpSprite
+            sf::Vector2f lastPosition;
+            if (!hpSprite.empty()) {
+                lastPosition = hpSprite.back().getPosition();
+            }
+            else {
+                lastPosition = sf::Vector2f(0.f, 25.f); // Ustawienie domyślnej pozycji, jeśli brak sprite'ów
+            }
 
+            newSprite.setPosition(sf::Vector2f(lastPosition.x + 45, 25.f));
+            hpSprite.push_back(newSprite);
+        }
     }
     else {
         std::cerr << "hpTextures jest pusty! Nie mo�na doda� sprite'a." << std::endl;
