@@ -14,6 +14,10 @@ CollectableItem::CollectableItem(sf::Texture& colltectableTexture, sf::Vector2f 
     this->itemSprite.setPosition(position);
 }
 
+CollectableItem::CollectableItem()
+{
+}
+
 sf::Texture& CollectableItem::getTexture() {
     return *collectableItemTexture;
 }

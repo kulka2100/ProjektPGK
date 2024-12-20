@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Item.h"
+#include "fstream"
 
 enum class ItemType {
 	Carrot,
@@ -23,6 +24,7 @@ private:
 public:
 
 	CollectableItem(sf::Texture& obstacleTexture, sf::Vector2f position, ItemType itemType);
+	CollectableItem();
 
 	sf::Texture& getTexture() override;
 
@@ -46,6 +48,20 @@ public:
 
 	bool getIsChestOpen() {
 		return isChestOpen;
+	}
+
+	void save(std::ofstream& file) const {
+		sf::Vector2f position = itemSprite.getPosition();
+		file.write(reinterpret_cast<const char*>(&position.x), sizeof(position.x));
+		file.write(reinterpret_cast<const char*>(&position.y), sizeof(position.y));
+		file.write(reinterpret_cast<const char*>(&type), sizeof(type));
+	}
+
+	void load(std::ifstream& file) {
+		sf::Vector2f position;
+		file.read(reinterpret_cast<char*>(&position.x), sizeof(position.x));
+		file.read(reinterpret_cast<char*>(&position.y), sizeof(position.y));
+		file.read(reinterpret_cast<char*>(&type), sizeof(type));
 	}
 
 };

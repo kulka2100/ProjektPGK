@@ -319,7 +319,6 @@ void Game::updateEnemies(float deltaTime) {
 void Game::update() {
 	// deltaTime w sekundach
 	float deltaTime = clock.restart().asSeconds();    // Obliczanie FPS
-
 	while (this->window.pollEvent(event)) {
 		if (event.type == sf::Event::Closed) {
 			this->window.close();
@@ -351,6 +350,27 @@ void Game::update() {
 						gameState = GameState::Settings;
 						isMenuActive = false;
 					}
+					else if (selected == 3) {
+						std::cout << "Wczytywanie gry z pliku..." << std::endl;
+						loadFromFile("game_save.dat");
+						player->updateHealthVector();
+						// Dodaj sprawdzenie poprawnoœci danych
+						if (player != nullptr) {
+							std::cout << "Zdrowie gracza po wczytaniu: " << player->getCurrentHealth() << std::endl;
+							std::cout << "Pozycja gracza po wczytaniu: "
+								<< player->getPlayerPosition().x << ", "
+								<< player->getPlayerPosition().y << std::endl;
+							std::cout << "Odczytano pozycjê gracza: X=" << player->getPlayerPosition().x << ", Y=" << player->getPlayerPosition().y << std::endl;
+
+						}
+						else {
+							std::cerr << "B³¹d: player nie jest poprawnie zainicjalizowany!" << std::endl;
+						}
+
+						gameState = GameState::Playing; // Po wczytaniu gra przechodzi do trybu rozgrywki
+						isMenuActive = false;
+					}
+
 				}
 			}
 		}
@@ -361,7 +381,7 @@ void Game::update() {
 				difficultyLvel = settings->getHoverIndex(window, settings->getItems()); // Wywo³anie metody obs³ugi klikniêcia
 				if (difficultyLvel == 0) {
 					std::cout << "wybrano latwy" << std::endl;
-					player->setCurrentAmo(50);
+					loadFromFile("game_save.dat");
 					player->setHealth(5);
 					player->updateAmmoText(player->getCurrentAmo());
 					player->updateHealthVector();
@@ -415,7 +435,9 @@ void Game::update() {
 			}
 			else if (pause->getPauseIndex(window) == 1) {
 				std::cout << "Saving game to file..." << std::endl;
-				saveToBinaryFile("game_save.txt");
+				saveToBinaryFile("game_save.dat");
+				std::cout << "Zapisano pozycjê gracza: X=" << player->getPlayerPosition().x << ", Y=" << player->getPlayerPosition().y << std::endl;
+
 				std::cout << "Game saved successfully." << std::endl;
 			}
 			else if (pause->getPauseIndex(window) == 2) {

@@ -5,7 +5,6 @@ class Item
 protected:
 	sf::Sprite itemSprite;
 public:
-public:
     virtual sf::FloatRect getBounds() {
         return itemSprite.getGlobalBounds();
     }

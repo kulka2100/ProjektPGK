@@ -29,6 +29,14 @@ Menu::Menu(float width, float height) {
 	settings.setFillColor(unselectedColor);
 	menuItems.push_back(settings);
 
+	sf::Text loading;
+	loading.setFont(font);
+	loading.setString("Loading");
+	loading.setPosition(sf::Vector2f(width / 2.0f - 50.0f, height / 2.0f + 120.0f));
+	loading.setFillColor(unselectedColor);
+	menuItems.push_back(loading);
+
+
 	selectedIndex = 0;  // Domyœlnie wybrany pierwszy element
 }
 

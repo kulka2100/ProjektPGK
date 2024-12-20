@@ -29,6 +29,7 @@ public:
 
 	sf::Sprite& getBackgroundSprite();
 
+
 	sf::Texture& getBackgroundTexture();
 
 };

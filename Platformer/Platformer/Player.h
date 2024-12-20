@@ -119,11 +119,15 @@ public:
 		this->canMoveLeft = canMove;
 	}
 
+	void setPlayerPosition(float posx, float posy) {
+		this->playerSprite.setPosition(posx, posy);
+	}
+
 	void setIsDead(bool isDead) {
 		this->isDead = isDead;
 	}
 
-	void setFallen() {
+	void setFallen(bool fallen) {
 		this->fallen = fallen;
 	}
 

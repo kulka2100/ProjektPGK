@@ -105,30 +105,49 @@ public:
 	void setOpenChestTexture();
 
 	void saveToBinaryFile(const std::string& filename) {
-		std::ofstream file(filename);  // Otwieramy plik binarnie
+		std::ofstream file(filename, std::ios::binary);  // Otwieramy plik binarnie
 		if (!file.is_open()) {
 			std::cerr << "Nie mo¿na otworzyæ pliku do zapisu!" << std::endl;
 			return;
 		}
 
-		std::cout << "File opened successfully." << std::endl;
-
-		// Przyk³ad zapisu wartoœci
 		try {
-			float playerPosX = player->getPlayerPosition().x;
-			float playerPosY = player->getPlayerPosition().y;
-			file.write(reinterpret_cast<char*>(&playerPosX), sizeof(playerPosX));
-			file.write(reinterpret_cast<char*>(&playerPosY), sizeof(playerPosY));
+			// Zapisujemy dane podstawowe
+			file.write(reinterpret_cast<const char*>(&gameState), sizeof(gameState));
+
+			// Zapisujemy dane gracza
+			if (player != nullptr) {
+				int currentHealth = player->getCurrentHealth();
+				std::cout << "Zapisywanie zdrowia gracza: " << currentHealth << std::endl;
+				file.write(reinterpret_cast<const char*>(&currentHealth), sizeof(currentHealth));
+
+				float playerPosX = player->getPlayerPosition().x;
+				float playerPosY = player->getPlayerPosition().y;
+				file.write(reinterpret_cast<const char*>(&playerPosX), sizeof(playerPosX));
+				file.write(reinterpret_cast<const char*>(&playerPosY), sizeof(playerPosY));
+			}
+			
+
+			// Zapisujemy liczbê przedmiotów do zebrania
+			size_t itemsCount = collectableItems.size();
+			file.write(reinterpret_cast<const char*>(&itemsCount), sizeof(itemsCount));
+
+			// Zapisujemy dane przedmiotów
+			for (const auto& item : collectableItems) {
+				item.save(file);
+			}
+
+
+			std::cout << "Stan gry zapisany do pliku: " << filename << std::endl;
 		}
 		catch (const std::exception& e) {
 			std::cerr << "Exception during file write: " << e.what() << std::endl;
-			file.close();
-			return;
 		}
 
 		file.close();
-		std::cout << "File saved and closed successfully." << std::endl;
 	}
+
+
 
 	void loadFromFile(const std::string& filename) {
 		std::ifstream file(filename, std::ios::binary);  // Otwieramy plik binarnie
@@ -136,46 +155,51 @@ public:
 			std::cerr << "Nie mo¿na otworzyæ pliku do odczytu!" << std::endl;
 			return;
 		}
-			// Zapis pozycji gracza (x i y)
-		float playerPosX = player->getPlayerPosition().x;
-		float playerPosY = player->getPlayerPosition().y;
-
-
-		// Odczytujemy podstawowe dane obiektu Game
-		file.read(reinterpret_cast<char*>(&width), sizeof(width));
-		file.read(reinterpret_cast<char*>(&height), sizeof(height));
-		file.read(reinterpret_cast<char*>(&gameState), sizeof(gameState));
-
-		// Odczytujemy dane gracza (Player)
-		if (player != nullptr) {
-			file.read(reinterpret_cast<char*>(player->getCurrentHealth()), sizeof(player->getCurrentHealth()));
-			file.read(reinterpret_cast<char*>(&playerPosX), sizeof(playerPosX));
-			file.read(reinterpret_cast<char*>(&playerPosY), sizeof(playerPosY));
-		}
-
-		// Dodaj inne elementy gry (t³o, przeszkody, przedmioty, itp.)
-		std::cout << "Stan gry odczytany z pliku binarnie: " << filename << std::endl;
-		file.close();
-
 		try {
-			// Wczytaj pozycjê gracza
-			float playerPosX, playerPosY;
-			file.read(reinterpret_cast<char*>(&playerPosX), sizeof(playerPosX));
-			file.read(reinterpret_cast<char*>(&playerPosY), sizeof(playerPosY));
+			// Odczytujemy dane podstawowe (w tej samej kolejnoœci, co zapisano)
+			file.read(reinterpret_cast<char*>(&gameState), sizeof(gameState));
 
-			// Aktualizuj gracza na podstawie wczytanych danych
-			player->getPlayerSprite().setPosition(playerPosX, playerPosY);
+			// Odczytujemy dane gracza (sprawdzamy, czy player istnieje)
+			if (player != nullptr) {
+				int currentHealth;
+				file.read(reinterpret_cast<char*>(&currentHealth), sizeof(currentHealth));
+				std::cout << "odczytywanie zdrowia gracza: " << currentHealth << std::endl;
+				player->setHealth(currentHealth);
 
-			std::cout << "Game loaded successfully!" << std::endl;
+				float playerPosX, playerPosY;
+				file.read(reinterpret_cast<char*>(&playerPosX), sizeof(playerPosX));
+				file.read(reinterpret_cast<char*>(&playerPosY), sizeof(playerPosY));
+				player->setPlayerPosition(playerPosX, playerPosY);
+				std::cout << "odczytana gracza po pozycja: "
+					<< playerPosX << ", "
+					<< playerPosY << std::endl;
+			}
+
+
+			// Odczytujemy liczbê przedmiotów do zebrania
+			size_t itemsCount;
+			file.read(reinterpret_cast<char*>(&itemsCount), sizeof(itemsCount));
+
+			// Odczytujemy dane przedmiotów
+			collectableItems.clear();
+			for (size_t i = 0; i < itemsCount; ++i) {
+				CollectableItem item;
+				item.load(file);  // Odczytaj dane przedmiotu z pliku
+				collectableItems.push_back(item);  // Dodaj do wektora
+			}
+
+
+			std::cout << "Stan gry odczytany z pliku: " << filename << std::endl;
+			isGameLoaded = true;
 		}
 		catch (const std::exception& e) {
 			std::cerr << "Exception during file reading: " << e.what() << std::endl;
+			isGameLoaded = false;
 		}
 
 		file.close();
-
-		isGameLoaded = true;
 	}
+
 
 };
 
