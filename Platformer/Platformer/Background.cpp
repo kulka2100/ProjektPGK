@@ -3,9 +3,8 @@
 
 Background::Background(const std::string& filename, Player *player){
     this->player = player;
-    std::cout << "Próba za³adowania pliku: " << filename << std::endl;
 	if (!textureBackground.loadFromFile(filename)) {
-		throw std::runtime_error("Nie mo¿na za³adowaæ tekstury: ");
+		throw std::runtime_error("Nie mo¿na za³adowaæ tekstury tla: ");
 	}
     backgroundSprite.setTexture(textureBackground);
 	position = sf::Vector2f(0.0f, 0.0f);
@@ -13,9 +12,8 @@ Background::Background(const std::string& filename, Player *player){
 
 
 Background::Background(const std::string& filename) {
-    std::cout << "Proba za³adowania pliku: " << filename << std::endl;
     if (!textureBackground.loadFromFile(filename)) {
-        throw std::runtime_error("Nie mo¿na za³adowaæ tekstury: ");
+        throw std::runtime_error("Nie mo¿na za³adowaæ tekstury tla: ");
     }
     backgroundSprite.setTexture(textureBackground);
     position = sf::Vector2f(0.0f, 0.0f);

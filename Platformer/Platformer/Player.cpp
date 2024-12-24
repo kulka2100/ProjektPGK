@@ -224,13 +224,13 @@ void Player::update(float deltaTime, sf::Event &event) {
     bool isOnPlatform = false;
     //Animowanie textur
     updateAnimations(deltaTime);
-
     // Zatrzymywanie postaci gdy dojdzie do krawedzi
     holdPlayerAtEdges();
 
 
     // Ruch w prawo
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        movingWithEqRight = true;
         //Skok podczas ruchu w prawo
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
             verticalVelocity = JUMP_STRENGTH;
@@ -245,6 +245,7 @@ void Player::update(float deltaTime, sf::Event &event) {
     }
     // Ruch w lewo
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        movingWithEqLeft = true;
         //Skok podczas ruchu w lewo
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
             verticalVelocity = JUMP_STRENGTH;
@@ -285,6 +286,8 @@ void Player::update(float deltaTime, sf::Event &event) {
     // Dodawanie grawitacji, aby posta� wraca�a na ziemi�
     gravitation(deltaTime);
 
+    updateEqPosition();
+
     //Akutalizacja pociskow
     for (auto it = bullets.begin(); it != bullets.end(); ) {
         it->update(deltaTime);
@@ -320,6 +323,7 @@ void Player::update(float deltaTime, sf::Event &event) {
 void Player::render(sf::RenderTarget &target) {
     if (!isDead) {
         target.draw(this->playerSprite);
+        target.draw(this->eqSprite);
     }
     else {
         target.draw(this->playerDeadSprite);
@@ -343,7 +347,7 @@ void Player::reduceHealth(int amount) {
         hpSprite.pop_back();
 
     if (this->health <= 0) {
-        std::cout << "Gracz zgin��! " << getCurrentHealth() << std::endl;
+        std::cout << "Gracz zginal! " << getCurrentHealth() << std::endl;
         // Implementacja zako�czenia gry
         setIsDead(true);
         isFalling = true;

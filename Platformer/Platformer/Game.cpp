@@ -123,6 +123,7 @@ Game::Game(int width, int height) : width(width), height(height), gameState(Game
 	this->initBackground(currentMap);
 	this->pause = new Pause(width, height);
 	this->initEnemies();
+	this->eq = new Equipment();
 }
 
 Game::~Game() {
@@ -133,6 +134,7 @@ Game::~Game() {
 	for (Enemy* enemy : enemies) {
 		delete enemy;
 	}
+	delete eq;
 	enemies.clear();
 }
 
@@ -171,6 +173,8 @@ void Game::updateCollectableItems(float deltaTime){
 						keysCounter++;
 						player->setKeys(keysCounter);
 						item.setIsCollected(true);
+						this->eq->addItem("textury/las/key.png", ItemType::Key);
+					
 					}
 					else if (item.getType() == ItemType::Chest) {				
 						if (player->getKeys() > 0) {
@@ -178,8 +182,15 @@ void Game::updateCollectableItems(float deltaTime){
 								item.setIsOpenChest(true);
 								std::cout << "Otwarles skrzynie " << item.getIsChestOpen() << std::endl;
 								setOpenChestTexture();
+								this->eq->removeItem(0);
+								this->eq->setIsActive(true); // Aktywuj panel ekwipunku
+								
 							}
 						}
+					}
+					else if (item.getType() == ItemType::Hat) {
+						item.setIsCollected(true);
+						eq->addItem("textury/hat.png", ItemType::Hat);
 					}
 					else if (item.getType() == ItemType::Tree) {
 						if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
@@ -194,7 +205,6 @@ void Game::updateCollectableItems(float deltaTime){
 				}
 			}
 	}
-
 	// Usuñ wszystkie zebrane przedmioty
 	collectableItems.erase(
 		std::remove_if(collectableItems.begin(), collectableItems.end(),
@@ -334,7 +344,7 @@ void Game::update() {
 				}
 				else if (event.key.code == sf::Keyboard::Enter) {
 					int selected = menu->getSelectedIndex();
-					if(selected == 0) {
+					if (selected == 0) {
 						// Play
 						gameState = GameState::Playing;
 						std::cout << "Wybrano Play!\n" << std::endl;
@@ -375,6 +385,13 @@ void Game::update() {
 			}
 		}
 
+		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::E) {
+			this->eq->setIsActive(true); // Aktywuj panel ekwipunku
+		}
+		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
+			this->eq->setIsActive(false);
+		}
+
 		if (gameState == GameState::Settings) {
 			settings->handleHover(window, settings->getItems());
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
@@ -394,7 +411,7 @@ void Game::update() {
 					player->setHealth(4);
 					player->updateAmmoText(player->getCurrentAmo());
 					player->updateHealthVector();
-					gameState = GameState:: Menu; // Zmieñ stan gry na Playing po wybraniu mapy
+					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
 				}
 				else if (difficultyLvel == 2) {
 					std::cout << "wybrano trudny" << std::endl;
@@ -412,16 +429,17 @@ void Game::update() {
 	}
 
 	// Aktualizacja logiki gry, gdy gra jest w trybie Playing
-    if (gameState == GameState::Playing) {
-        this->updatePlayer(deltaTime);
-        this->updateObstacles(deltaTime);
+	if (gameState == GameState::Playing) {
+		this->updatePlayer(deltaTime);
+		this->updateObstacles(deltaTime);
 		this->updateCollectableItems(deltaTime);
-        this->updateEnemies(deltaTime);
-        this->checkPlayerEnemyCollision();
-        this->updateBackground(deltaTime, player->getCharacterSpeed());
+		this->updateEnemies(deltaTime);
+		this->checkPlayerEnemyCollision();
+		this->updateBackground(deltaTime, player->getCharacterSpeed());
 		this->checkBulletEnemyCollision();
 		this->checkBulletPlayerCollision();
-    }
+		this->checkEqPanel();
+	}
 
 
 	if (gameState == GameState::Pause) {
@@ -450,6 +468,7 @@ void Game::update() {
 		}
 	}
 
+
 	if (gameState == GameState::ChoosingMaps) {
 		maps->handleHover(window, maps->getItems());
 
@@ -462,7 +481,6 @@ void Game::update() {
 				initCollectableItems(currentMap);
 			}
 			else if (currentMap == 5) {
-				std::cout << currentMap << " x" << std::endl;
 				gameState = GameState::Menu;
 			}
 		}
@@ -532,6 +550,9 @@ void Game::render() {
 		this->renderCollectableItems();
 		this->renderPlayer();
 		this->renderEnemies();
+		if (eq && eq->getIsActive()) {
+			eq->render(window);
+		}
 	}
 	else if (gameState == GameState::Pause) {
 		pause->draw(window);
@@ -605,6 +626,20 @@ void Game::checkBulletPlayerCollision() {
 	}
 }
 
+void Game::checkEqPanel()
+{
+	if (eq->getIsActive()) {
+		if (eq->getEqItems().empty()) {
+			
+		}
+		else {
+			this->eq->handleHover(window, eq->getEqItems());
+			// Usuwanie kliknietego przedmiotu
+			eq->processClick(window, *this->player);
+		}
+	}
+}
+
 void Game::updateDeltaTime() {
 	static sf::Clock clock;
 	this->deltaTime = clock.restart().asSeconds();
@@ -614,14 +649,23 @@ void Game::setOpenChestTexture() {
 	textureManager.loadTexture("textury/las/openchest.png", "openChest");
 	sf::Texture* openChestTexture = textureManager.getTexture("openChest");
 
+	textureManager.loadTexture("textury/hat.png", "hat");
+	sf::Texture* hatTexture = textureManager.getTexture("hat");
+
 	if (openChestTexture) {
-		//collectableItems.emplace_back(*openChestTexture, sf::Vector2f(1800.f, 400.f), ItemType::OpenChest);
 		for (auto& item : collectableItems) {
+
 			std::cout << item.getIsChestOpen() << std::endl;
 			if (item.getIsChestOpen()) {
+				sf::Vector2f posChest = item.getPosition();
 				std::cout << "Otwarta slkrznia" << std::endl;
 				item.setTexture(*openChestTexture);
 				item.setType(ItemType::OpenChest);
+				if (hatTexture) {
+					collectableItems.emplace_back(*hatTexture, sf::Vector2f(posChest.x + 80 , posChest.y), ItemType::Hat);
+					std::cout << "dodano "  << posChest.x  << std::endl;
+				}
+			
 			}
 		}
 	}

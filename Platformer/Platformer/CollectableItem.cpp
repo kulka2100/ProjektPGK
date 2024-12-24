@@ -8,10 +8,10 @@ CollectableItem::CollectableItem(sf::Texture& colltectableTexture, sf::Vector2f 
     // Ustawienie tekstury w sprite
     if (this->collectableItemTexture) { // Sprawdzenie, czy wskaŸnik nie jest pusty
         itemSprite.setTexture(*this->collectableItemTexture);
+        // Ustawienie pozycji sprite'a
+        this->itemSprite.setPosition(position);
     }
 
-    // Ustawienie pozycji sprite'a
-    this->itemSprite.setPosition(position);
 }
 
 CollectableItem::CollectableItem()

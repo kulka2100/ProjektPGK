@@ -15,6 +15,7 @@
 #include "Settings.h"
 #include "Boss.h"
 #include "Pause.h"
+#include "Equipment.h"
 #include <fstream>
 
 
@@ -37,6 +38,7 @@ private:
 	Maps* maps;
 	Settings* settings;
 	Pause* pause;
+	Equipment* eq;
 	MapInitializer* mapInitializer;
 	TextureManager textureManager;
 	std::vector<Obstacle> obstacles;
@@ -47,6 +49,7 @@ private:
 	GameState gameState;
 	int currentMap = 0;
 	int difficultyLvel = 0;
+	int selectedEq = 0;
 
 	bool moveLeftObstacle = true;
 	bool moveRightObstacle = false;
@@ -63,6 +66,7 @@ private:
 	void checkPlayerEnemyCollision();
 	void checkBulletEnemyCollision();
 	void checkBulletPlayerCollision();
+	void checkEqPanel();
 
 public:
 	
@@ -104,6 +108,9 @@ public:
 
 	void setOpenChestTexture();
 
+
+
+
 	void saveToBinaryFile(const std::string& filename) {
 		std::ofstream file(filename, std::ios::binary);  // Otwieramy plik binarnie
 		if (!file.is_open()) {
@@ -138,6 +145,7 @@ public:
 			}
 
 
+
 			std::cout << "Stan gry zapisany do pliku: " << filename << std::endl;
 		}
 		catch (const std::exception& e) {
@@ -146,8 +154,6 @@ public:
 
 		file.close();
 	}
-
-
 
 	void loadFromFile(const std::string& filename) {
 		std::ifstream file(filename, std::ios::binary);  // Otwieramy plik binarnie
@@ -187,6 +193,7 @@ public:
 				item.load(file);  // Odczytaj dane przedmiotu z pliku
 				collectableItems.push_back(item);  // Dodaj do wektora
 			}
+
 
 
 			std::cout << "Stan gry odczytany z pliku: " << filename << std::endl;

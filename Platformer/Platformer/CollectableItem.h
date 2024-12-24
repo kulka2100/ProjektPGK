@@ -10,6 +10,7 @@ enum class ItemType {
 	Chest,
 	OpenChest,
 	Tree,
+	Hat,
 };
 
 class CollectableItem : public Item
@@ -24,6 +25,8 @@ private:
 public:
 
 	CollectableItem(sf::Texture& obstacleTexture, sf::Vector2f position, ItemType itemType);
+
+
 	CollectableItem();
 
 	sf::Texture& getTexture() override;
@@ -50,6 +53,8 @@ public:
 		return isChestOpen;
 	}
 
+
+	
 	void save(std::ofstream& file) const {
 		sf::Vector2f position = itemSprite.getPosition();
 		file.write(reinterpret_cast<const char*>(&position.x), sizeof(position.x));

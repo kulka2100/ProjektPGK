@@ -22,7 +22,7 @@ void Enemy::initSprite() {
         this->sprite.setTexture(rightTextures[0]); // Ustawienie domyslnej tekstury
     }
     else {
-        std::cerr << "Brak tekstur w wektorze rightTextures podczas inicjalizacji sprite'a!" << std::endl;
+        std::cerr << "(klasa Enemy)Brak tekstur w wektorze rightTextures podczas inicjalizacji sprite'a!" << std::endl;
     }
     this->sprite.setPosition(this->position);
 }

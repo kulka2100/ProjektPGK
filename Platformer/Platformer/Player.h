@@ -1,12 +1,13 @@
-#pragma once
+ï»¿#pragma once
 #include "Bullet.h"
 #include "TextureManager.h"
 #include "GameState.h"
+#include "CollectableItem.h"
 class Player
 {
 private:
 	int health;
-	float damageCooldown; // Czas do nastêpnego mo¿liwego otrzymania obra¿eñ
+	float damageCooldown; // Czas do nastÄ™pnego moÅ¼liwego otrzymania obraÅ¼eÅ„
 	int keys = 0;
 	sf::Sprite playerSprite;
 	sf::Sprite playerDeadSprite;
@@ -14,6 +15,8 @@ private:
 	std::vector<sf::Texture> leftTextures;
 	std::vector<sf::Texture> hpTextures;
 	std::vector<sf::Sprite> hpSprite;
+	sf::Sprite eqSprite;
+
 
 	int currentAmmo = 15;
 	sf::Text ammoText;
@@ -41,7 +44,7 @@ private:
 
 	// Poczatkowa pozycja postaci na ekranie
 	sf::Vector2f playerPosition;
-	// Szybkoœæ poruszania postaci
+	// SzybkoÅ›Ä‡ poruszania postaci
 	float characterSpeed; 
 	//Zmienne stanu
 	bool isJumping = false;
@@ -52,6 +55,9 @@ private:
 	bool isFalling = false;
 	bool fallen = false;
 	bool isDeadSpriteSet = false;
+	bool movingWithEqRight = false;
+	bool movingWithEqLeft = false;
+
 
 	void initText();
 	void initSprite();
@@ -90,7 +96,7 @@ public:
 
 	void shoot();
 
-	// Dodawanie grawitacji, aby postaæ wraca³a na ziemiê
+	// Dodawanie grawitacji, aby postaÄ‡ wracaÅ‚a na ziemiÄ™
 	void gravitation(float deltaTime);
 
 	//Zatrzymanie postaci gdy dojdzie do krawedzi
@@ -145,7 +151,7 @@ public:
 	}
 
 	void updateHealthVector() {
-		hpSprite.clear(); // Wyczyœæ aktualny stan wektora
+		hpSprite.clear(); // WyczyÅ›Ä‡ aktualny stan wektora
 
 		if (!hpTextures.empty()) {
 			for (int i = 0; i < health; ++i) {
@@ -164,7 +170,7 @@ public:
 			}
 		}
 		else {
-			std::cerr << "hpTextures jest pusty! Nie mo¿na dodaæ sprite'a." << std::endl;
+			std::cerr << "hpTextures jest pusty! Nie moÅ¼na dodaÄ‡ sprite'a." << std::endl;
 		}
 	}
 
@@ -196,6 +202,34 @@ public:
 	bool canTakeDamage() const {
 		return damageCooldown <= 0;
 	}
+
+
+
+	void setEqTexture(const std::string filepath, const std::string name) {
+		textureManager.loadTexture(filepath, name);
+		sf::Texture* texture = textureManager.getTexture(name);
+		if (texture) {
+			this->eqSprite.setTexture(*texture);
+			this->eqSprite.setPosition(getPlayerPosition().x, getPlayerPosition().y - 25);
+			std::cout << "Playerpos: " << getPlayerPosition().x << "\n";
+		}
+		else {
+			std::cout << "Nie udaÅ‚o siÄ™ zaÅ‚adowaÄ‡ tekstury: " << "\n";
+		}
+
+	}
+
+	void updateEqPosition() {
+		if (movingWithEqRight) {
+			this->eqSprite.setPosition(getPlayerPosition().x+ 10, getPlayerPosition().y - 28);
+			eqSprite.setScale(1.0, 1.0);
+		}
+		if (movingWithEqLeft) {
+			this->eqSprite.setPosition(getPlayerPosition().x + 70, getPlayerPosition().y - 28);
+			eqSprite.setScale(-1.0, 1.0);
+		}
+	}
+
 };
 
 	

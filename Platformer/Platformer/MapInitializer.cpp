@@ -109,8 +109,6 @@ void MapInitializer::initMap5Obstacles(std::vector<Obstacle>& obstacles, Texture
 
 void MapInitializer::initMap1CollectableItems(std::vector<CollectableItem>& collectableItems, std::vector<CollectableItem> carrotOnTree, TextureManager& textureManager) {
 	textureManager.loadTexture("textury/las/marchewka.png", "marchewka");
-	std::cout << "ww" << std::endl;
-
 	textureManager.loadTexture("textury/hp.png", "health");
 	textureManager.loadTexture("textury/las/key.png", "key");
 	textureManager.loadTexture("textury/las/chest.png", "chest");
@@ -134,6 +132,9 @@ void MapInitializer::initMap1CollectableItems(std::vector<CollectableItem>& coll
 	if (healthTexture) {
 		collectableItems.emplace_back(*healthTexture, sf::Vector2f(400.f, 230.f), ItemType::Health);
 		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 230.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(450.f, 230.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(100.f, 400.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(150.f, 230.f), ItemType::Health);
 	}
 	else {
 		std::cerr << "Tekstura hp nie zosta³a poprawnie za³adowana." << healthTexture << std::endl;
