@@ -3,6 +3,12 @@
 #include "TextureManager.h"
 #include "GameState.h"
 #include "CollectableItem.h"
+
+struct EquippedItem {
+	ItemType type;
+	sf::Sprite sprite;
+};
+
 class Player
 {
 private:
@@ -15,7 +21,8 @@ private:
 	std::vector<sf::Texture> leftTextures;
 	std::vector<sf::Texture> hpTextures;
 	std::vector<sf::Sprite> hpSprite;
-	sf::Sprite eqSprite;
+	std::vector<EquippedItem> equippedItems;
+	
 
 
 	int currentAmmo = 15;
@@ -67,6 +74,7 @@ private:
 	//Strzaly
 	float shootCooldown;
 	float shootCooldownMax;
+
 
 public:
 	Player(sf::Vector2f playerPosition,float speed, int hp);
@@ -203,33 +211,67 @@ public:
 		return damageCooldown <= 0;
 	}
 
-
-
-	void setEqTexture(const std::string filepath, const std::string name) {
+		
+	void setEqTexture(const std::string& filepath, const std::string& name, ItemType itemType) {
 		textureManager.loadTexture(filepath, name);
 		sf::Texture* texture = textureManager.getTexture(name);
 		if (texture) {
-			this->eqSprite.setTexture(*texture);
-			this->eqSprite.setPosition(getPlayerPosition().x, getPlayerPosition().y - 25);
-			std::cout << "Playerpos: " << getPlayerPosition().x << "\n";
-		}
-		else {
-			std::cout << "Nie udało się załadować tekstury: " << "\n";
-		}
+				sf::Sprite sprite;
+				sprite.setTexture(*texture);
 
+				// Ustawianie pozycji w zależności od typu przedmiotu
+				switch (itemType) {
+				case ItemType::Hat:
+					sprite.setPosition(getPlayerPosition().x, getPlayerPosition().y - 25);
+					break;
+				case ItemType::Wings:
+					sprite.setPosition(getPlayerPosition().x - 100, getPlayerPosition().y);
+					break;
+				case ItemType::Saw:
+					sprite.setPosition(getPlayerPosition().x+ 80, getPlayerPosition().y);
+					break;
+				}
+				equippedItems.push_back({ itemType, sprite });
+			}
+		else {
+			std::cout << "Nie udalo sie załadowac tekstury: " << name << "\n";
+			}	
 	}
 
 	void updateEqPosition() {
-		if (movingWithEqRight) {
-			this->eqSprite.setPosition(getPlayerPosition().x+ 10, getPlayerPosition().y - 28);
-			eqSprite.setScale(1.0, 1.0);
-		}
-		if (movingWithEqLeft) {
-			this->eqSprite.setPosition(getPlayerPosition().x + 70, getPlayerPosition().y - 28);
-			eqSprite.setScale(-1.0, 1.0);
+		for (auto& eqItem : equippedItems) {
+			switch (eqItem.type) {
+			case ItemType::Hat:
+				eqItem.sprite.setPosition(getPlayerPosition().x+ 10, getPlayerPosition().y - 28);
+				if (movingWithEqLeft) {
+					eqItem.sprite.setPosition(getPlayerPosition().x + 70, getPlayerPosition().y - 28);
+				}
+				break;
+			case ItemType::Wings:
+				eqItem.sprite.setPosition(getPlayerPosition().x - 33, getPlayerPosition().y);
+				if (movingWithEqLeft) {
+					eqItem.sprite.setPosition(getPlayerPosition().x + 118, getPlayerPosition().y);
+				}
+				break;
+			case ItemType::Saw:
+				eqItem.sprite.setPosition(getPlayerPosition().x + 35, getPlayerPosition().y + 17);
+				if (movingWithEqLeft) {
+					eqItem.sprite.setPosition(getPlayerPosition().x + 38, getPlayerPosition().y + 17);
+				}
+				break;
+			default:
+				break;
+			}
+
+
+			if (movingWithEqRight) {
+				eqItem.sprite.setScale(1.0, 1.0);
+			}
+			else if (movingWithEqLeft) {
+				eqItem.sprite.setScale(-1.0, 1.0);
+			}
 		}
 	}
-
 };
 
 	

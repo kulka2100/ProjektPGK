@@ -231,6 +231,7 @@ void Player::update(float deltaTime, sf::Event &event) {
     // Ruch w prawo
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         movingWithEqRight = true;
+        movingWithEqLeft = false;
         //Skok podczas ruchu w prawo
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
             verticalVelocity = JUMP_STRENGTH;
@@ -246,6 +247,7 @@ void Player::update(float deltaTime, sf::Event &event) {
     // Ruch w lewo
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         movingWithEqLeft = true;
+        movingWithEqRight = false;
         //Skok podczas ruchu w lewo
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isJumping) {
             verticalVelocity = JUMP_STRENGTH;
@@ -263,6 +265,10 @@ void Player::update(float deltaTime, sf::Event &event) {
         verticalVelocity = JUMP_STRENGTH;
         isJumping = true;
         isOnGround = false;
+    }
+
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        this->playerSprite.move(sf::Vector2f(0.0, characterSpeed * deltaTime));
     }
 
     //Strzaly
@@ -314,7 +320,6 @@ void Player::update(float deltaTime, sf::Event &event) {
         }
     }
 
-
     if (damageCooldown > 0) {
         damageCooldown -= deltaTime; // Zmniejsz cooldown
     }
@@ -323,7 +328,9 @@ void Player::update(float deltaTime, sf::Event &event) {
 void Player::render(sf::RenderTarget &target) {
     if (!isDead) {
         target.draw(this->playerSprite);
-        target.draw(this->eqSprite);
+        for (const auto& eqItem : equippedItems) {
+            target.draw(eqItem.sprite);
+        }
     }
     else {
         target.draw(this->playerDeadSprite);

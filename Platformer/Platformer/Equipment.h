@@ -39,10 +39,10 @@ public:
 	bool getIsActive() {
 		return isActive;
 	}
-
 	const std::vector<std::shared_ptr<sf::Sprite>>& getEqItems() const {
 		return eqItems;
 	}
+
 	void setIsActive(bool isActive) {
 		this->isActive = isActive;
 	}
@@ -52,74 +52,52 @@ public:
 	// Sprawdzenie czy aktualna pozycja myszy pokrywa siê ze sprite
 	bool isMouseHover(const sf::Sprite& sprite, const sf::RenderWindow& window);
 
+	void addItem(const std::string& texturePath, ItemType itemType);
 
+	// Funkcja do aktualizacji pozycji elementów
+	void updateItemPositions();
 
-	void addItem(const std::string& texturePath, ItemType itemType) {
-		// Oblicz pozycjê dla nowego przedmiotu
-		int index = items.size();
-		int row = index % gridCols;
-		int col = index / gridCols;
-		sf::Vector2f position = gridStart + sf::Vector2f(row * cellSize, col * cellSize);
+	void removeItem(size_t index);
 
-	
-		items.emplace_back(texturePath, position, itemType);
-		std::shared_ptr<sf::Sprite> spritePtr = std::make_shared<sf::Sprite>(items.back().sprite);
-		eqItems.emplace_back(spritePtr);
-	}
+	ItemType getClickedItemType(sf::RenderWindow& window);
 
-	void removeItem(size_t index) {
-		if (index >= eqItems.size()) {
-			std::cerr << "Blad: Indeks poza zakresem!" << std::endl;
-			return;
-		}
+	void processClick(sf::RenderWindow& window, Player& player) {
+		static bool mouseHeld = false; // Œledzenie stanu przycisku myszy
 
-		// Usuniêcie wskaŸnika z eqItems
-		eqItems.erase(eqItems.begin() + index);
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			if (!mouseHeld) {
+				mouseHeld = true; //przycisk zosta³ wcisniety
 
-		// Usuniêcie odpowiadaj¹cego elementu z items
-		items.erase(items.begin() + index);
+				for (size_t i = 0; i < eqItems.size(); ++i) {
+					if (isMouseHover(*eqItems[i], window)) {
+						ItemType type = items[i].itemType;
+						std::cout << "Klikniêto przedmiot o typie: " << static_cast<int>(type) << std::endl;
 
-		//Przesuñ pozosta³e elementy, aby zachowaæ spójnoœæ uk³adu
-		updateItemPositions();
-	}
+						switch (type) {
+						case ItemType::Hat:
+							player.setEqTexture("textury/hat.png", "kapelusz", type);
+							break;
+						case ItemType::Wings:
+							player.setEqTexture("textury/wings.png", "skrzydla", type);
+							break;
 
-	// Funkcja pomocnicza do aktualizacji pozycji elementów
-	void updateItemPositions() {
-		for (size_t i = 0; i < items.size(); ++i) {
-			int row = i % gridCols;
-			int col = i / gridCols;
-			sf::Vector2f newPosition = gridStart + sf::Vector2f(row * cellSize, col * cellSize);
-			items[i].sprite.setPosition(newPosition);
-			eqItems[i]->setPosition(newPosition);
-		}
-	}
+						case ItemType::Saw:
+							player.setEqTexture("textury/saw.png", "pila", type);
+						}
 
+						// Usuwanie przedmiotu
+						removeItem(i);
 
-
-	ItemType getClickedItemType(sf::RenderWindow& window) {
-		for (size_t i = 0; i < eqItems.size(); ++i) {
-			if (isMouseHover(*eqItems[i], window) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-				return items[i].itemType; // Zwraca typ klikniêtego przedmiotu
+						// Przerwanie pêtli po obs³u¿eniu klikniêcia
+						break;
+					}
+				}
 			}
 		}
-		throw std::runtime_error("Nie klikniêto ¿adnego przedmiotu!");
-	}
-
-	void processClick(sf::RenderWindow& window,  Player& player ) {
-		for (size_t i = 0; i < eqItems.size(); ++i) {
-			if (isMouseHover(*eqItems[i], window) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-				ItemType type = items[i].itemType;
-				std::cout << "Klikniêto przedmiot o typie: " << static_cast<int>(type) << std::endl;
-
-				//player.setPlayerTexture("textury/las/");
-				player.setEqTexture("textury/hat.png", "kapelusz");
-				// Usuwanie przedmiotu
-				removeItem(i);
-				break;
-			}
+		else {
+			mouseHeld = false; // Resetujemy stan przycisku po jego puszczeniu
 		}
 	}
-
 
 };
 

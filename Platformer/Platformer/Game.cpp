@@ -192,6 +192,14 @@ void Game::updateCollectableItems(float deltaTime){
 						item.setIsCollected(true);
 						eq->addItem("textury/hat.png", ItemType::Hat);
 					}
+					else if (item.getType() == ItemType::Wings) {
+						item.setIsCollected(true);
+						eq->addItem("textury/wings.png", ItemType::Wings);
+					}
+					else if (item.getType() == ItemType::Saw) {
+						item.setIsCollected(true);
+						eq->addItem("textury/saw.png", ItemType::Saw);
+					}
 					else if (item.getType() == ItemType::Tree) {
 						if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
 							for (auto& carot : carrotOnTree) {
@@ -445,20 +453,20 @@ void Game::update() {
 	if (gameState == GameState::Pause) {
 		// Gra nie jest aktualizowana, tylko rysowanie t³a pauzy
 		pause->draw(window);
-		pause->handleHover(window);
+		pause->handleHover(window, pause->getPauseItems());
 
 		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-			if (pause->getPauseIndex(window) == 0) {
+			if (pause->getHoverIndex(window, pause->getPauseItems()) == 0) {
 				gameState = GameState::Playing;
 			}
-			else if (pause->getPauseIndex(window) == 1) {
+			else if (pause->getHoverIndex(window, pause->getPauseItems()) == 1) {
 				std::cout << "Saving game to file..." << std::endl;
 				saveToBinaryFile("game_save.dat");
 				std::cout << "Zapisano pozycjê gracza: X=" << player->getPlayerPosition().x << ", Y=" << player->getPlayerPosition().y << std::endl;
 
 				std::cout << "Game saved successfully." << std::endl;
 			}
-			else if (pause->getPauseIndex(window) == 2) {
+			else if (pause->getHoverIndex(window, pause->getPauseItems()) == 2) {
 				gameState = GameState::Menu;
 				this->initPlayer();               // Inicjowanie postaci
 				this->initObstacles(currentMap);  // Inicjowanie przeszkód
@@ -652,6 +660,12 @@ void Game::setOpenChestTexture() {
 	textureManager.loadTexture("textury/hat.png", "hat");
 	sf::Texture* hatTexture = textureManager.getTexture("hat");
 
+	textureManager.loadTexture("textury/wings.png", "wings");
+	sf::Texture* wingsTexture = textureManager.getTexture("wings");
+
+	textureManager.loadTexture("textury/saw.png", "saw");
+	sf::Texture* sawTexture = textureManager.getTexture("saw");
+
 	if (openChestTexture) {
 		for (auto& item : collectableItems) {
 
@@ -664,6 +678,14 @@ void Game::setOpenChestTexture() {
 				if (hatTexture) {
 					collectableItems.emplace_back(*hatTexture, sf::Vector2f(posChest.x + 80 , posChest.y), ItemType::Hat);
 					std::cout << "dodano "  << posChest.x  << std::endl;
+				}
+				if (wingsTexture) {
+					collectableItems.emplace_back(*wingsTexture, sf::Vector2f(posChest.x + 40, posChest.y - 20), ItemType::Wings);
+					std::cout << "wings " << posChest.x << std::endl;
+				}
+				if (sawTexture) {
+					collectableItems.emplace_back(*sawTexture, sf::Vector2f(posChest.x, posChest.y - 20), ItemType::Saw);
+					std::cout << "wings " << posChest.x << std::endl;
 				}
 			
 			}

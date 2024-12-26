@@ -11,6 +11,8 @@ enum class ItemType {
 	OpenChest,
 	Tree,
 	Hat,
+	Wings,
+	Saw
 };
 
 class CollectableItem : public Item
