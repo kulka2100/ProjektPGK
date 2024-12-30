@@ -30,6 +30,7 @@ private:
 	sf::Clock clock;
 	std::vector<Enemy*> enemies;
 	float deltaTime;
+	sf::Font font;
 	
 
 	Player *player;

@@ -74,10 +74,16 @@ private:
 	//Strzaly
 	float shootCooldown;
 	float shootCooldownMax;
+	int experience;       
+	int level;            
+	int experienceToNext; 
+	int maxHealth;        
+	int damage;                  
+
 
 
 public:
-	Player(sf::Vector2f playerPosition,float speed, int hp);
+	Player(sf::Vector2f playerPosition, int hp);
 
 	~Player();
 
@@ -272,6 +278,14 @@ public:
 			}
 		}
 	}
+
+	void addExperience(int amount);
+	void levelUp();
+	int getLevel() const;
+	int getExperience() const;
+	int getExperienceToNext() const;
+	int getMaxHealth() const;
+	int getDamage() const;
 };
 
 	

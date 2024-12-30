@@ -6,7 +6,7 @@ void Game::initWindow(){
 }
 
 void Game::initPlayer() {
-	this->player = new Player(sf::Vector2f(100.f, 400.f), 500.0, 3);
+	this->player = new Player(sf::Vector2f(100.f, 400.f), 3);
 }
 
 void Game::initBackground(int mapIndex) {
@@ -561,6 +561,16 @@ void Game::render() {
 		if (eq && eq->getIsActive()) {
 			eq->render(window);
 		}
+		if (!font.loadFromFile("font.ttf")) {
+			throw std::runtime_error("Nie mozna zaladowac czcionki");
+		}
+		sf::Text levelText;
+		levelText.setFont(font);
+		levelText.setString("Level: " + std::to_string(player->getLevel()) + "\nExperience: " + std::to_string(player->getExperience()) + "/" + std::to_string(player->getExperienceToNext()));
+		levelText.setCharacterSize(24);
+		levelText.setFillColor(sf::Color::White);
+		levelText.setPosition(10.f, 10.f);
+		this->window.draw(levelText);
 	}
 	else if (gameState == GameState::Pause) {
 		pause->draw(window);
@@ -598,6 +608,7 @@ void Game::checkBulletEnemyCollision() {
 
 				if ((*enemyIt)->getHealth() <= 0) {
 					(*enemyIt)->startDeathAnimation();
+					player->addExperience(50);
 					break;
 				}
 			}
