@@ -124,6 +124,10 @@ Game::Game(int width, int height) : width(width), height(height), gameState(Game
 	this->pause = new Pause(width, height);
 	this->initEnemies();
 	this->eq = new Equipment();
+	if (!font.loadFromFile("font.ttf")) {
+		throw std::runtime_error("Nie mozna zaladowac czcionki");
+	}
+	this->statsMenu = new StatsMenu(font);
 }
 
 Game::~Game() {
@@ -136,6 +140,7 @@ Game::~Game() {
 	}
 	delete eq;
 	enemies.clear();
+	delete this->statsMenu;
 }
 
 sf::RenderWindow& Game::getWindow() {
@@ -161,7 +166,7 @@ void Game::updateCollectableItems(float deltaTime){
 						player->incrementCurrentAmo();
 						player->updateAmmoText(player->getCurrentAmo());
 					}
-					else if (item.getType() == ItemType::Health) {
+					else if (item.getType() == ItemType::Health && player->getCurrentHealth() < player->getMaxHealth()) {
 						std::cout << "zebrales zycie" << std::endl;
 						item.setIsCollected(true);
 						player->updateHealth();
@@ -341,113 +346,36 @@ void Game::update() {
 		if (event.type == sf::Event::Closed) {
 			this->window.close();
 		}
-
-		if (gameState == GameState::Menu) {
-			if (event.type == sf::Event::KeyPressed) {
-				if (event.key.code == sf::Keyboard::Up) {
-					menu->moveUp();
-				}
-				else if (event.key.code == sf::Keyboard::Down) {
-					menu->moveDown();
-				}
-				else if (event.key.code == sf::Keyboard::Enter) {
-					int selected = menu->getSelectedIndex();
-					if (selected == 0) {
-						// Play
-						gameState = GameState::Playing;
-						std::cout << "Wybrano Play!\n" << std::endl;
-						isMenuActive = false;
-					}
-					else if (selected == 1) {
-						std::cout << "Wybrano Maps!\n";
-						gameState = GameState::ChoosingMaps;
-						isMenuActive = false;
-					}
-					else if (selected == 2) {
-						std::cout << "Wybrano Settings!\n";
-						gameState = GameState::Settings;
-						isMenuActive = false;
-					}
-					else if (selected == 3) {
-						std::cout << "Wczytywanie gry z pliku..." << std::endl;
-						loadFromFile("game_save.dat");
-						player->updateHealthVector();
-						// Dodaj sprawdzenie poprawnoœci danych
-						if (player != nullptr) {
-							std::cout << "Zdrowie gracza po wczytaniu: " << player->getCurrentHealth() << std::endl;
-							std::cout << "Pozycja gracza po wczytaniu: "
-								<< player->getPlayerPosition().x << ", "
-								<< player->getPlayerPosition().y << std::endl;
-							std::cout << "Odczytano pozycjê gracza: X=" << player->getPlayerPosition().x << ", Y=" << player->getPlayerPosition().y << std::endl;
-
-						}
-						else {
-							std::cerr << "B³¹d: player nie jest poprawnie zainicjalizowany!" << std::endl;
-						}
-
-						gameState = GameState::Playing; // Po wczytaniu gra przechodzi do trybu rozgrywki
-						isMenuActive = false;
-					}
-
-				}
-			}
-		}
-
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::E) {
 			this->eq->setIsActive(true); // Aktywuj panel ekwipunku
 		}
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
 			this->eq->setIsActive(false);
 		}
-
-		if (gameState == GameState::Settings) {
-			settings->handleHover(window, settings->getItems());
-			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-				difficultyLvel = settings->getHoverIndex(window, settings->getItems()); // Wywo³anie metody obs³ugi klikniêcia
-				if (difficultyLvel == 0) {
-					std::cout << "wybrano latwy" << std::endl;
-					loadFromFile("game_save.dat");
-					player->setHealth(5);
-					player->updateAmmoText(player->getCurrentAmo());
-					player->updateHealthVector();
-					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
-
-				}
-				else if (difficultyLvel == 1) {
-					std::cout << "wybrano sredni" << std::endl;
-					player->setCurrentAmo(20);
-					player->setHealth(4);
-					player->updateAmmoText(player->getCurrentAmo());
-					player->updateHealthVector();
-					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
-				}
-				else if (difficultyLvel == 2) {
-					std::cout << "wybrano trudny" << std::endl;
-					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
-				}
-				else if (difficultyLvel == 3) {
-					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
-				}
-			}
+		if (gameState == GameState::Menu) {
+			handleMenuEvents();
+		}
+		else if (gameState == GameState::Settings) {
+			handleSettingsEvents();
+		}
+		else if (gameState == GameState::Playing) {
+			handlePlayingEvents();
+		}
+		else if (gameState == GameState::ChoosingStats) {
+			handleStatsMenuEvents();
 		}
 
-		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape && gameState == GameState::Playing) {
-			gameState = GameState::Pause;
-		}
+		
+		
+		
 	}
 
-	// Aktualizacja logiki gry, gdy gra jest w trybie Playing
+	
 	if (gameState == GameState::Playing) {
-		this->updatePlayer(deltaTime);
-		this->updateObstacles(deltaTime);
-		this->updateCollectableItems(deltaTime);
-		this->updateEnemies(deltaTime);
-		this->checkPlayerEnemyCollision();
-		this->updateBackground(deltaTime, player->getCharacterSpeed());
-		this->checkBulletEnemyCollision();
-		this->checkBulletPlayerCollision();
-		this->checkEqPanel();
+		updateGameplay(deltaTime);
 	}
+	
+
 
 
 	if (gameState == GameState::Pause) {
@@ -566,11 +494,14 @@ void Game::render() {
 		}
 		sf::Text levelText;
 		levelText.setFont(font);
-		levelText.setString("Level: " + std::to_string(player->getLevel()) + "\nExperience: " + std::to_string(player->getExperience()) + "/" + std::to_string(player->getExperienceToNext()));
+		levelText.setString("\n\nLevel: " + std::to_string(player->getLevel()) + "\nExperience: " + std::to_string(player->getExperience()) + "/" + std::to_string(player->getExperienceToNext())+"\nMax Health: "+ std::to_string(player->getMaxHealth())+"\nDamage: "+std::to_string(player->getDamage())+"\nSpeed: "+std::to_string(int(player->getCharacterSpeed())));
 		levelText.setCharacterSize(24);
 		levelText.setFillColor(sf::Color::White);
 		levelText.setPosition(10.f, 10.f);
 		this->window.draw(levelText);
+	}
+	else if (gameState == GameState::ChoosingStats) {
+		statsMenu->draw(window);
 	}
 	else if (gameState == GameState::Pause) {
 		pause->draw(window);
@@ -600,8 +531,8 @@ void Game::checkBulletEnemyCollision() {
 
 		for (auto it = this->player->getBullets().begin(); it != this->player->getBullets().end(); ) {
 			if ((*enemyIt)->getBounds().intersects(it->getBounds())) {
-				(*enemyIt)->reduceHealth(1); // Wróg traci ¿ycie
-				std::cout << "Wróg traci 1 ¿ycie! Pozosta³o: " << (*enemyIt)->getHealth() << std::endl;
+				(*enemyIt)->reduceHealth(player->getDamage()); // Wróg traci ¿ycie
+				std::cout << "Wróg oberwal! Pozosta³o: " << (*enemyIt)->getHealth() << std::endl;
 
 				it = this->player->getBullets().erase(it);
 				//enemyHit = true;
@@ -705,4 +636,140 @@ void Game::setOpenChestTexture() {
 	else {
 		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << openChestTexture << std::endl;
 	}
+}
+
+void Game::handleMenuEvents() {
+	if (event.type == sf::Event::KeyPressed) {
+		if (event.key.code == sf::Keyboard::Up) {
+			menu->moveUp();
+		}
+		else if (event.key.code == sf::Keyboard::Down) {
+			menu->moveDown();
+		}
+		else if (event.key.code == sf::Keyboard::Enter) {
+			int selected = menu->getSelectedIndex();
+			if (selected == 0) {
+				// Play
+				gameState = GameState::Playing;
+				std::cout << "Wybrano Play!\n" << std::endl;
+				isMenuActive = false;
+			}
+			else if (selected == 1) {
+				std::cout << "Wybrano Maps!\n";
+				gameState = GameState::ChoosingMaps;
+				isMenuActive = false;
+			}
+			else if (selected == 2) {
+				std::cout << "Wybrano Settings!\n";
+				gameState = GameState::Settings;
+				isMenuActive = false;
+			}
+			else if (selected == 3) {
+				std::cout << "Wczytywanie gry z pliku..." << std::endl;
+				loadFromFile("game_save.dat");
+				player->updateHealthVector();
+				// Dodaj sprawdzenie poprawnoœci danych
+				if (player != nullptr) {
+					std::cout << "Zdrowie gracza po wczytaniu: " << player->getCurrentHealth() << std::endl;
+					std::cout << "Pozycja gracza po wczytaniu: "
+						<< player->getPlayerPosition().x << ", "
+						<< player->getPlayerPosition().y << std::endl;
+					std::cout << "Odczytano pozycjê gracza: X=" << player->getPlayerPosition().x << ", Y=" << player->getPlayerPosition().y << std::endl;
+
+				}
+				else {
+					std::cerr << "B³¹d: player nie jest poprawnie zainicjalizowany!" << std::endl;
+				}
+
+				gameState = GameState::Playing; // Po wczytaniu gra przechodzi do trybu rozgrywki
+				isMenuActive = false;
+			}
+
+		}
+	}
+}
+
+void Game::handleSettingsEvents() {
+	settings->handleHover(window, settings->getItems());
+	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+		difficultyLvel = settings->getHoverIndex(window, settings->getItems()); // Wywo³anie metody obs³ugi klikniêcia
+		if (difficultyLvel == 0) {
+			std::cout << "wybrano latwy" << std::endl;
+			loadFromFile("game_save.dat");
+			player->setHealth(5);
+			player->updateAmmoText(player->getCurrentAmo());
+			player->updateHealthVector();
+			gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
+
+		}
+		else if (difficultyLvel == 1) {
+			std::cout << "wybrano sredni" << std::endl;
+			player->setCurrentAmo(20);
+			player->setHealth(4);
+			player->updateAmmoText(player->getCurrentAmo());
+			player->updateHealthVector();
+			gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
+		}
+		else if (difficultyLvel == 2) {
+			std::cout << "wybrano trudny" << std::endl;
+			gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
+		}
+		else if (difficultyLvel == 3) {
+			gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
+		}
+	}
+}
+
+void Game::handlePlayingEvents() {
+	if (event.type == sf::Event::KeyPressed) {
+		if (event.key.code == sf::Keyboard::Escape) {
+			gameState = GameState::Pause;
+		}
+	}
+
+	if (player->checkLevelUp()) {
+		gameState = GameState::ChoosingStats;
+		std::cout << "Przejœcie do menu wyboru statystyk." << std::endl;
+	}
+}
+
+void Game::handleStatsMenuEvents() {
+	// Wyœwietl menu wyboru statystyki
+	statsMenu->draw(window);
+
+	if (event.type == sf::Event::KeyPressed) {
+		if (event.key.code == sf::Keyboard::Up) {
+			statsMenu->moveUp();
+		}
+		else if (event.key.code == sf::Keyboard::Down) {
+			statsMenu->moveDown();
+		}
+		else if (event.key.code == sf::Keyboard::Enter) {
+			int selectedStat = statsMenu->getSelectedIndex();
+			if (selectedStat == 0) {
+				player->increaseMaxHealth();
+			}
+			else if (selectedStat == 1) {
+				player->increaseDamage();
+			}
+			else if (selectedStat == 2) {
+				player->increaseSpeed();
+			}
+
+			std::cout << "Wybrano: " << (selectedStat == 0 ? "Zdrowie" : selectedStat == 1 ? "Obra¿enia" : "Szybkoœæ") << std::endl;
+			gameState = GameState::Playing; // Powrót do gry po wyborze
+		}
+	}
+}
+
+void Game::updateGameplay(float deltaTime) {
+	this->updatePlayer(deltaTime);
+	this->updateObstacles(deltaTime);
+	this->updateCollectableItems(deltaTime);
+	this->updateEnemies(deltaTime);
+	this->checkPlayerEnemyCollision();
+	this->updateBackground(deltaTime, player->getCharacterSpeed());
+	this->checkBulletEnemyCollision();
+	this->checkBulletPlayerCollision();
+	this->checkEqPanel();
 }

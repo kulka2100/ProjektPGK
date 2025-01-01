@@ -111,11 +111,10 @@ Player::Player(sf::Vector2f playerPosition, int hp) : health(hp) {
     this->experience = 0;
     this->level = 1;
     this->experienceToNext = 100;
+    this->health = 4;
     this->maxHealth = 5;
     this->damage = 1;
-    this->characterSpeed = 500.f;
-
-    //experience(0), level(1), experienceToNext(100), maxHealth(100), damage(10), speed(200.f)
+    this->characterSpeed = 150.f;
 }
 
 Player::~Player()
@@ -408,25 +407,9 @@ int Player::getCurrentAmo(){
 // Zwiększanie doświadczenia
 void Player::addExperience(int amount) {
     experience += amount;
-    while (experience >= experienceToNext) {
-        levelUp();
-    }
 }
 
-// Awans na kolejny poziom
-void Player::levelUp() {
-    experience -= experienceToNext;
-    level++;
-    experienceToNext += 50 * level; // Skalowanie wymaganego doświadczenia
 
-    // Tymczasowe zwiększenie statystyk (można dostosować)
-    maxHealth += 10;
-    damage += 2;
-    characterSpeed += 10.f;
-
-    std::cout << "Level up! Nowy poziom: " << level << std::endl;
-    std::cout << "Nowe statystyki: zdrowie: " << maxHealth << ", obrażenia: " << damage << ", szybkość: " << characterSpeed << std::endl;
-}
 
 // Pobieranie aktualnych statystyk
 int Player::getLevel() const { return level; }
@@ -435,4 +418,29 @@ int Player::getExperienceToNext() const { return experienceToNext; }
 int Player::getMaxHealth() const { return maxHealth; }
 int Player::getDamage() const { return damage; }
 
+
+void Player::increaseMaxHealth() {
+    maxHealth += 1;
+}
+
+void Player::increaseDamage() {
+    damage += 1;
+}
+
+void Player::increaseSpeed() {
+    characterSpeed += 50.f;
+}
+
+
+bool Player::checkLevelUp() {
+    if (experience >= experienceToNext) {
+        experience -= experienceToNext;
+        level++;
+        experienceToNext += 50 * level;
+
+        std::cout << "Level up! Nowy poziom: " << level << std::endl;
+        return true; 
+    }
+    return false; 
+}
 

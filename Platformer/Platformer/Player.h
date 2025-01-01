@@ -78,7 +78,8 @@ private:
 	int level;            
 	int experienceToNext; 
 	int maxHealth;        
-	int damage;                  
+	int damage;  
+	bool levelUpMenuActive = false;
 
 
 
@@ -280,12 +281,15 @@ public:
 	}
 
 	void addExperience(int amount);
-	void levelUp();
+	bool checkLevelUp();
 	int getLevel() const;
 	int getExperience() const;
 	int getExperienceToNext() const;
 	int getMaxHealth() const;
 	int getDamage() const;
+	void increaseMaxHealth();
+	void increaseDamage();
+	void increaseSpeed();
 };
 
 	

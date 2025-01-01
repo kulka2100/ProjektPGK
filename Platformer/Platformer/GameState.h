@@ -7,5 +7,6 @@ enum class GameState {
     Settings,
     Pause,
     Loading,
+    ChoosingStats
 };
 
