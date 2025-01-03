@@ -406,8 +406,8 @@ void Game::update() {
 				difficultyLvel = settings->getHoverIndex(window, settings->getItems()); // Wywo³anie metody obs³ugi klikniêcia
 				if (difficultyLvel == 0) {
 					std::cout << "wybrano latwy" << std::endl;
-					loadFromFile("game_save.dat");
 					player->setHealth(5);
+					player->setCurrentAmo(50);
 					player->updateAmmoText(player->getCurrentAmo());
 					player->updateHealthVector();
 					gameState = GameState::Menu; // Zmieñ stan gry na Playing po wybraniu mapy
@@ -495,6 +495,7 @@ void Game::update() {
 	}
 
 	if (player->getIsFallen() == true) {
+		eq->resetItems();
 		this->initPlayer();               // Inicjowanie postaci
 		this->initObstacles(currentMap);  // Inicjowanie przeszkód
 		this->initCollectableItems(currentMap); // Inicjowanie przedmiotów

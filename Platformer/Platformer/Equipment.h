@@ -76,9 +76,11 @@ public:
 						switch (type) {
 						case ItemType::Hat:
 							player.setEqTexture("textury/hat.png", "kapelusz", type);
+							player.setWearingHat(true);
 							break;
 						case ItemType::Wings:
 							player.setEqTexture("textury/wings.png", "skrzydla", type);
+							player.setWearingWings(true);
 							break;
 
 						case ItemType::Saw:
@@ -97,6 +99,10 @@ public:
 		else {
 			mouseHeld = false; // Resetujemy stan przycisku po jego puszczeniu
 		}
+	}
+
+	void resetItems() {
+		eqItems.clear();
 	}
 
 };

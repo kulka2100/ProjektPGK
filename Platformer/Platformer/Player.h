@@ -34,9 +34,10 @@ private:
 	TextureManager textureManager;
 
 	//Grawitacja
-	const float GRAVITY = 980.f;
-	const float JUMP_STRENGTH = -550.f;
+	float GRAVITY = 980.f;
+	float JUMP_STRENGTH = -550.f;
 	float verticalVelocity = 0.0f;
+
 
 	GameState gameState;
 	std::vector<Bullet> bullets;
@@ -64,6 +65,8 @@ private:
 	bool isDeadSpriteSet = false;
 	bool movingWithEqRight = false;
 	bool movingWithEqLeft = false;
+	bool wearingWings = false;
+	bool wearingHat = false;
 
 
 	void initText();
@@ -263,7 +266,6 @@ public:
 				break;
 			}
 
-
 			if (movingWithEqRight) {
 				eqItem.sprite.setScale(1.0, 1.0);
 			}
@@ -271,6 +273,15 @@ public:
 				eqItem.sprite.setScale(-1.0, 1.0);
 			}
 		}
+	}
+
+
+	void setWearingWings(bool wearing) {
+		wearingWings = wearing;
+	}
+
+	void setWearingHat(bool wearing) {
+		wearingHat = wearing;
 	}
 };
 

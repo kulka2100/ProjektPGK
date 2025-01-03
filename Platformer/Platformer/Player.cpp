@@ -153,16 +153,25 @@ void Player::shoot() {
     sf::Vector2f direction(bulletDir, 0.0f);
 
     if (currentAmmo > 0) {
-        bullets.emplace_back(bulletTexture, startPos, direction, 400.f);
-        std::cout << currentAmmo;
-        currentAmmo--;
-        updateAmmoText(currentAmmo);
+        if (!wearingHat) {
+            bullets.emplace_back(bulletTexture, startPos, direction, 400.f);
+            std::cout << currentAmmo;
+            currentAmmo--;
+            updateAmmoText(currentAmmo);
+        }
+        else {
+            std::cout << " xxx";
+            bullets.emplace_back(bulletTexture, startPos, direction, 800.f);
+            std::cout << currentAmmo;
+            currentAmmo--;
+            updateAmmoText(currentAmmo);
+        }
     }
 }
 
 void Player::gravitation(float deltaTime) {
     // Je�li gracz nie dotyka ziemi ani platformy, zastosuj grawitacj�
-    if (!isOnGround) {
+    if (!isOnGround && !wearingWings) {
         verticalVelocity += GRAVITY * deltaTime;
         playerSprite.move(0, verticalVelocity * deltaTime);
 
@@ -173,9 +182,12 @@ void Player::gravitation(float deltaTime) {
             isJumping = false;
             isOnGround = true;
         }
-    
     } 
-
+    else if (wearingWings) {
+        // Dostosowana grawitacja z aktywnymi skrzydłami
+        verticalVelocity += GRAVITY * deltaTime;
+        playerSprite.move(0, verticalVelocity * deltaTime);
+    }
 }
 
 void Player::setOnGround(bool isOnGround) {
@@ -265,6 +277,10 @@ void Player::update(float deltaTime, sf::Event &event) {
         verticalVelocity = JUMP_STRENGTH;
         isJumping = true;
         isOnGround = false;
+    }
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && wearingWings) {
+        verticalVelocity = JUMP_STRENGTH;
+        isJumping = true;
     }
 
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
