@@ -16,6 +16,7 @@
 #include "Boss.h"
 #include "Pause.h"
 #include "Equipment.h"
+#include "StatsMenu.h"
 #include <fstream>
 
 
@@ -30,6 +31,8 @@ private:
 	sf::Clock clock;
 	std::vector<Enemy*> enemies;
 	float deltaTime;
+	sf::Font font;
+	StatsMenu* statsMenu;
 	
 
 	Player *player;
@@ -107,6 +110,15 @@ public:
 	void updateDeltaTime();
 
 	void setOpenChestTexture();
+
+	void handleMenuEvents();
+
+	void handleSettingsEvents();
+
+	void handlePlayingEvents();
+
+	void handleStatsMenuEvents();
+	void updateGameplay(float deltaTime);
 
 
 

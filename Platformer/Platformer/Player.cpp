@@ -90,9 +90,8 @@ void Player::initText() {
 }
 
 
-Player::Player(sf::Vector2f playerPosition, float speed, int hp) : health(hp) {
+Player::Player(sf::Vector2f playerPosition, int hp) : health(hp) {
     this->playerPosition = playerPosition;
-    this->characterSpeed = speed;
 
     bulletTexture.loadFromFile("textury/bullet1.png");
 	this->initTexture();
@@ -108,6 +107,14 @@ Player::Player(sf::Vector2f playerPosition, float speed, int hp) : health(hp) {
     //Strzaly
     this->shootCooldown = 0.0f;
     this->shootCooldownMax = 0.5f;
+
+    this->experience = 0;
+    this->level = 1;
+    this->experienceToNext = 100;
+    this->health = 4;
+    this->maxHealth = 5;
+    this->damage = 1;
+    this->characterSpeed = 150.f;
 }
 
 Player::~Player()
@@ -413,6 +420,43 @@ int Player::getCurrentAmo(){
     return currentAmmo;
 }
 
+// Zwiększanie doświadczenia
+void Player::addExperience(int amount) {
+    experience += amount;
+}
 
 
+
+// Pobieranie aktualnych statystyk
+int Player::getLevel() const { return level; }
+int Player::getExperience() const { return experience; }
+int Player::getExperienceToNext() const { return experienceToNext; }
+int Player::getMaxHealth() const { return maxHealth; }
+int Player::getDamage() const { return damage; }
+
+
+void Player::increaseMaxHealth() {
+    maxHealth += 1;
+}
+
+void Player::increaseDamage() {
+    damage += 1;
+}
+
+void Player::increaseSpeed() {
+    characterSpeed += 50.f;
+}
+
+
+bool Player::checkLevelUp() {
+    if (experience >= experienceToNext) {
+        experience -= experienceToNext;
+        level++;
+        experienceToNext += 50 * level;
+
+        std::cout << "Level up! Nowy poziom: " << level << std::endl;
+        return true; 
+    }
+    return false; 
+}
 

@@ -11,7 +11,7 @@ Bats::Bats(sf::Vector2f startPosition, float speed, float leftBoundary, float ri
     this->textureLeftAttack2.loadFromFile("textury/bat6.png");
     sprite.setTextureRect(sf::IntRect(0, 0, textureRightAttack1.getSize().x, textureRightAttack1.getSize().y));
     this->rotationAngle = 0.0f;
-    this->rotationBatSpeed = 45.0f;
+    this->rotationBatSpeed = 100.0f;
 
 }
 
@@ -67,7 +67,7 @@ void Bats::update(float deltaTime) {
     }
 
     // Ustalanie nowej pozycji na okręgu
-    float radius = 0.08f;  // Promień okręgu, w którym porusza się postać
+    float radius = 0.7f;  // Promień okręgu, w którym porusza się postać
     float centerX = this->position.x;  // Środek okręgu w osi X
     float centerY = this->position.y;  // Środek okręgu w osi Y
 

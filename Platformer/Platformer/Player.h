@@ -77,10 +77,17 @@ private:
 	//Strzaly
 	float shootCooldown;
 	float shootCooldownMax;
+	int experience;       
+	int level;            
+	int experienceToNext; 
+	int maxHealth;        
+	int damage;  
+	bool levelUpMenuActive = false;
+
 
 
 public:
-	Player(sf::Vector2f playerPosition,float speed, int hp);
+	Player(sf::Vector2f playerPosition, int hp);
 
 	~Player();
 
@@ -276,6 +283,7 @@ public:
 	}
 
 
+
 	void setWearingWings(bool wearing) {
 		wearingWings = wearing;
 	}
@@ -283,6 +291,17 @@ public:
 	void setWearingHat(bool wearing) {
 		wearingHat = wearing;
 	}
+
+	void addExperience(int amount);
+	bool checkLevelUp();
+	int getLevel() const;
+	int getExperience() const;
+	int getExperienceToNext() const;
+	int getMaxHealth() const;
+	int getDamage() const;
+	void increaseMaxHealth();
+	void increaseDamage();
+	void increaseSpeed();
 };
 
 	
