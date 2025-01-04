@@ -67,6 +67,7 @@ private:
 	bool movingWithEqLeft = false;
 	bool wearingWings = false;
 	bool wearingHat = false;
+	bool wearingHelmet = false;
 
 
 	void initText();
@@ -168,29 +169,7 @@ public:
 		this->health = health;
 	}
 
-	void updateHealthVector() {
-		hpSprite.clear(); // Wyczyść aktualny stan wektora
-
-		if (!hpTextures.empty()) {
-			for (int i = 0; i < health; ++i) {
-				sf::Sprite newSprite;
-				newSprite.setTexture(hpTextures[0]);
-
-				sf::Vector2f position;
-				if (i == 0) {
-					position = sf::Vector2f(10.f, 25.f); // Pierwszy sprite
-				}
-				else {
-					position = sf::Vector2f(hpSprite.back().getPosition().x + 45, 25.f);
-				}
-				newSprite.setPosition(position);
-				hpSprite.push_back(newSprite);
-			}
-		}
-		else {
-			std::cerr << "hpTextures jest pusty! Nie można dodać sprite'a." << std::endl;
-		}
-	}
+	void updateHealthVector();
 
 
 	void incrementCurrentAmo();
@@ -217,35 +196,20 @@ public:
 		return fallen;
 	}
 
+	bool getWearingHelmet() {
+		return wearingHelmet;
+	}
+
 	bool canTakeDamage() const {
 		return damageCooldown <= 0;
 	}
 
 		
-	void setEqTexture(const std::string& filepath, const std::string& name, ItemType itemType) {
-		textureManager.loadTexture(filepath, name);
-		sf::Texture* texture = textureManager.getTexture(name);
-		if (texture) {
-				sf::Sprite sprite;
-				sprite.setTexture(*texture);
+	void setEqTexture(const std::string& filepath, const std::string& name, ItemType itemType);
+	void removeEquippedItem(ItemType itemType);
 
-				// Ustawianie pozycji w zależności od typu przedmiotu
-				switch (itemType) {
-				case ItemType::Hat:
-					sprite.setPosition(getPlayerPosition().x, getPlayerPosition().y - 25);
-					break;
-				case ItemType::Wings:
-					sprite.setPosition(getPlayerPosition().x - 100, getPlayerPosition().y);
-					break;
-				case ItemType::Saw:
-					sprite.setPosition(getPlayerPosition().x+ 80, getPlayerPosition().y);
-					break;
-				}
-				equippedItems.push_back({ itemType, sprite });
-			}
-		else {
-			std::cout << "Nie udalo sie załadowac tekstury: " << name << "\n";
-			}	
+	std::vector<EquippedItem> getEquippedItems() const {
+		return equippedItems;
 	}
 
 	void updateEqPosition() {
@@ -267,6 +231,12 @@ public:
 				eqItem.sprite.setPosition(getPlayerPosition().x + 35, getPlayerPosition().y + 17);
 				if (movingWithEqLeft) {
 					eqItem.sprite.setPosition(getPlayerPosition().x + 38, getPlayerPosition().y + 17);
+				}
+				break;
+			case ItemType::Helmet:
+				eqItem.sprite.setPosition(getPlayerPosition().x + 10, getPlayerPosition().y - 5);
+				if (movingWithEqLeft) {
+					eqItem.sprite.setPosition(getPlayerPosition().x + 70, getPlayerPosition().y - 5);
 				}
 				break;
 			default:
@@ -292,6 +262,10 @@ public:
 		wearingHat = wearing;
 	}
 
+	void setWearingHelmet(bool wearing) {
+		wearingHelmet = wearing;
+	}
+
 	void addExperience(int amount);
 	bool checkLevelUp();
 	int getLevel() const;
@@ -302,6 +276,11 @@ public:
 	void increaseMaxHealth();
 	void increaseDamage();
 	void increaseSpeed();
+
+
+
+
+
 };
 
 	

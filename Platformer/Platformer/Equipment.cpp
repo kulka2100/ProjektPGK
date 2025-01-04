@@ -87,11 +87,83 @@ void Equipment::updateItemPositions() {
 	}
 }
 
+
+void Equipment::processClick(sf::RenderWindow& window, Player& player) {
+	static bool mouseHeld = false; // Œledzenie stanu przycisku myszy
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		if (!mouseHeld) {
+			mouseHeld = true; //przycisk zosta³ wcisniety
+
+			for (size_t i = 0; i < eqItems.size(); ++i) {
+				if (isMouseHover(*eqItems[i], window)) {
+					ItemType type = items[i].itemType;
+					std::cout << "Klikniêto przedmiot o typie: " << static_cast<int>(type) << std::endl;
+
+					switch (type) {
+					case ItemType::Hat:
+						player.setEqTexture("textury/hat.png", "kapelusz", type);
+						player.setWearingHat(true);
+						break;
+					case ItemType::Wings:
+						player.setEqTexture("textury/wings.png", "skrzydla", type);
+						player.setWearingWings(true);
+						break;
+
+					case ItemType::Saw:
+						player.setEqTexture("textury/saw.png", "pila", type);
+						break;
+					case ItemType::Helmet:
+						player.setEqTexture("textury/helmet.png", "helm", type);
+						player.setWearingHelmet(true);
+						break;
+					}
+					// Przerwanie pêtli po obs³u¿eniu klikniêcia
+					break;
+				}
+			}
+		}
+	}
+	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+		if (!mouseHeld) {
+			mouseHeld = true; //przycisk zosta³ wcisniety
+
+			for (size_t i = 0; i < eqItems.size(); ++i) {
+				if (isMouseHover(*eqItems[i], window)) {
+					ItemType type = items[i].itemType;
+					std::cout << "Klikniêto przedmiot o typie: " << static_cast<int>(type) << std::endl;
+
+					switch (type) {
+					case ItemType::Hat:
+						player.removeEquippedItem(type);
+						player.setWearingHat(false);
+						break;
+					case ItemType::Wings:
+						player.removeEquippedItem(type);
+						player.setWearingWings(false);
+						break;
+					case ItemType::Helmet:
+						player.removeEquippedItem(type);
+						player.setWearingHelmet(false);
+						break;
+					}
+					// Przerwanie pêtli po obs³u¿eniu klikniêcia
+					break;
+				}
+			}
+		}
+	}
+	else {
+		mouseHeld = false; // Resetujemy stan przycisku po jego puszczeniu
+	}
+}
+
 ItemType Equipment::getClickedItemType(sf::RenderWindow& window) {
 	for (size_t i = 0; i < eqItems.size(); ++i) {
 		if (isMouseHover(*eqItems[i], window) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			return items[i].itemType; // Zwraca typ klikniêtego przedmiotu
 		}
 	}
-	throw std::runtime_error("Nie klikniêto ¿adnego przedmiotu!");
+
+	return ItemType::None; // Zwróæ 'None' jeœli nic nie zosta³o klikniête
 }

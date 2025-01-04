@@ -25,6 +25,9 @@ public:
 
 	void initMap3CollectableItems(std::vector<CollectableItem>& collectableItems, std::vector<CollectableItem> carrotOnTree, TextureManager& textureManager);
 
+	void initMap4CollectableItems(std::vector<CollectableItem>& collectableItems, std::vector<CollectableItem> carrotOnTree, TextureManager& textureManager);
+
+
 	void initMap5CollectableItems(std::vector<CollectableItem>& collectableItems, std::vector<CollectableItem> carrotOnTree, TextureManager& textureManager);
 
 };

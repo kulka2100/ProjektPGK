@@ -60,10 +60,13 @@ void MapInitializer::initMap3Obstacles(std::vector<Obstacle>& obstacles, Texture
 	}
 	if (smallBoxTexture) {
 		obstacles.emplace_back(*smallBoxTexture, sf::Vector2f(550.f, 400.f), ObstacleType::Stone);
+
 	}
 	//Dodac spadanie g³azów
 	if (stoneWulkan) {
-		obstacles.emplace_back(*stoneWulkan, sf::Vector2f(800.f, 100.f), ObstacleType::Stone);
+		obstacles.emplace_back(*stoneWulkan, sf::Vector2f(300.f, 10.f), ObstacleType::FallingStone);
+		obstacles.emplace_back(*stoneWulkan, sf::Vector2f(600.f, 100.f), ObstacleType::FallingStone);
+
 	}
 }
 
@@ -71,12 +74,10 @@ void MapInitializer::initMap4Obstacles(std::vector<Obstacle>& obstacles, Texture
 	textureManager.loadTexture("textury/pieklo/platforma.png", "platformaPielko");
 	textureManager.loadTexture("textury/pieklo/kolce.png", "kolce");
 	textureManager.loadTexture("textury/pieklo/kosa.png", "kosa");
-	textureManager.loadTexture("textury/pieklo/lawa.png", "lawa");
 
 	sf::Texture* platformTexture = textureManager.getTexture("platformaPielko");
 	sf::Texture* kolceTexture = textureManager.getTexture("kolce");
 	sf::Texture* kosaWulkan = textureManager.getTexture("kosa");
-	sf::Texture* lawaTexture = textureManager.getTexture("lawa");
 
 	if (platformTexture) {
 		// Dodawanie przeszkód z za³adowan¹ tekstur¹
@@ -89,9 +90,6 @@ void MapInitializer::initMap4Obstacles(std::vector<Obstacle>& obstacles, Texture
 	//Zrobic poruszanie kos¹
 	if (kosaWulkan) {
 		obstacles.emplace_back(*kosaWulkan, sf::Vector2f(400.f, 200.f), ObstacleType::Scythe);
-	}
-	if (lawaTexture) {
-		obstacles.emplace_back(*lawaTexture, sf::Vector2f(400.f, 450.f), ObstacleType::Lava);
 	}
 }
 
@@ -113,12 +111,14 @@ void MapInitializer::initMap1CollectableItems(std::vector<CollectableItem>& coll
 	textureManager.loadTexture("textury/las/key.png", "key");
 	textureManager.loadTexture("textury/las/chest.png", "chest");
 	textureManager.loadTexture("textury/las/tree.png", "tree");
-
+	textureManager.loadTexture("textury/gate.png", "gate");
+	
 	sf::Texture* marchewkaTexture = textureManager.getTexture("marchewka");
 	sf::Texture* healthTexture = textureManager.getTexture("health");
 	sf::Texture* keyTexture = textureManager.getTexture("key");
 	sf::Texture* chestTexture = textureManager.getTexture("chest");
 	sf::Texture* treeTexture = textureManager.getTexture("tree");
+	sf::Texture* gateTexture = textureManager.getTexture("gate");
 
 
 	if (marchewkaTexture) {
@@ -163,6 +163,12 @@ void MapInitializer::initMap1CollectableItems(std::vector<CollectableItem>& coll
 	else {
 		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << treeTexture << std::endl;
 	}
+	if (gateTexture) {
+		collectableItems.emplace_back(*gateTexture, sf::Vector2f(2100.f, 255.f), ItemType::Gate);
+	}
+	else {
+		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << gateTexture << std::endl;
+	}
 }
 
 void MapInitializer::initMap2CollectableItems(std::vector<CollectableItem>& collectableItems, std::vector<CollectableItem> carrotOnTree, TextureManager& textureManager) {
@@ -175,6 +181,7 @@ void MapInitializer::initMap2CollectableItems(std::vector<CollectableItem>& coll
 	sf::Texture* healthTexture = textureManager.getTexture("health");
 	sf::Texture* keyTexture = textureManager.getTexture("keyPolana");
 	sf::Texture* chestTexture = textureManager.getTexture("chestPolana");
+	sf::Texture* gateTexture = textureManager.getTexture("gate");
 
 
 	if (marchewkaTexture) {
@@ -204,6 +211,12 @@ void MapInitializer::initMap2CollectableItems(std::vector<CollectableItem>& coll
 	}
 	else {
 		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << chestTexture << std::endl;
+	}
+	if (gateTexture) {
+		collectableItems.emplace_back(*gateTexture, sf::Vector2f(2100.f, 255.f), ItemType::Gate);
+	}
+	else {
+		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << gateTexture << std::endl;
 	}
 }
 
@@ -217,6 +230,7 @@ void MapInitializer::initMap3CollectableItems(std::vector<CollectableItem>& coll
 	sf::Texture* healthTexture = textureManager.getTexture("health");
 	sf::Texture* keyTexture = textureManager.getTexture("keyPolana");
 	sf::Texture* chestTexture = textureManager.getTexture("chestWulkan");
+	sf::Texture* gateTexture = textureManager.getTexture("gate");
 
 
 	if (marchewkaTexture) {
@@ -242,24 +256,41 @@ void MapInitializer::initMap3CollectableItems(std::vector<CollectableItem>& coll
 	}
 
 	if (chestTexture) {
-		collectableItems.emplace_back(*chestTexture, sf::Vector2f(1300.f, 380.f), ItemType::Chest);
+		collectableItems.emplace_back(*chestTexture, sf::Vector2f(1300.f, 330.f), ItemType::Chest);
 	}
 	else {
 		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << chestTexture << std::endl;
 	}
+	if (gateTexture) {
+		collectableItems.emplace_back(*gateTexture, sf::Vector2f(2100.f, 255.f), ItemType::Gate);
+	}
+	else {
+		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << gateTexture << std::endl;
+	}
 
 }
+void MapInitializer::initMap4CollectableItems(std::vector<CollectableItem>& collectableItems, std::vector<CollectableItem> carrotOnTree, TextureManager& textureManager) {
+	sf::Texture* gateTexture = textureManager.getTexture("gate");
+
+
+	if (gateTexture) {
+		collectableItems.emplace_back(*gateTexture, sf::Vector2f(2100.f, 255.f), ItemType::Gate);
+	}
+	else {
+		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << gateTexture << std::endl;
+	}
+}
+
 
 void MapInitializer::initMap5CollectableItems(std::vector<CollectableItem>& collectableItems, std::vector<CollectableItem> carrotOnTree, TextureManager& textureManager) {
 	textureManager.loadTexture("textury/polana/marchewka.png", "marchewkaPolana");
 	textureManager.loadTexture("textury/hp.png", "health");
 	textureManager.loadTexture("textury/las/key.png", "keyPolana");
-	textureManager.loadTexture("textury/niebo/gate.png", "gateNiebo");
 
 	sf::Texture* marchewkaTexture = textureManager.getTexture("marchewkaPolana");
 	sf::Texture* healthTexture = textureManager.getTexture("health");
 	sf::Texture* keyTexture = textureManager.getTexture("keyPolana");
-	sf::Texture* gateTexture = textureManager.getTexture("gateNiebo");
+	sf::Texture* gateTexture = textureManager.getTexture("gate");
 
 
 	if (marchewkaTexture) {
@@ -285,7 +316,7 @@ void MapInitializer::initMap5CollectableItems(std::vector<CollectableItem>& coll
 	}
 
 	if (gateTexture) {
-		collectableItems.emplace_back(*gateTexture, sf::Vector2f(1800.f, 100.f), ItemType::Chest);
+		collectableItems.emplace_back(*gateTexture, sf::Vector2f(2100.f, 255.f), ItemType::Gate);
 	}
 	else {
 		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << gateTexture << std::endl;

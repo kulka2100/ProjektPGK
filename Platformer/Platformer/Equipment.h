@@ -61,45 +61,8 @@ public:
 
 	ItemType getClickedItemType(sf::RenderWindow& window);
 
-	void processClick(sf::RenderWindow& window, Player& player) {
-		static bool mouseHeld = false; // Œledzenie stanu przycisku myszy
-
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			if (!mouseHeld) {
-				mouseHeld = true; //przycisk zosta³ wcisniety
-
-				for (size_t i = 0; i < eqItems.size(); ++i) {
-					if (isMouseHover(*eqItems[i], window)) {
-						ItemType type = items[i].itemType;
-						std::cout << "Klikniêto przedmiot o typie: " << static_cast<int>(type) << std::endl;
-
-						switch (type) {
-						case ItemType::Hat:
-							player.setEqTexture("textury/hat.png", "kapelusz", type);
-							player.setWearingHat(true);
-							break;
-						case ItemType::Wings:
-							player.setEqTexture("textury/wings.png", "skrzydla", type);
-							player.setWearingWings(true);
-							break;
-
-						case ItemType::Saw:
-							player.setEqTexture("textury/saw.png", "pila", type);
-						}
-
-						// Usuwanie przedmiotu
-						removeItem(i);
-
-						// Przerwanie pêtli po obs³u¿eniu klikniêcia
-						break;
-					}
-				}
-			}
-		}
-		else {
-			mouseHeld = false; // Resetujemy stan przycisku po jego puszczeniu
-		}
-	}
+	void processClick(sf::RenderWindow& window, Player& player);
+	
 
 	void resetItems() {
 		eqItems.clear();

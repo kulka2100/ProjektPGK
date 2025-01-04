@@ -8,6 +8,7 @@ enum class ObstacleType {
 	Spikes,
 	Scythe,
 	Lava,
+	FallingStone
 };
 
 class Obstacle : public Item
@@ -15,6 +16,8 @@ class Obstacle : public Item
 private:
 	sf::Texture *obstacleTexture;
 	ObstacleType obstacleType;
+	sf::Vector2f initialPosition; // Pocz¹tkowa pozycja przeszkody
+
 
 	sf::Clock damageClock;
 	float damageInterval;
@@ -32,6 +35,21 @@ public:
 		return obstacleType;
 	}
 
+
+	// Resetowanie pozycji na pocz¹tkow¹
+	void resetPosition() {
+		this->itemSprite.setPosition(initialPosition);
+	}
+
+	// Ustawienie nowej pozycji pocz¹tkowej
+	void setInitialPosition(const sf::Vector2f& position) {
+		initialPosition = position;
+	}
+
+	// Uzyskanie pozycji pocz¹tkowej
+	sf::Vector2f getInitialPosition() const {
+		return initialPosition;
+	}
 
 	bool canDealDamage() {
 		// Sprawdzanie, czy min?? czas od ostatniego zadania obra?e?

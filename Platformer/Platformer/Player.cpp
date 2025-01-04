@@ -111,10 +111,9 @@ Player::Player(sf::Vector2f playerPosition, int hp) : health(hp) {
     this->experience = 0;
     this->level = 1;
     this->experienceToNext = 100;
-    this->health = 4;
     this->maxHealth = 5;
     this->damage = 1;
-    this->characterSpeed = 150.f;
+    this->characterSpeed = 500.f;
 }
 
 Player::~Player()
@@ -348,6 +347,30 @@ void Player::update(float deltaTime, sf::Event &event) {
     }
 }
 
+void Player::updateHealthVector() {
+    hpSprite.clear(); // Wyczyść aktualny stan wektora
+
+    if (!hpTextures.empty()) {
+        for (int i = 0; i < health; ++i) {
+            sf::Sprite newSprite;
+            newSprite.setTexture(hpTextures[0]);
+
+            sf::Vector2f position;
+            if (i == 0) {
+                position = sf::Vector2f(10.f, 25.f); // Pierwszy sprite
+            }
+            else {
+                position = sf::Vector2f(hpSprite.back().getPosition().x + 45, 25.f);
+            }
+            newSprite.setPosition(position);
+            hpSprite.push_back(newSprite);
+        }
+    }
+    else {
+        std::cerr << "hpTextures jest pusty! Nie można dodać sprite'a." << std::endl;
+    }
+}
+
 void Player::render(sf::RenderTarget &target) {
     if (!isDead) {
         target.draw(this->playerSprite);
@@ -460,3 +483,49 @@ bool Player::checkLevelUp() {
     return false; 
 }
 
+void Player::setEqTexture(const std::string& filepath, const std::string& name, ItemType itemType) {
+    textureManager.loadTexture(filepath, name);
+    sf::Texture* texture = textureManager.getTexture(name);
+    if (texture) {
+        sf::Sprite sprite;
+        sprite.setTexture(*texture);
+
+        // Ustawianie pozycji w zależności od typu przedmiotu
+        switch (itemType) {
+        case ItemType::Hat:
+            sprite.setPosition(getPlayerPosition().x, getPlayerPosition().y - 25);
+            break;
+        case ItemType::Wings:
+            sprite.setPosition(getPlayerPosition().x - 100, getPlayerPosition().y);
+            break;
+        case ItemType::Saw:
+            sprite.setPosition(getPlayerPosition().x + 80, getPlayerPosition().y);
+            break;
+        case ItemType::Helmet:
+            sprite.setPosition(getPlayerPosition().x, getPlayerPosition().y - 5);
+            break;
+        case ItemType::None:
+            sprite.setPosition(getPlayerPosition().x, getPlayerPosition().y);
+            break;
+        }
+        equippedItems.push_back({ itemType, sprite });
+    }
+    else {
+        std::cout << "Nie udalo sie załadowac tekstury: " << name << "\n";
+    }
+}
+
+void Player::removeEquippedItem(ItemType itemType) {
+    // Szukamy przedmiotu w equippedItems
+    auto it = std::find_if(equippedItems.begin(), equippedItems.end(),
+        [itemType](const EquippedItem& item) { return item.type == itemType; });
+
+    if (it != equippedItems.end()) {
+        // Usuwamy przedmiot z postaci
+        equippedItems.erase(it);
+        std::cout << "Przedmiot " << static_cast<int>(itemType) << " usunięty z postaci." << std::endl;
+    }
+    else {
+        std::cerr << "Nie znaleziono przedmiotu o tym typie!" << std::endl;
+    }
+}

@@ -85,6 +85,7 @@ void Game::initCollectableItems(int mapIndex){
 			break;
 		}
 		case 3: {
+			mapInitializer->initMap3CollectableItems(collectableItems, carrotOnTree, textureManager);
 			break;
 		}
 		case 4: {
@@ -177,9 +178,7 @@ void Game::updateCollectableItems(float deltaTime){
 						std::cout << "zebrales klucz" << std::endl;
 						keysCounter++;
 						player->setKeys(keysCounter);
-						item.setIsCollected(true);
-						this->eq->addItem("textury/las/key.png", ItemType::Key);
-					
+						item.setIsCollected(true);					
 					}
 					else if (item.getType() == ItemType::Chest) {				
 						if (player->getKeys() > 0) {
@@ -187,9 +186,7 @@ void Game::updateCollectableItems(float deltaTime){
 								item.setIsOpenChest(true);
 								std::cout << "Otwarles skrzynie " << item.getIsChestOpen() << std::endl;
 								setOpenChestTexture();
-								this->eq->removeItem(0);
 								this->eq->setIsActive(true); // Aktywuj panel ekwipunku
-								
 							}
 						}
 					}
@@ -205,6 +202,10 @@ void Game::updateCollectableItems(float deltaTime){
 						item.setIsCollected(true);
 						eq->addItem("textury/saw.png", ItemType::Saw);
 					}
+					else if (item.getType() == ItemType::Helmet) {
+						item.setIsCollected(true);
+						eq->addItem("textury/helmet.png", ItemType::Helmet);
+					}
 					else if (item.getType() == ItemType::Tree) {
 						if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
 							for (auto& carot : carrotOnTree) {
@@ -213,6 +214,12 @@ void Game::updateCollectableItems(float deltaTime){
 									carot.setIsCollected(true);
 								}
 							}
+						}
+					}
+					else if (item.getType() == ItemType::Gate) {
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+							std::cout << "przeszedles do nastepnego poziomu";
+							gameState = GameState::ChoosingMaps;
 						}
 					}
 				}
@@ -255,6 +262,19 @@ void Game::updateObstacles(float deltaTime) {
 			}
 		}
 
+		for (auto& obstacle : obstacles) {
+			if (obstacle.getType() == ObstacleType::FallingStone) {
+
+				obstacle.getSprite().move(0.f, 50 * deltaTime);
+
+				if (obstacle.getSprite().getPosition().y > 700) {
+					obstacle.resetPosition();
+				}
+			}
+		}
+
+
+
 		if (playerBounds.intersects(obstacleBounds)) {
 			bool isOnPlatform = false;
 			//Kolizja z gory
@@ -288,6 +308,13 @@ void Game::updateObstacles(float deltaTime) {
 			if (playerPosition.x + playerBounds.width >  obstacleBounds.left && obstacle.getType() == ObstacleType::Scythe) {
 				if (obstacle.canDealDamage()) {
 					player->reduceHealth(1);
+				}
+			}
+			if (playerPosition.x + playerBounds.width > obstacleBounds.left && obstacle.getType() == ObstacleType::FallingStone) {
+				if (obstacle.canDealDamage()) {
+					if (!player->getWearingHelmet()) {
+						player->reduceHealth(1);
+					}
 				}
 			}
 		}
@@ -343,6 +370,7 @@ void Game::update() {
 	// deltaTime w sekundach
 	float deltaTime = clock.restart().asSeconds();    // Obliczanie FPS
 	while (this->window.pollEvent(event)) {
+
 		if (event.type == sf::Event::Closed) {
 			this->window.close();
 		}
@@ -382,86 +410,84 @@ void Game::update() {
 					gameState = GameState::Menu; // Zmie� stan gry na Playing po wybraniu mapy
 				}
 			}
-		if (gameState == GameState::Menu) {
-			handleMenuEvents();
-		}
-		else if (gameState == GameState::Settings) {
-			handleSettingsEvents();
-		}
-		else if (gameState == GameState::Playing) {
-			handlePlayingEvents();
-		}
-		else if (gameState == GameState::ChoosingStats) {
-			handleStatsMenuEvents();
-		}
-
-		
-		
-		
-	}
-
-	
-	if (gameState == GameState::Playing) {
-		updateGameplay(deltaTime);
-	}
-	
-
-
-
-	if (gameState == GameState::Pause) {
-		// Gra nie jest aktualizowana, tylko rysowanie t�a pauzy
-		pause->draw(window);
-		pause->handleHover(window, pause->getPauseItems());
-
-		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-			if (pause->getHoverIndex(window, pause->getPauseItems()) == 0) {
-				gameState = GameState::Playing;
 			}
-			else if (pause->getHoverIndex(window, pause->getPauseItems()) == 1) {
-				std::cout << "Saving game to file..." << std::endl;
-				saveToBinaryFile("game_save.dat");
-				std::cout << "Zapisano pozycj� gracza: X=" << player->getPlayerPosition().x << ", Y=" << player->getPlayerPosition().y << std::endl;
-
-				std::cout << "Game saved successfully." << std::endl;
+			if (gameState == GameState::Menu) {
+				handleMenuEvents();
 			}
-			else if (pause->getHoverIndex(window, pause->getPauseItems()) == 2) {
-				gameState = GameState::Menu;
-				this->initPlayer();               // Inicjowanie postaci
-				this->initObstacles(currentMap);  // Inicjowanie przeszk�d
-				this->initCollectableItems(currentMap); // Inicjowanie przedmiot�w
-				this->initBackground(currentMap); // Inicjowanie t�a
+			else if (gameState == GameState::Settings) {
+				handleSettingsEvents();
+			}
+			else if (gameState == GameState::Playing) {
+				handlePlayingEvents();
+			}
+			else if (gameState == GameState::ChoosingStats) {
+				handleStatsMenuEvents();
 			}
 		}
-	}
 
 
-	if (gameState == GameState::ChoosingMaps) {
-		maps->handleHover(window, maps->getItems());
+		if (gameState == GameState::Playing) {
+			updateGameplay(deltaTime);
+		}
 
-		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-			currentMap = maps->getHoverIndex(window, maps->getItems()); // Wywo�anie metody obs�ugi klikni�cia
-			if (currentMap < 5) {
-				gameState = GameState::Playing; // Zmie� stan gry na Playing po wybraniu mapy
-				initBackground(currentMap);
-				initObstacles(currentMap);
-				initCollectableItems(currentMap);
-			}
-			else if (currentMap == 5) {
-				gameState = GameState::Menu;
+		if (gameState == GameState::Pause) {
+			// Gra nie jest aktualizowana, tylko rysowanie t�a pauzy
+			pause->draw(window);
+			pause->handleHover(window, pause->getPauseItems());
+
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+				if (pause->getHoverIndex(window, pause->getPauseItems()) == 0) {
+					gameState = GameState::Playing;
+				}
+				else if (pause->getHoverIndex(window, pause->getPauseItems()) == 1) {
+					std::cout << "Saving game to file..." << std::endl;
+					saveToBinaryFile("game_save.dat");
+					std::cout << "Zapisano pozycj� gracza: X=" << player->getPlayerPosition().x << ", Y=" << player->getPlayerPosition().y << std::endl;
+
+					std::cout << "Game saved successfully." << std::endl;
+				}
+				else if (pause->getHoverIndex(window, pause->getPauseItems()) == 2) {
+					eq->resetItems();
+					this->initPlayer();               // Inicjowanie postaci
+					this->initObstacles(currentMap);  // Inicjowanie przeszk�d
+					this->initCollectableItems(currentMap); // Inicjowanie przedmiot�w
+					this->initBackground(currentMap); // Inicjowanie t�a
+					this->initEnemies();
+					gameState = GameState::Menu;
+				}
 			}
 		}
-	}
 
-	if (player->getIsFallen() == true) {
-		eq->resetItems();
-		this->initPlayer();               // Inicjowanie postaci
-		this->initObstacles(currentMap);  // Inicjowanie przeszk�d
-		this->initCollectableItems(currentMap); // Inicjowanie przedmiot�w
-		this->initBackground(currentMap); // Inicjowanie t�a
-		this->initEnemies();
-		gameState = GameState::Menu;
+
+		if (gameState == GameState::ChoosingMaps) {
+			maps->handleHover(window, maps->getItems());
+
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+				currentMap = maps->getHoverIndex(window, maps->getItems()); // Wywo�anie metody obs�ugi klikni�cia
+				if (currentMap < 5) {
+					gameState = GameState::Playing; // Zmie� stan gry na Playing po wybraniu mapy
+					this->player->setPlayerPosition(100.f, 400.f);
+					initBackground(currentMap);
+					initObstacles(currentMap);
+					initCollectableItems(currentMap);
+					initEnemies();
+				}
+				else if (currentMap == 5) {
+					gameState = GameState::Menu;
+				}
+			}
+		}
+
+		if (player->getIsFallen() == true) {
+			eq->resetItems();
+			this->initPlayer();               // Inicjowanie postaci
+			this->initObstacles(currentMap);  // Inicjowanie przeszk�d
+			this->initCollectableItems(currentMap); // Inicjowanie przedmiot�w
+			this->initBackground(currentMap); // Inicjowanie t�a
+			this->initEnemies();
+			gameState = GameState::Menu;
+		}
 	}
-}
 
 
 
@@ -628,36 +654,42 @@ void Game::updateDeltaTime() {
 
 void Game::setOpenChestTexture() {
 	textureManager.loadTexture("textury/las/openchest.png", "openChest");
-	sf::Texture* openChestTexture = textureManager.getTexture("openChest");
-
 	textureManager.loadTexture("textury/hat.png", "hat");
-	sf::Texture* hatTexture = textureManager.getTexture("hat");
-
 	textureManager.loadTexture("textury/wings.png", "wings");
-	sf::Texture* wingsTexture = textureManager.getTexture("wings");
-
 	textureManager.loadTexture("textury/saw.png", "saw");
+	textureManager.loadTexture("textury/helmet.png", "helmet");
+
+
+	sf::Texture* openChestTexture = textureManager.getTexture("openChest");
+	sf::Texture* hatTexture = textureManager.getTexture("hat");
+	sf::Texture* wingsTexture = textureManager.getTexture("wings");
 	sf::Texture* sawTexture = textureManager.getTexture("saw");
+	sf::Texture* helmetTexture = textureManager.getTexture("helmet");
 
 	if (openChestTexture) {
 		for (auto& item : collectableItems) {
-
+			std::cout << "obecna mapa " << currentMap;
 			std::cout << item.getIsChestOpen() << std::endl;
 			if (item.getIsChestOpen()) {
 				sf::Vector2f posChest = item.getPosition();
 				std::cout << "Otwarta slkrznia" << std::endl;
 				item.setTexture(*openChestTexture);
 				item.setType(ItemType::OpenChest);
-				if (hatTexture) {
+				if (hatTexture && currentMap == 0) {
 					collectableItems.emplace_back(*hatTexture, sf::Vector2f(posChest.x + 80 , posChest.y), ItemType::Hat);
 					std::cout << "dodano "  << posChest.x  << std::endl;
 				}
-				if (wingsTexture) {
+				if (wingsTexture &&currentMap == 3) {
 					collectableItems.emplace_back(*wingsTexture, sf::Vector2f(posChest.x + 40, posChest.y - 20), ItemType::Wings);
 					std::cout << "wings " << posChest.x << std::endl;
 				}
-				if (sawTexture) {
+				if (sawTexture && currentMap == 2) {
 					collectableItems.emplace_back(*sawTexture, sf::Vector2f(posChest.x, posChest.y - 20), ItemType::Saw);
+					std::cout << "wings " << posChest.x << std::endl;
+				}
+
+				if (helmetTexture && currentMap == 1) {
+					collectableItems.emplace_back(*helmetTexture, sf::Vector2f(posChest.x, posChest.y - 20), ItemType::Helmet);
 					std::cout << "wings " << posChest.x << std::endl;
 				}
 			

@@ -2,13 +2,13 @@
 #include "Obstacle.h"
 
 
-Obstacle::Obstacle(sf::Texture& obstacleTexture, sf::Vector2f position, ObstacleType type) : obstacleType(type) {
-	this->obstacleTexture = &obstacleTexture;
+
+Obstacle::Obstacle(sf::Texture& obstacleTexture, sf::Vector2f position, ObstacleType type)
+    : obstacleTexture(&obstacleTexture), obstacleType(type), initialPosition(position), damageInterval(0.5f) {
 	if (this->obstacleTexture) { // Sprawdzenie, czy wskaŸnik nie jest pusty
 		this->itemSprite.setTexture(obstacleTexture);
 	}
-	this->damageInterval = 0.5f;
-	this->itemSprite.setPosition(position);
+    this->itemSprite.setPosition(position); // Ustawienie pozycji sprite'a
 }
 
 

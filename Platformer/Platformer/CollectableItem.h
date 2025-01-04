@@ -12,7 +12,10 @@ enum class ItemType {
 	Tree,
 	Hat,
 	Wings,
-	Saw
+	Saw,
+	Gate,
+	Helmet,
+	None
 };
 
 class CollectableItem : public Item
@@ -70,6 +73,7 @@ public:
 		file.read(reinterpret_cast<char*>(&position.y), sizeof(position.y));
 		file.read(reinterpret_cast<char*>(&type), sizeof(type));
 	}
+
 
 };
 
