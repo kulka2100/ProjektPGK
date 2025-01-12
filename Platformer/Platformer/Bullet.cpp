@@ -21,6 +21,14 @@ bool Bullet::isOffScreen() {
 	return position.x < 0 || position.x > 800 || position.y < 0 || position.y > 600;
 }
 
+sf::Vector2f Bullet::getBulletPosition() {
+	return bulletSprite.getPosition();
+}
+
+
+sf::Sprite& Bullet::getBulletSprite() {
+	return bulletSprite;
+}
 
 void Bullet::update(float deltaTime) {
 	sf::Vector2f position = bulletSprite.getPosition();

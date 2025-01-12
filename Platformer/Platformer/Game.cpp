@@ -98,18 +98,20 @@ void Game::initCollectableItems(int mapIndex){
 	
 	}	
 }
-void Game::initEnemies() {
+void Game::initEnemies(int mapIndex) {
 	// Usuwanie istniej�cych przeciwnik�w (je�li s�)
 	for (auto enemy : enemies) {
 		delete enemy; // Zwolnienie pami�ci dla ka�dego przeciwnika
 	}
 	enemies.clear(); // Opr�nianie wektora
-	enemies.emplace_back(new Moles(sf::Vector2f(400.f, 170.f), 70.f, 400.f, 550.f));
-	enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
-	enemies.emplace_back(new Cats(sf::Vector2f(900.f, 390.f), 150.f, 900.f, 1200.f));
-	enemies.emplace_back(new Bats(sf::Vector2f(1600.f, 100.f), 300.f, 1300.f, 1600.f));
-	enemies.emplace_back(new Bats(sf::Vector2f(1300.f, 200.f), 300.f, 400.f, 600.f));
-	enemies.emplace_back(new Boss(sf::Vector2f(2000.f, 200.f), 70.f, 2000.f, 2000.f));
+	//enemies.emplace_back(new Moles(sf::Vector2f(400.f, 170.f), 70.f, 400.f, 550.f));
+	//enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
+	//enemies.emplace_back(new Cats(sf::Vector2f(900.f, 390.f), 150.f, 900.f, 1200.f));
+	//enemies.emplace_back(new Bats(sf::Vector2f(1600.f, 100.f), 300.f, 1300.f, 1600.f));
+	//enemies.emplace_back(new Bats(sf::Vector2f(1300.f, 200.f), 300.f, 400.f, 600.f));
+	if (mapIndex == 3) {
+		enemies.emplace_back(new Boss(sf::Vector2f(2000.f, 200.f), 70.f, 2000.f, 2000.f));
+	}
 }
 
 
@@ -123,7 +125,7 @@ Game::Game(int width, int height) : width(width), height(height), gameState(Game
 	this->initCollectableItems(currentMap);
 	this->initBackground(currentMap);
 	this->pause = new Pause(width, height);
-	this->initEnemies();
+	this->initEnemies(currentMap);
 	this->eq = new Equipment();
 	if (!font.loadFromFile("font.ttf")) {
 		throw std::runtime_error("Nie mozna zaladowac czcionki");
@@ -219,6 +221,9 @@ void Game::updateCollectableItems(float deltaTime){
 					else if (item.getType() == ItemType::Gate) {
 						if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
 							std::cout << "przeszedles do nastepnego poziomu";
+							if (currentMap < 4) { // Sprawdź, czy są jeszcze mapy do odblokowania
+								unlockedMaps[currentMap + 1] = true; // Odblokuj kolejną mapę
+							}
 							gameState = GameState::ChoosingMaps;
 						}
 					}
@@ -371,45 +376,45 @@ void Game::update() {
 	float deltaTime = clock.restart().asSeconds();    // Obliczanie FPS
 	while (this->window.pollEvent(event)) {
 
-		if (event.type == sf::Event::Closed) {
-			this->window.close();
-		}
-		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::E) {
-			this->eq->setIsActive(true); // Aktywuj panel ekwipunku
-		}
-		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
-			this->eq->setIsActive(false);
-		}
-
-		if (gameState == GameState::Settings) {
-			settings->handleHover(window, settings->getItems());
-			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-				difficultyLvel = settings->getHoverIndex(window, settings->getItems()); // Wywo�anie metody obs�ugi klikni�cia
-				if (difficultyLvel == 0) {
-					std::cout << "wybrano latwy" << std::endl;
-					player->setHealth(5);
-					player->setCurrentAmo(50);
-					player->updateAmmoText(player->getCurrentAmo());
-					player->updateHealthVector();
-					gameState = GameState::Menu; // Zmie� stan gry na Playing po wybraniu mapy
-
-				}
-				else if (difficultyLvel == 1) {
-					std::cout << "wybrano sredni" << std::endl;
-					player->setCurrentAmo(20);
-					player->setHealth(4);
-					player->updateAmmoText(player->getCurrentAmo());
-					player->updateHealthVector();
-					gameState = GameState::Menu; // Zmie� stan gry na Playing po wybraniu mapy
-				}
-				else if (difficultyLvel == 2) {
-					std::cout << "wybrano trudny" << std::endl;
-					gameState = GameState::Menu; // Zmie� stan gry na Playing po wybraniu mapy
-				}
-				else if (difficultyLvel == 3) {
-					gameState = GameState::Menu; // Zmie� stan gry na Playing po wybraniu mapy
-				}
+			if (event.type == sf::Event::Closed) {
+				this->window.close();
 			}
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::E) {
+				this->eq->setIsActive(true); // Aktywuj panel ekwipunku
+			}
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
+				this->eq->setIsActive(false);
+			}
+
+			if (gameState == GameState::Settings) {
+				settings->handleHover(window, settings->getItems());
+				if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+					difficultyLvel = settings->getHoverIndex(window, settings->getItems()); // Wywo�anie metody obs�ugi klikni�cia
+					if (difficultyLvel == 0) {
+						std::cout << "wybrano latwy" << std::endl;
+						player->setHealth(5);
+						player->setCurrentAmo(50);
+						player->updateAmmoText(player->getCurrentAmo());
+						player->updateHealthVector();
+						gameState = GameState::Menu; // Zmie� stan gry na Playing po wybraniu mapy
+
+					}
+					else if (difficultyLvel == 1) {
+						std::cout << "wybrano sredni" << std::endl;
+						player->setCurrentAmo(20);
+						player->setHealth(4);
+						player->updateAmmoText(player->getCurrentAmo());
+						player->updateHealthVector();
+						gameState = GameState::Menu; // Zmie� stan gry na Playing po wybraniu mapy
+					}
+					else if (difficultyLvel == 2) {
+						std::cout << "wybrano trudny" << std::endl;
+						gameState = GameState::Menu; // Zmie� stan gry na Playing po wybraniu mapy
+					}
+					else if (difficultyLvel == 3) {
+						gameState = GameState::Menu; // Zmie� stan gry na Playing po wybraniu mapy
+					}
+				}
 			}
 			if (gameState == GameState::Menu) {
 				handleMenuEvents();
@@ -452,7 +457,7 @@ void Game::update() {
 					this->initObstacles(currentMap);  // Inicjowanie przeszk�d
 					this->initCollectableItems(currentMap); // Inicjowanie przedmiot�w
 					this->initBackground(currentMap); // Inicjowanie t�a
-					this->initEnemies();
+					this->initEnemies(currentMap);
 					gameState = GameState::Menu;
 				}
 			}
@@ -463,14 +468,20 @@ void Game::update() {
 			maps->handleHover(window, maps->getItems());
 
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-				currentMap = maps->getHoverIndex(window, maps->getItems()); // Wywo�anie metody obs�ugi klikni�cia
+				currentMap = maps->getHoverIndex(window, maps->getItems()); // Wywolanie metody obslugi klikni�cia
 				if (currentMap < 5) {
-					gameState = GameState::Playing; // Zmie� stan gry na Playing po wybraniu mapy
-					this->player->setPlayerPosition(100.f, 400.f);
-					initBackground(currentMap);
-					initObstacles(currentMap);
-					initCollectableItems(currentMap);
-					initEnemies();
+					if (unlockedMaps[currentMap]) { // Sprawdź, czy mapa jest odblokowana
+						gameState = GameState::Playing; // Zmien stan gry na Playing po wybraniu mapy
+						this->player->setPlayerPosition(100.f, 400.f);
+						initBackground(currentMap);
+						initObstacles(currentMap);
+						initCollectableItems(currentMap);
+						initEnemies(currentMap);
+					}
+					else {
+						// Opcjonalnie: Wyświetl komunikat, że mapa jest zablokowana
+						std::cout << "Ta mapa jest jeszcze zablokowana!" << std::endl;
+					}
 				}
 				else if (currentMap == 5) {
 					gameState = GameState::Menu;
@@ -484,7 +495,7 @@ void Game::update() {
 			this->initObstacles(currentMap);  // Inicjowanie przeszk�d
 			this->initCollectableItems(currentMap); // Inicjowanie przedmiot�w
 			this->initBackground(currentMap); // Inicjowanie t�a
-			this->initEnemies();
+			this->initEnemies(currentMap);
 			gameState = GameState::Menu;
 		}
 	}
@@ -729,21 +740,7 @@ void Game::handleMenuEvents() {
 			}
 			else if (selected == 3) {
 				std::cout << "Wczytywanie gry z pliku..." << std::endl;
-				loadFromFile("game_save.dat");
-				player->updateHealthVector();
-				// Dodaj sprawdzenie poprawno�ci danych
-				if (player != nullptr) {
-					std::cout << "Zdrowie gracza po wczytaniu: " << player->getCurrentHealth() << std::endl;
-					std::cout << "Pozycja gracza po wczytaniu: "
-						<< player->getPlayerPosition().x << ", "
-						<< player->getPlayerPosition().y << std::endl;
-					std::cout << "Odczytano pozycj� gracza: X=" << player->getPlayerPosition().x << ", Y=" << player->getPlayerPosition().y << std::endl;
-
-				}
-				else {
-					std::cerr << "B��d: player nie jest poprawnie zainicjalizowany!" << std::endl;
-				}
-
+				loadFromBinaryFile("game_save.dat");
 				gameState = GameState::Playing; // Po wczytaniu gra przechodzi do trybu rozgrywki
 				isMenuActive = false;
 			}
@@ -755,10 +752,9 @@ void Game::handleMenuEvents() {
 void Game::handleSettingsEvents() {
 	settings->handleHover(window, settings->getItems());
 	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-		difficultyLvel = settings->getHoverIndex(window, settings->getItems()); // Wywo�anie metody obs�ugi klikni�cia
+		difficultyLvel = settings->getHoverIndex(window, settings->getItems()); // Wywolanie metody obs�ugi klikni�cia
 		if (difficultyLvel == 0) {
 			std::cout << "wybrano latwy" << std::endl;
-			loadFromFile("game_save.dat");
 			player->setHealth(5);
 			player->updateAmmoText(player->getCurrentAmo());
 			player->updateHealthVector();
@@ -835,4 +831,72 @@ void Game::updateGameplay(float deltaTime) {
 	this->checkBulletEnemyCollision();
 	this->checkBulletPlayerCollision();
 	this->checkEqPanel();
+}
+
+
+void Game::saveToBinaryFile(const std::string& filename) {
+	std::ofstream file(filename, std::ios::binary);  // Otwieramy plik binarnie
+	if (!file.is_open()) {
+		std::cerr << "Nie można otworzyć pliku do zapisu!" << std::endl;
+		return;
+	}
+
+	try {
+		// Zapisz liczbę elementów wektora
+		size_t size = unlockedMaps.size();
+		file.write(reinterpret_cast<const char*>(&size), sizeof(size));
+
+		// Zapisz elementy wektora
+		for (bool unlocked : unlockedMaps) {
+			file.write(reinterpret_cast<const char*>(&unlocked), sizeof(unlocked));
+		}
+
+		file.close();
+	}
+
+	catch (const std::exception& e) {
+		std::cerr << "Exception during file write: " << e.what() << std::endl;
+	}
+}
+
+void Game::loadFromBinaryFile(const std::string& filename) {
+	std::ifstream file(filename, std::ios::binary);  // Otwieramy plik w trybie binarnym
+
+	if (!file.is_open()) {
+		std::cerr << "Nie mozna otworzyc pliku do odczytu: " << filename << std::endl;
+		return;
+	}
+
+	try {
+		// Odczytaj liczbe elementow wektora
+		size_t size = 0;
+		file.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+		// Sprawdz, czy odczytano prawidlowy rozmiar
+		if (file.fail()) {
+			throw std::runtime_error("Blad podczas odczytu rozmiaru wektora.");
+		}
+
+		// Odczytaj elementy wektora i przypisz je do unlockedMaps
+		unlockedMaps.resize(size);
+		for (size_t i = 0; i < size; ++i) {
+			bool unlocked = false;
+			file.read(reinterpret_cast<char*>(&unlocked), sizeof(unlocked));
+
+			if (file.fail()) {
+				throw std::runtime_error("Blad podczas odczytu elementow wektora.");
+			}
+
+			unlockedMaps[i] = unlocked;
+		}
+
+		std::cout << "Stan odblokowanych map wczytany z pliku: " << filename << std::endl;
+		isGameLoaded = true;  // Ustaw flage informujaca o pomyslnym wczytaniu
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Blad podczas odczytu pliku: " << e.what() << std::endl;
+		isGameLoaded = false;  // Ustaw flage informujaca o bledzie wczytywania
+	}
+
+	file.close();  // Zamknij plik
 }

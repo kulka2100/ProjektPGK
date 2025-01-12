@@ -2,7 +2,6 @@
 #include "Obstacle.h"
 
 
-
 Obstacle::Obstacle(sf::Texture& obstacleTexture, sf::Vector2f position, ObstacleType type)
     : obstacleTexture(&obstacleTexture), obstacleType(type), initialPosition(position), damageInterval(0.5f) {
 	if (this->obstacleTexture) { // Sprawdzenie, czy wskaŸnik nie jest pusty
@@ -12,4 +11,11 @@ Obstacle::Obstacle(sf::Texture& obstacleTexture, sf::Vector2f position, Obstacle
 }
 
 
-
+bool Obstacle::canDealDamage() {
+	// Sprawdzanie, czy min?? czas od ostatniego zadania obra?e?
+	if (damageClock.getElapsedTime().asSeconds() >= damageInterval) {
+		damageClock.restart();
+		return true;
+	}
+	return false;
+}

@@ -100,7 +100,18 @@ sf::FloatRect Enemy::getBounds() const {
     return this->sprite.getGlobalBounds();
 }
 
+void Enemy::setTextures(const std::vector<sf::Texture>& right, const std::vector<sf::Texture>& left) {
+    this->rightTextures = right;
+    this->leftTextures = left;
 
+    // Ustawienie domyślnej tekstury, jeśli są dostępne
+    if (!rightTextures.empty()) {
+        this->sprite.setTexture(rightTextures[0]);
+    }
+    else if (!leftTextures.empty()) {
+        this->sprite.setTexture(leftTextures[0]);
+    }
+}
 
 void Enemy::startAttack() {
     this->isAttacking = true;

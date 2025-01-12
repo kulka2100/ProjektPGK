@@ -167,3 +167,8 @@ ItemType Equipment::getClickedItemType(sf::RenderWindow& window) {
 
 	return ItemType::None; // Zwróæ 'None' jeœli nic nie zosta³o klikniête
 }
+
+void Equipment::resetItems() {
+	eqItems.clear();
+	items.clear();
+}

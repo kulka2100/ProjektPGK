@@ -10,7 +10,6 @@ Background::Background(const std::string& filename, Player *player){
 	position = sf::Vector2f(0.0f, 0.0f);
 }
 
-
 Background::Background(const std::string& filename) {
     if (!textureBackground.loadFromFile(filename)) {
         throw std::runtime_error("Nie mo¿na za³adowaæ tekstury tla: ");
@@ -18,7 +17,6 @@ Background::Background(const std::string& filename) {
     backgroundSprite.setTexture(textureBackground);
     position = sf::Vector2f(0.0f, 0.0f);
 }
-
 
 sf::Sprite& Background::getBackgroundSprite() {
     return backgroundSprite;
@@ -29,7 +27,7 @@ sf::Texture& Background::getBackgroundTexture() {
 }
 
 void Background::update(float deltaTime, float characterSpeed) {
-    // Aktualizujemy pozycjê sprite'a na podstawie nowej pozycji
+    // Aktualizujemy pozycje sprite'a na podstawie nowej pozycji
     //Przesuwanie tla
     float maxScroll = textureBackground.getSize().x - 800; // Maksymalny przesuw
     bool hasScrolled = false;
@@ -40,7 +38,6 @@ void Background::update(float deltaTime, float characterSpeed) {
         backgroundSprite.setPosition(position);
         isUpdated = true;
         moveRight = true;
-
     }
     else if (player->getPlayerPosition().x < 10  && position.x < 0) {
         position.x += characterSpeed * deltaTime;
@@ -53,7 +50,6 @@ void Background::update(float deltaTime, float characterSpeed) {
         isUpdated = false;
         moveLeft = false;
         moveRight = false;
-
     }
 
     backgroundSprite.setPosition(position);

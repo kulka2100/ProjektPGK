@@ -529,3 +529,47 @@ void Player::removeEquippedItem(ItemType itemType) {
         std::cerr << "Nie znaleziono przedmiotu o tym typie!" << std::endl;
     }
 }
+
+void Player::updateEqPosition() {
+    for (auto& eqItem : equippedItems) {
+        switch (eqItem.type) {
+        case ItemType::Hat:
+            eqItem.sprite.setPosition(getPlayerPosition().x + 10, getPlayerPosition().y - 28);
+            if (movingWithEqLeft) {
+                eqItem.sprite.setPosition(getPlayerPosition().x + 70, getPlayerPosition().y - 28);
+            }
+            break;
+        case ItemType::Wings:
+            eqItem.sprite.setPosition(getPlayerPosition().x - 33, getPlayerPosition().y);
+            if (movingWithEqLeft) {
+                eqItem.sprite.setPosition(getPlayerPosition().x + 118, getPlayerPosition().y);
+            }
+            break;
+        case ItemType::Saw:
+            eqItem.sprite.setPosition(getPlayerPosition().x + 35, getPlayerPosition().y + 17);
+            if (movingWithEqLeft) {
+                eqItem.sprite.setPosition(getPlayerPosition().x + 38, getPlayerPosition().y + 17);
+            }
+            break;
+        case ItemType::Helmet:
+            eqItem.sprite.setPosition(getPlayerPosition().x + 10, getPlayerPosition().y - 5);
+            if (movingWithEqLeft) {
+                eqItem.sprite.setPosition(getPlayerPosition().x + 70, getPlayerPosition().y - 5);
+            }
+            break;
+        default:
+            break;
+        }
+
+        if (movingWithEqRight) {
+            eqItem.sprite.setScale(1.0, 1.0);
+        }
+        else if (movingWithEqLeft) {
+            eqItem.sprite.setScale(-1.0, 1.0);
+        }
+    }
+}
+
+void Player::clearEq() {
+    equippedItems.clear();
+}

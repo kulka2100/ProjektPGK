@@ -20,205 +20,251 @@
 #include <fstream>
 
 
-
+/**
+ * @brief Klasa reprezentujaca glowna logike gry.
+ * Zawiera wszystkie elementy rozgrywki, takie jak gracz, tlo, wrogowie, przeszkody, przedmioty itp.
+ */
 class Game
 {
 private:
-	int width; 
-	int height; 
-	sf::Event event;
-	sf::RenderWindow window;
-	sf::Clock clock;
-	std::vector<Enemy*> enemies;
-	float deltaTime;
-	sf::Font font;
-	StatsMenu* statsMenu;
-	
+    int width;                          ///< Szerokosc okna gry.
+    int height;                         ///< Wysokosc okna gry.
+    sf::Event event;                    ///< Wydarzenie zwiazane z oknem gry.
+    sf::RenderWindow window;            ///< Okno gry.
+    sf::Clock clock;                    ///< Zegar gry.
+    std::vector<Enemy*> enemies;        ///< Lista wrogow.
+    float deltaTime;                    ///< Czas, jaki uplyn¹³ od ostatniej klatki.
+    sf::Font font;                      ///< Czcionka do rysowania tekstu.
+    StatsMenu* statsMenu;               ///< Menu statystyk gry.
 
-	Player *player;
-	Background* background;
-	Menu* menu;
-	Maps* maps;
-	Settings* settings;
-	Pause* pause;
-	Equipment* eq;
-	MapInitializer* mapInitializer;
-	TextureManager textureManager;
-	std::vector<Obstacle> obstacles;
-	std::vector<CollectableItem> collectableItems;
-	std::vector<CollectableItem> carrotOnTree;
-	bool isMenuActive;
-	bool isPlayed;
-	GameState gameState;
-	int currentMap = 0;
-	int difficultyLvel = 0;
-	int selectedEq = 0;
+    Player* player;                     ///< Gracz.
+    Background* background;             ///< Tlo.
+    Menu* menu;                         ///< Menu.
+    Maps* maps;                         ///< Mapy.
+    Settings* settings;                 ///< Ustawienia.
+    Pause* pause;                       ///< Pauza.
+    Equipment* eq;                      ///< Ekwipunek.
+    MapInitializer* mapInitializer;     ///< Inicjalizator map.
+    TextureManager textureManager;      ///< Menedzer tekstur.
+    std::vector<Obstacle> obstacles;    ///< Lista przeszkod.
+    std::vector<CollectableItem> collectableItems; ///< Lista przedmiotow do zebrania.
+    std::vector<CollectableItem> carrotOnTree; ///< Lista marchewek na drzewach.
+    std::vector<bool> unlockedMaps = { true, false, false, false, false }; ///< Lista map, z których tylko pierwsza jest odblokowana.
+    bool isMenuActive;                  ///< Flaga aktywacji menu.
+    bool isPlayed;                      ///< Flaga informujaca, czy gra byla rozegrana.
+    GameState gameState;                ///< Stan gry.
+    int currentMap = 0;                 ///< Aktualnie wybrana mapa.
+    int difficultyLvel = 0;             ///< Poziom trudnosci.
+    int selectedEq = 0;                 ///< Wybrany przedmiot w ekwipunku.
 
-	bool moveLeftObstacle = true;
-	bool moveRightObstacle = false;
-	bool isGameLoaded = false;
+    bool moveLeftObstacle = true;       ///< Flaga kierunku ruchu przeszkody w lewo.
+    bool moveRightObstacle = false;     ///< Flaga kierunku ruchu przeszkody w prawo.
+    bool isGameLoaded = false;          ///< Flaga informujaca, czy gra zostala zaladowana.
 
-	void initWindow();
-	void initPlayer();
-	void initBackground(int mapIndex);
-	void initObstacles(int mapIndex);
-	void initCollectableItems(int mapIndex);
-	void initEnemies();
-	void updateEnemies(float deltaTime);
-	void renderEnemies();
-	void checkPlayerEnemyCollision();
-	void checkBulletEnemyCollision();
-	void checkBulletPlayerCollision();
-	void checkEqPanel();
+    /**
+     * @brief Inicjalizuje okno gry.
+     */
+    void initWindow();
+
+    /**
+     * @brief Inicjalizuje gracza.
+     */
+    void initPlayer();
+
+    /**
+     * @brief Inicjalizuje tlo na podstawie indeksu mapy.
+     * @param mapIndex Indeks mapy.
+     */
+    void initBackground(int mapIndex);
+
+    /**
+     * @brief Inicjalizuje przeszkody na podstawie indeksu mapy.
+     * @param mapIndex Indeks mapy.
+     */
+    void initObstacles(int mapIndex);
+
+    /**
+     * @brief Inicjalizuje przedmioty do zebrania na podstawie indeksu mapy.
+     * @param mapIndex Indeks mapy.
+     */
+    void initCollectableItems(int mapIndex);
+
+    /**
+     * @brief Inicjalizuje wrogow.
+     */
+    void initEnemies(int mapIndex);
+
+    /**
+     * @brief Aktualizuje stan wrogow.
+     * @param deltaTime Czas, jaki uplyn¹³ od ostatniej klatki.
+     */
+    void updateEnemies(float deltaTime);
+
+    /**
+     * @brief Renderuje wrogow.
+     */
+    void renderEnemies();
+
+    /**
+     * @brief Sprawdza kolizje pomiedzy graczem a wrogami.
+     */
+    void checkPlayerEnemyCollision();
+
+    /**
+     * @brief Sprawdza kolizje pomiedzy pociskami a wrogami.
+     */
+    void checkBulletEnemyCollision();
+
+    /**
+     * @brief Sprawdza kolizje pomiedzy pociskami a graczem.
+     */
+    void checkBulletPlayerCollision();
+
+    /**
+     * @brief Sprawdza stan panelu ekwipunku.
+     */
+    void checkEqPanel();
+
 
 public:
-	
+    /**
+     * @brief Konstruktor klasy Game.
+     * Inicjalizuje wszystkie elementy gry.
+     * @param width Szerokosc okna gry.
+     * @param height Wysokosc okna gry.
+     */
 	Game(int width, int height);
 
+    /**
+     * @brief Destruktor klasy Game.
+     * Zwolnia zasoby wykorzystywane przez obiekty gry.
+     */
 	~Game();
 
+    /**
+     * @brief Zwraca okno gry.
+     * @return Referencja do okna gry.
+     */
 	sf::RenderWindow& getWindow();
 
+    /**
+     * @brief Zwraca szerokosc okna gry.
+     * @return Szerokosc okna gry.
+     */
 	int getWidth() {
 		return width;
 	}
-
+  
+    /**
+     * @brief Zwraca wysokosc okna gry.
+     * @return Wysokosc okna gry.
+     */
 	int getHeight() {
 		return height;
 	}
 
-	void updatePlayer(float deltaTime);
+    /**
+    * @brief Aktualizuje stan gracza.
+    * @param deltaTime Czas, jaki uplyn¹³ od ostatniej klatki.
+    */
+    void updatePlayer(float deltaTime);
 
-	void renderPlayer();
+    /**
+     * @brief Renderuje gracza na ekranie.
+     */
+    void renderPlayer();
 
-	void updateCollectableItems(float deltaTime);
-	
-	void renderCollectableItems();
-	
-	void updateObstacles(float deltaTime);
+    /**
+     * @brief Aktualizuje stan przedmiotow do zebrania.
+     * @param deltaTime Czas, jaki uplyn¹³ od ostatniej klatki.
+     */
+    void updateCollectableItems(float deltaTime);
 
-	void renderObstacles();
+    /**
+     * @brief Renderuje przedmioty do zebrania na ekranie.
+     */
+    void renderCollectableItems();
 
-	void updateBackground(float deltaTime, float characterSpeed);
+    /**
+     * @brief Aktualizuje przeszkody na ekranie.
+     * @param deltaTime Czas, jaki uplyn¹³ od ostatniej klatki.
+     */
+    void updateObstacles(float deltaTime);
 
-	void renderBackground();
+    /**
+     * @brief Renderuje przeszkody na ekranie.
+     */
+    void renderObstacles();
 
-	void update();
+    /**
+     * @brief Aktualizuje tlo gry.
+     * @param deltaTime Czas, jaki uplyn¹³ od ostatniej klatki.
+     * @param characterSpeed Predkosc poruszania sie gracza.
+     */
+    void updateBackground(float deltaTime, float characterSpeed);
 
-	void render();
+    /**
+     * @brief Renderuje tlo na ekranie.
+     */
+    void renderBackground();
 
-	void updateDeltaTime();
+    /**
+     * @brief G³ówna petla aktualizacji gry.
+     */
+    void update();
 
-	void setOpenChestTexture();
+    /**
+     * @brief G³ówna petla renderowania gry.
+     */
+    void render();
 
-	void handleMenuEvents();
+    /**
+     * @brief Aktualizuje czas deltaTime.
+     */
+    void updateDeltaTime();
 
-	void handleSettingsEvents();
+    /**
+     * @brief Ustawia teksture otwartego skrzynki.
+     */
+    void setOpenChestTexture();
 
-	void handlePlayingEvents();
+    /**
+     * @brief Obsluguje wydarzenia w menu.
+     */
+    void handleMenuEvents();
 
-	void handleStatsMenuEvents();
-	void updateGameplay(float deltaTime);
+    /**
+     * @brief Obsluguje wydarzenia w ustawieniach.
+     */
+    void handleSettingsEvents();
 
+    /**
+     * @brief Obsluguje wydarzenia podczas gry.
+     */
+    void handlePlayingEvents();
 
+    /**
+     * @brief Obsluguje wydarzenia w menu statystyk.
+     */
+    void handleStatsMenuEvents();
 
+    /**
+     * @brief Aktualizuje stan rozgrywki.
+     * @param deltaTime Czas, jaki uplyn¹³ od ostatniej klatki.
+     */
+    void updateGameplay(float deltaTime);
 
-	void saveToBinaryFile(const std::string& filename) {
-		std::ofstream file(filename, std::ios::binary);  // Otwieramy plik binarnie
-		if (!file.is_open()) {
-			std::cerr << "Nie mo¿na otworzyæ pliku do zapisu!" << std::endl;
-			return;
-		}
+    /**
+     * @brief Zapisuje stan gry do pliku binarnego.
+     * @param filename Nazwa pliku do zapisania.
+     */
+    void saveToBinaryFile(const std::string& filename);
 
-		try {
-			// Zapisujemy dane podstawowe
-			file.write(reinterpret_cast<const char*>(&gameState), sizeof(gameState));
-
-			// Zapisujemy dane gracza
-			if (player != nullptr) {
-				int currentHealth = player->getCurrentHealth();
-				std::cout << "Zapisywanie zdrowia gracza: " << currentHealth << std::endl;
-				file.write(reinterpret_cast<const char*>(&currentHealth), sizeof(currentHealth));
-
-				float playerPosX = player->getPlayerPosition().x;
-				float playerPosY = player->getPlayerPosition().y;
-				file.write(reinterpret_cast<const char*>(&playerPosX), sizeof(playerPosX));
-				file.write(reinterpret_cast<const char*>(&playerPosY), sizeof(playerPosY));
-			}
-			
-
-			// Zapisujemy liczbê przedmiotów do zebrania
-			size_t itemsCount = collectableItems.size();
-			file.write(reinterpret_cast<const char*>(&itemsCount), sizeof(itemsCount));
-
-			// Zapisujemy dane przedmiotów
-			for (const auto& item : collectableItems) {
-				item.save(file);
-			}
-
-
-
-			std::cout << "Stan gry zapisany do pliku: " << filename << std::endl;
-		}
-		catch (const std::exception& e) {
-			std::cerr << "Exception during file write: " << e.what() << std::endl;
-		}
-
-		file.close();
-	}
-
-	void loadFromFile(const std::string& filename) {
-		std::ifstream file(filename, std::ios::binary);  // Otwieramy plik binarnie
-		if (!file.is_open()) {
-			std::cerr << "Nie mo¿na otworzyæ pliku do odczytu!" << std::endl;
-			return;
-		}
-		try {
-			// Odczytujemy dane podstawowe (w tej samej kolejnoœci, co zapisano)
-			file.read(reinterpret_cast<char*>(&gameState), sizeof(gameState));
-
-			// Odczytujemy dane gracza (sprawdzamy, czy player istnieje)
-			if (player != nullptr) {
-				int currentHealth;
-				file.read(reinterpret_cast<char*>(&currentHealth), sizeof(currentHealth));
-				std::cout << "odczytywanie zdrowia gracza: " << currentHealth << std::endl;
-				player->setHealth(currentHealth);
-
-				float playerPosX, playerPosY;
-				file.read(reinterpret_cast<char*>(&playerPosX), sizeof(playerPosX));
-				file.read(reinterpret_cast<char*>(&playerPosY), sizeof(playerPosY));
-				player->setPlayerPosition(playerPosX, playerPosY);
-				std::cout << "odczytana gracza po pozycja: "
-					<< playerPosX << ", "
-					<< playerPosY << std::endl;
-			}
-
-
-			// Odczytujemy liczbê przedmiotów do zebrania
-			size_t itemsCount;
-			file.read(reinterpret_cast<char*>(&itemsCount), sizeof(itemsCount));
-
-			// Odczytujemy dane przedmiotów
-			collectableItems.clear();
-			for (size_t i = 0; i < itemsCount; ++i) {
-				CollectableItem item;
-				item.load(file);  // Odczytaj dane przedmiotu z pliku
-				collectableItems.push_back(item);  // Dodaj do wektora
-			}
-
-
-
-			std::cout << "Stan gry odczytany z pliku: " << filename << std::endl;
-			isGameLoaded = true;
-		}
-		catch (const std::exception& e) {
-			std::cerr << "Exception during file reading: " << e.what() << std::endl;
-			isGameLoaded = false;
-		}
-
-		file.close();
-	}
-
+    /**
+     * @brief Wczytuje stan gry z pliku binarnego.
+     * @param filename Nazwa pliku do wczytania.
+     */
+    void loadFromBinaryFile(const std::string& filename);
 
 };
 

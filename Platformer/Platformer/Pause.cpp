@@ -11,12 +11,12 @@ void Pause::initItems() {
 		sprite.setPosition(800 / 2.0f - 100, 600 / 2.0f);
 		pauseItems.emplace_back(sprite);
 	}
-	if (!stopTexture.loadFromFile("textury/stop.png")) {
+	if (!saveTexture.loadFromFile("textury/stop.png")) {
 		std::cerr << "Nie uda³o siê za³adowaæ tekstury 'stop.png'!" << std::endl;
 	}
 	else {
 		sf::Sprite sprite;
-		sprite.setTexture(stopTexture);
+		sprite.setTexture(saveTexture);
 		sprite.setPosition(800 / 2.0f, 600 / 2.0);
 		pauseItems.emplace_back(sprite);
 	}

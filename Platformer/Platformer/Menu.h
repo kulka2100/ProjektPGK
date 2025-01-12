@@ -1,30 +1,60 @@
 #pragma once
 #include "Background.h"
+
+/**
+ * @brief Klasa odpowiedzialna za zarzadzanie menu w grze.
+ * Umo¿liwia rysowanie menu, nawigowanie po elementach oraz wybór.
+ */
 class Menu
 {
 protected:
-	sf::Font font;
-	std::vector<sf::Text> menuItems;
-	int selectedIndex;
-	const sf::Color selectedColor = sf::Color::Red;
-	const sf::Color unselectedColor = sf::Color::White;
-	Background *background;
+    sf::Font font;                                      /**< Czcionka u¿ywana w menu. */
+    std::vector<sf::Text> menuItems;                    /**< Wektor przechowuj¹cy elementy tekstowe menu. */
+    int selectedIndex;                                  /**< Indeks aktualnie wybranego elementu w menu. */
+    const sf::Color selectedColor = sf::Color::Red;     /**< Kolor zaznaczonego elementu menu. */
+    const sf::Color unselectedColor = sf::Color::White; /**< Kolor niezaznaczonego elementu menu. */
+    Background* background;                             /**< T³o menu. */
 
 public:
-	Menu(float width, float height);
+    /**
+     * @brief Konstruktor klasy Menu, inicjalizuje menu na podstawie szerokosci i wysokosci okna.
+     * @param width Szerokosc okna gry.
+     * @param height Wysokosc okna gry.
+     */
+    Menu(float width, float height);
 
-	Menu();
+    /**
+     * @brief Konstruktor domyslny klasy Menu.
+     */
+    Menu();
 
-	~Menu() {
-		delete background;
-	}
+    /**
+     * @brief Destruktor klasy Menu, zwalnia zasoby.
+     */
+    ~Menu() {
+        delete background;
+    }
 
-	void draw(sf::RenderWindow& window);
+    /**
+     * @brief Rysuje menu na ekranie gry.
+     * @param window Okno renderowania, na którym ma zostaæ wyœwietlone menu.
+     */
+    void draw(sf::RenderWindow& window);
 
-	void moveUp();
+    /**
+     * @brief Przemieszcza zaznaczenie menu w górê.
+     */
+    void moveUp();
 
-	void moveDown();
+    /**
+     * @brief Przemieszcza zaznaczenie menu w dó³.
+     */
+    void moveDown();
 
-	int getSelectedIndex() const;
+    /**
+     * @brief Zwraca indeks aktualnie wybranego elementu w menu.
+     * @return Indeks aktualnie wybranego elementu.
+     */
+    int getSelectedIndex() const;
 };
 
