@@ -4,7 +4,7 @@
 
 /**
  * @brief Klasa reprezentujaca menu statystyk w grze.
- * Umo¿liwia nawigowanie po opcjach menu oraz ich renderowanie.
+ * Umozliwia nawigowanie po opcjach menu oraz ich renderowanie.
  */
 class StatsMenu {
 private:

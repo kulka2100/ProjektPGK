@@ -3,7 +3,7 @@
 
 /**
  * @brief Klasa odpowiedzialna za zarzadzanie menu w grze.
- * Umo¿liwia rysowanie menu, nawigowanie po elementach oraz wybór.
+ * Umozliwia rysowanie menu, nawigowanie po elementach oraz wybor.
  */
 class Menu
 {

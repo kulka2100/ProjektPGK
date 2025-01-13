@@ -3,7 +3,7 @@
 
 /**
  * @class Background
- * @brief Klasa reprezentuj¹ca t³o gry, które mo¿e poruszaæ siê w zale¿noœci od pozycji gracza.
+ * @brief Klasa reprezentujaca tlo gry, ktore moze poruszac sie w zaleznosci od pozycji gracza.
  */
 class Background
 {

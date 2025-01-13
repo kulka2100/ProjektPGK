@@ -4,8 +4,8 @@
 #include "TextureManager.h"
 
 /**
- * @brief Klasa reprezentuj¹ca ekran ustawieñ w grze.
- * Dziedziczy po klasach Button i Menu, umozliwiajac obs³uge interfejsu ustawien.
+ * @brief Klasa reprezentujaca ekran ustawien w grze.
+ * Dziedziczy po klasach Button i Menu, umozliwiajac obsluge interfejsu ustawien.
  */
 class Settings : public Button, Menu
 {

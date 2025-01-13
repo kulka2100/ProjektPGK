@@ -7,7 +7,7 @@
 
 /**
  * @brief Klasa odpowiedzialna za zarzadzanie mapami w menu gry, dziedziczy po klasach Button oraz Menu.
- * Umo¿liwia inicjalizacjê miniaturek map oraz ich wyœwietlanie.
+ * Umozliwia inicjalizacje miniaturek map oraz ich wyswietlanie.
  */
 class Maps : public Button, Menu
 {

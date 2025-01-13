@@ -104,14 +104,46 @@ void Game::initEnemies(int mapIndex) {
 		delete enemy; // Zwolnienie pami�ci dla ka�dego przeciwnika
 	}
 	enemies.clear(); // Opr�nianie wektora
-	//enemies.emplace_back(new Moles(sf::Vector2f(400.f, 170.f), 70.f, 400.f, 550.f));
-	//enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
-	//enemies.emplace_back(new Cats(sf::Vector2f(900.f, 390.f), 150.f, 900.f, 1200.f));
-	//enemies.emplace_back(new Bats(sf::Vector2f(1600.f, 100.f), 300.f, 1300.f, 1600.f));
-	//enemies.emplace_back(new Bats(sf::Vector2f(1300.f, 200.f), 300.f, 400.f, 600.f));
-	if (mapIndex == 3) {
-		enemies.emplace_back(new Boss(sf::Vector2f(2000.f, 200.f), 70.f, 2000.f, 2000.f));
+	switch (mapIndex) {
+	case 0: {
+	enemies.emplace_back(new Moles(sf::Vector2f(500.f, 170.f), 70.f, 500.f, 650.f));
+	enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
+	enemies.emplace_back(new Cats(sf::Vector2f(1400.f, 390.f), 150.f, 1400.f, 1700.f));
+
+	enemies.emplace_back(new Moles(sf::Vector2f(1500.f, 390.f), 70.f, 1500.f, 1800));
+	enemies.emplace_back(new Moles(sf::Vector2f(1700.f, 390.f), 100.f, 1700.f, 2200));
+		break;
 	}
+	case 1: {
+		enemies.emplace_back(new Moles(sf::Vector2f(500.f, 170.f), 70.f, 500.f, 650.f));
+		enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
+		enemies.emplace_back(new Cats(sf::Vector2f(1400.f, 390.f), 150.f, 1400.f, 1700.f));
+		enemies.emplace_back(new Cats(sf::Vector2f(1700.f, 390.f), 150.f, 1700.f, 2200.f));
+
+		break;
+	}
+	case 2: {
+		enemies.emplace_back(new Moles(sf::Vector2f(500.f, 170.f), 70.f, 500.f, 650.f));
+		enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
+		enemies.emplace_back(new Cats(sf::Vector2f(1400.f, 390.f), 150.f, 1400.f, 1700.f));
+		break;
+	}
+	case 3: {
+		enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
+		enemies.emplace_back(new Bats(sf::Vector2f(1600.f, 100.f), 300.f, 1300.f, 1600.f));
+		enemies.emplace_back(new Boss(sf::Vector2f(2000.f, 200.f), 70.f, 2000.f, 2000.f));
+		break;
+	}
+	case 4: {
+		enemies.emplace_back(new Bats(sf::Vector2f(1600.f, 100.f), 300.f, 1300.f, 1600.f));
+		enemies.emplace_back(new Bats(sf::Vector2f(600.f, 100.f), 300.f, 1300.f, 600.f));
+		break;
+	}
+	default:
+		std::cerr << "Nieobslugiwany indeks mapy : " << mapIndex << std::endl;
+		break;
+	}
+
 }
 
 
