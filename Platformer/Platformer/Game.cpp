@@ -85,7 +85,7 @@ void Game::initCollectableItems(int mapIndex){
 			break;
 		}
 		case 3: {
-			mapInitializer->initMap3CollectableItems(collectableItems, carrotOnTree, textureManager);
+			mapInitializer->initMap4CollectableItems(collectableItems, carrotOnTree, textureManager);
 			break;
 		}
 		case 4: {
@@ -109,8 +109,7 @@ void Game::initEnemies(int mapIndex) {
 	enemies.emplace_back(new Moles(sf::Vector2f(500.f, 170.f), 70.f, 500.f, 650.f));
 	enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
 	enemies.emplace_back(new Cats(sf::Vector2f(1400.f, 390.f), 150.f, 1400.f, 1700.f));
-
-	enemies.emplace_back(new Moles(sf::Vector2f(1500.f, 390.f), 70.f, 1500.f, 1800));
+	enemies.emplace_back(new Moles(sf::Vector2f(1600, 180.f), 70.f, 1550.f, 1780));
 	enemies.emplace_back(new Moles(sf::Vector2f(1700.f, 390.f), 100.f, 1700.f, 2200));
 		break;
 	}
@@ -124,7 +123,6 @@ void Game::initEnemies(int mapIndex) {
 	}
 	case 2: {
 		enemies.emplace_back(new Moles(sf::Vector2f(500.f, 170.f), 70.f, 500.f, 650.f));
-		enemies.emplace_back(new Moles(sf::Vector2f(600.f, 390.f), 100.f, 600.f, 800.f));
 		enemies.emplace_back(new Cats(sf::Vector2f(1400.f, 390.f), 150.f, 1400.f, 1700.f));
 		break;
 	}
@@ -696,51 +694,65 @@ void Game::updateDeltaTime() {
 }
 
 void Game::setOpenChestTexture() {
-	textureManager.loadTexture("textury/las/openchest.png", "openChest");
 	textureManager.loadTexture("textury/hat.png", "hat");
 	textureManager.loadTexture("textury/wings.png", "wings");
 	textureManager.loadTexture("textury/saw.png", "saw");
 	textureManager.loadTexture("textury/helmet.png", "helmet");
+	textureManager.loadTexture("textury/las/marchewka.png", "marchew");
+
+	textureManager.loadTexture("textury/las/openchest.png", "openChest");
+	textureManager.loadTexture("textury/polana/openchest.png", "openChestPolana");
+	textureManager.loadTexture("textury/wulkan/openchest.png", "openChestWulkan");
+	textureManager.loadTexture("textury/pieklo/openchest.png", "openChestPieklo");
 
 
 	sf::Texture* openChestTexture = textureManager.getTexture("openChest");
+	sf::Texture* openChestPolanaTexture = textureManager.getTexture("openChestPolana");
+	sf::Texture* openChestWulkanTexture = textureManager.getTexture("openChestWulkan");
+	sf::Texture* openChestPiekloTexture = textureManager.getTexture("openChestPieklo");
+
 	sf::Texture* hatTexture = textureManager.getTexture("hat");
 	sf::Texture* wingsTexture = textureManager.getTexture("wings");
 	sf::Texture* sawTexture = textureManager.getTexture("saw");
 	sf::Texture* helmetTexture = textureManager.getTexture("helmet");
+	sf::Texture* marchewka = textureManager.getTexture("marchew");
 
-	if (openChestTexture) {
-		for (auto& item : collectableItems) {
-			std::cout << "obecna mapa " << currentMap;
-			std::cout << item.getIsChestOpen() << std::endl;
-			if (item.getIsChestOpen()) {
-				sf::Vector2f posChest = item.getPosition();
-				std::cout << "Otwarta slkrznia" << std::endl;
+	
+	for (auto& item : collectableItems) {
+		std::cout << "obecna mapa " << currentMap;
+		std::cout << item.getIsChestOpen() << std::endl;
+		if (item.getIsChestOpen()) {
+			sf::Vector2f posChest = item.getPosition();
+			std::cout << "Otwarta slkrznia" << std::endl;
+			if (hatTexture && openChestTexture && currentMap == 0) {
 				item.setTexture(*openChestTexture);
 				item.setType(ItemType::OpenChest);
-				if (hatTexture && currentMap == 0) {
-					collectableItems.emplace_back(*hatTexture, sf::Vector2f(posChest.x + 80 , posChest.y), ItemType::Hat);
-					std::cout << "dodano "  << posChest.x  << std::endl;
-				}
-				if (wingsTexture &&currentMap == 3) {
-					collectableItems.emplace_back(*wingsTexture, sf::Vector2f(posChest.x + 40, posChest.y - 20), ItemType::Wings);
-					std::cout << "wings " << posChest.x << std::endl;
-				}
-				if (sawTexture && currentMap == 2) {
-					collectableItems.emplace_back(*sawTexture, sf::Vector2f(posChest.x, posChest.y - 20), ItemType::Saw);
-					std::cout << "wings " << posChest.x << std::endl;
-				}
-
-				if (helmetTexture && currentMap == 1) {
-					collectableItems.emplace_back(*helmetTexture, sf::Vector2f(posChest.x, posChest.y - 20), ItemType::Helmet);
-					std::cout << "wings " << posChest.x << std::endl;
-				}
-			
+				collectableItems.emplace_back(*hatTexture, sf::Vector2f(posChest.x + 80 , posChest.y), ItemType::Hat);
+				collectableItems.emplace_back(*marchewka, sf::Vector2f(posChest.x + 100, posChest.y	+ 10), ItemType::Carrot);
+				collectableItems.emplace_back(*marchewka, sf::Vector2f(posChest.x + 60, posChest.y + 10), ItemType::Carrot);
+				collectableItems.emplace_back(*marchewka, sf::Vector2f(posChest.x + 120, posChest.y + 10), ItemType::Carrot);
 			}
+			if (wingsTexture && openChestPiekloTexture && currentMap == 3) {
+				item.setTexture(*openChestPiekloTexture);
+				item.setType(ItemType::OpenChest);
+				collectableItems.emplace_back(*wingsTexture, sf::Vector2f(posChest.x + 40, posChest.y - 20), ItemType::Wings);
+				std::cout << "wings " << posChest.x << std::endl;
+			}
+			if (sawTexture && openChestWulkanTexture && currentMap == 2) {
+				item.setTexture(*openChestWulkanTexture);
+				item.setType(ItemType::OpenChest);
+				collectableItems.emplace_back(*sawTexture, sf::Vector2f(posChest.x, posChest.y - 20), ItemType::Saw);
+				std::cout << "wings " << posChest.x << std::endl;
+			}
+
+			if (helmetTexture && openChestPolanaTexture && currentMap == 1) {
+				item.setTexture(*openChestPolanaTexture);
+				item.setType(ItemType::OpenChest);
+				collectableItems.emplace_back(*helmetTexture, sf::Vector2f(posChest.x, posChest.y - 20), ItemType::Helmet);
+				std::cout << "wings " << posChest.x << std::endl;
+			}
+			
 		}
-	}
-	else {
-		std::cerr << "Tekstura chest nie zosta�a poprawnie za�adowana." << openChestTexture << std::endl;
 	}
 }
 
@@ -773,7 +785,7 @@ void Game::handleMenuEvents() {
 			else if (selected == 3) {
 				std::cout << "Wczytywanie gry z pliku..." << std::endl;
 				loadFromBinaryFile("game_save.dat");
-				gameState = GameState::Playing; // Po wczytaniu gra przechodzi do trybu rozgrywki
+				gameState = GameState::ChoosingMaps; // Po wczytaniu gra przechodzi do trybu rozgrywki
 				isMenuActive = false;
 			}
 

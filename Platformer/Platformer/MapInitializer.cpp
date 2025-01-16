@@ -15,15 +15,20 @@ void MapInitializer::initMap1Obstacles(std::vector<Obstacle>& obstacles, Texture
 		// Dodawanie przeszkód z za³adowan¹ tekstur¹
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(50, 200.f), ObstacleType::Platform);
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(500.f, 250.f), ObstacleType::Platform);
+		obstacles.emplace_back(*platformTexture, sf::Vector2f(1600, 250.f), ObstacleType::Platform);
+	
 	}
 	if (kamykTexture) {
 		obstacles.emplace_back(*kamykTexture, sf::Vector2f(700.f, 400.0f), ObstacleType::Stone);
+		obstacles.emplace_back(*kamykTexture, sf::Vector2f(1600.f, 400.0f), ObstacleType::Stone);
 	}
 	else {
 		std::cerr << "Tekstura platforma nie zosta³a poprawnie za³adowana." << platformTexture << std::endl;
 	}
 	if (smallPlatformTexture) {
 		obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(250.f, 380.f), ObstacleType::Platform);
+		obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(1200.f, 320.f), ObstacleType::Platform);
+		obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(2000.f, 300.f), ObstacleType::Platform);
 	}
 }
 
@@ -41,6 +46,9 @@ void MapInitializer::initMap2Obstacles(std::vector<Obstacle>& obstacles, Texture
 	}
 	if (smallPlatformTexture) {
 		obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(550.f, 380.f), ObstacleType::Platform);
+		obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(1660.f, 380.f), ObstacleType::Platform);
+		obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(1000.f, 320.f), ObstacleType::Platform);
+		obstacles.emplace_back(*smallPlatformTexture, sf::Vector2f(1350.f, 280.f), ObstacleType::Platform);
 	}
 }
 
@@ -60,6 +68,10 @@ void MapInitializer::initMap3Obstacles(std::vector<Obstacle>& obstacles, Texture
 	}
 	if (smallBoxTexture) {
 		obstacles.emplace_back(*smallBoxTexture, sf::Vector2f(550.f, 400.f), ObstacleType::Stone);
+		obstacles.emplace_back(*smallBoxTexture, sf::Vector2f(1200.f, 400.f), ObstacleType::Stone);
+		obstacles.emplace_back(*smallBoxTexture, sf::Vector2f(1050.f, 300.f), ObstacleType::Stone);
+		obstacles.emplace_back(*smallBoxTexture, sf::Vector2f(1300.f, 200.f), ObstacleType::Stone);
+		obstacles.emplace_back(*smallBoxTexture, sf::Vector2f(1800.f, 330.f), ObstacleType::Stone);
 
 	}
 	//Dodac spadanie g³azów
@@ -74,23 +86,34 @@ void MapInitializer::initMap4Obstacles(std::vector<Obstacle>& obstacles, Texture
 	textureManager.loadTexture("textury/pieklo/platforma.png", "platformaPielko");
 	textureManager.loadTexture("textury/pieklo/kolce.png", "kolce");
 	textureManager.loadTexture("textury/pieklo/kosa.png", "kosa");
+	textureManager.loadTexture("textury/pieklo/bigBox.png", "bigBox");
 
 	sf::Texture* platformTexture = textureManager.getTexture("platformaPielko");
 	sf::Texture* kolceTexture = textureManager.getTexture("kolce");
 	sf::Texture* kosaWulkan = textureManager.getTexture("kosa");
+	sf::Texture* bigBox = textureManager.getTexture("bigBox");
+
+
 
 	if (platformTexture) {
 		// Dodawanie przeszkód z za³adowan¹ tekstur¹
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(50, 200.f), ObstacleType::Platform);
 		obstacles.emplace_back(*platformTexture, sf::Vector2f(500.f, 250.f), ObstacleType::Platform);
+
+		obstacles.emplace_back(*platformTexture, sf::Vector2f(1000.f, 300.f), ObstacleType::Platform);
+		obstacles.emplace_back(*platformTexture, sf::Vector2f(1350.f, 120.f), ObstacleType::Platform);
 	}
 	if (kolceTexture) {
 		obstacles.emplace_back(*kolceTexture, sf::Vector2f(550.f, 450.f), ObstacleType::Spikes);
 	}
-	//Zrobic poruszanie kos¹
 	if (kosaWulkan) {
 		obstacles.emplace_back(*kosaWulkan, sf::Vector2f(400.f, 200.f), ObstacleType::Scythe);
 	}
+	if (bigBox) {
+		obstacles.emplace_back(*bigBox, sf::Vector2f(300.f, 400.f), ObstacleType::Stone);
+		obstacles.emplace_back(*bigBox, sf::Vector2f(1700.f, 300.f), ObstacleType::Stone);
+	}
+
 }
 
 void MapInitializer::initMap5Obstacles(std::vector<Obstacle>& obstacles, TextureManager& textureManager) {
@@ -130,11 +153,11 @@ void MapInitializer::initMap1CollectableItems(std::vector<CollectableItem>& coll
 		std::cerr << "Tekstura marchewki nie zosta³a poprawnie za³adowana." << marchewkaTexture << std::endl;
 	}
 	if (healthTexture) {
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(400.f, 230.f), ItemType::Health);
 		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 230.f), ItemType::Health);
 		collectableItems.emplace_back(*healthTexture, sf::Vector2f(450.f, 230.f), ItemType::Health);
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(100.f, 400.f), ItemType::Health);
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(150.f, 230.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(1800.f, 400.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(2050.f, 280.f), ItemType::Health);
+
 	}
 	else {
 		std::cerr << "Tekstura hp nie zosta³a poprawnie za³adowana." << healthTexture << std::endl;
@@ -156,9 +179,9 @@ void MapInitializer::initMap1CollectableItems(std::vector<CollectableItem>& coll
 	if (treeTexture && marchewkaTexture) {
 		collectableItems.emplace_back(*treeTexture, sf::Vector2f(1000.f, 150.f), ItemType::Tree);
 		// Uzyskanie referencji do ostatnio dodanego elementu (drzewa)
-		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1100.f, 170.f), ItemType::Carrot);
-		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1100.f, 270.f), ItemType::Carrot);
-		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1200.f, 200.f), ItemType::Carrot);
+		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(100.f, 170.f), ItemType::Carrot);
+		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(800.f, 370.f), ItemType::Carrot);
+		carrotOnTree.emplace_back(*marchewkaTexture, sf::Vector2f(1200.f, 300.f), ItemType::Carrot);
 	}
 	else {
 		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << treeTexture << std::endl;
@@ -185,29 +208,30 @@ void MapInitializer::initMap2CollectableItems(std::vector<CollectableItem>& coll
 
 
 	if (marchewkaTexture) {
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(400.f, 400.0f), ItemType::Carrot);
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(200.f, 400.0f), ItemType::Carrot);
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1400.f, 170.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(550.f, 180.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(150.f, 150.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1400.f, 150.f), ItemType::Carrot);
 	}
 	else {
 		std::cerr << "Tekstura marchewki nie zosta³a poprawnie za³adowana." << marchewkaTexture << std::endl;
 	}
 	if (healthTexture) {
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(400.f, 230.f), ItemType::Health);
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 230.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(600.f, 200.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 180.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(2050.f, 280.f), ItemType::Health);
 	}
 	else {
 		std::cerr << "Tekstura hp nie zosta³a poprawnie za³adowana." << healthTexture << std::endl;
 	}
 	if (keyTexture) {
-		collectableItems.emplace_back(*keyTexture, sf::Vector2f(750.f, 330.f), ItemType::Key);
+		collectableItems.emplace_back(*keyTexture, sf::Vector2f(1100.f, 280.f), ItemType::Key);
 	}
 	else {
 		std::cerr << "Tekstura key nie zosta³a poprawnie za³adowana." << keyTexture << std::endl;
 	}
 
 	if (chestTexture) {
-		collectableItems.emplace_back(*chestTexture, sf::Vector2f(1300.f, 380.f), ItemType::Chest);
+		collectableItems.emplace_back(*chestTexture, sf::Vector2f(1300.f, 330.f), ItemType::Chest);
 	}
 	else {
 		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << chestTexture << std::endl;
@@ -234,22 +258,29 @@ void MapInitializer::initMap3CollectableItems(std::vector<CollectableItem>& coll
 
 
 	if (marchewkaTexture) {
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(400.f, 400.0f), ItemType::Carrot);
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(200.f, 400.0f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(150.f, 150.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(600.f, 200.f), ItemType::Carrot);
 		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1400.f, 170.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1820.f, 260.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1850.f, 200.f), ItemType::Carrot);
+
 	}
 	else {
 		std::cerr << "Tekstura marchewki nie zosta³a poprawnie za³adowana." << marchewkaTexture << std::endl;
 	}
 	if (healthTexture) {
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(400.f, 230.f), ItemType::Health);
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 230.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 150.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(670.f, 200.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(1900.f, 400.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(2050.f, 400.f), ItemType::Health);
+
+
 	}
 	else {
 		std::cerr << "Tekstura hp nie zosta³a poprawnie za³adowana." << healthTexture << std::endl;
 	}
 	if (keyTexture) {
-		collectableItems.emplace_back(*keyTexture, sf::Vector2f(750.f, 330.f), ItemType::Key);
+		collectableItems.emplace_back(*keyTexture, sf::Vector2f(1330.f, 150.f), ItemType::Key);
 	}
 	else {
 		std::cerr << "Tekstura key nie zosta³a poprawnie za³adowana." << keyTexture << std::endl;
@@ -270,9 +301,55 @@ void MapInitializer::initMap3CollectableItems(std::vector<CollectableItem>& coll
 
 }
 void MapInitializer::initMap4CollectableItems(std::vector<CollectableItem>& collectableItems, std::vector<CollectableItem> carrotOnTree, TextureManager& textureManager) {
+	textureManager.loadTexture("textury/polana/marchewka.png", "marchewkaPolana");
+	textureManager.loadTexture("textury/hp.png", "health");
+	textureManager.loadTexture("textury/niebo/key.png", "keyPolana");
+	textureManager.loadTexture("textury/pieklo/chest.png", "chestPieklo");
+
+	sf::Texture* marchewkaTexture = textureManager.getTexture("marchewkaPolana");
+	sf::Texture* healthTexture = textureManager.getTexture("health");
+	sf::Texture* keyTexture = textureManager.getTexture("keyPolana");
+	sf::Texture* chestTexture = textureManager.getTexture("chestPieklo");
 	sf::Texture* gateTexture = textureManager.getTexture("gate");
 
 
+	if (marchewkaTexture) {
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(150.f, 150.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(600.f, 200.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1150.f, 250.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1400.f, 50.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1500.f, 50.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1600.f, 50.f), ItemType::Carrot);
+		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1700.f, 50.f), ItemType::Carrot);
+
+	}
+	else {
+		std::cerr << "Tekstura marchewki nie zosta³a poprawnie za³adowana." << marchewkaTexture << std::endl;
+	}
+	if (healthTexture) {
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 150.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(670.f, 200.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(1900.f, 400.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(2050.f, 400.f), ItemType::Health);
+
+
+	}
+	else {
+		std::cerr << "Tekstura hp nie zosta³a poprawnie za³adowana." << healthTexture << std::endl;
+	}
+	if (keyTexture) {
+		collectableItems.emplace_back(*keyTexture, sf::Vector2f(1100.f, 250.f), ItemType::Key);
+	}
+	else {
+		std::cerr << "Tekstura key nie zosta³a poprawnie za³adowana." << keyTexture << std::endl;
+	}
+
+	if (chestTexture) {
+		collectableItems.emplace_back(*chestTexture, sf::Vector2f(1300.f, 330.f), ItemType::Chest);
+	}
+	else {
+		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << chestTexture << std::endl;
+	}
 	if (gateTexture) {
 		collectableItems.emplace_back(*gateTexture, sf::Vector2f(2100.f, 255.f), ItemType::Gate);
 	}
@@ -283,36 +360,20 @@ void MapInitializer::initMap4CollectableItems(std::vector<CollectableItem>& coll
 
 
 void MapInitializer::initMap5CollectableItems(std::vector<CollectableItem>& collectableItems, std::vector<CollectableItem> carrotOnTree, TextureManager& textureManager) {
-	textureManager.loadTexture("textury/polana/marchewka.png", "marchewkaPolana");
 	textureManager.loadTexture("textury/hp.png", "health");
-	textureManager.loadTexture("textury/las/key.png", "keyPolana");
+	textureManager.loadTexture("textury/niebo/key.png", "keyNiebo");
 
-	sf::Texture* marchewkaTexture = textureManager.getTexture("marchewkaPolana");
 	sf::Texture* healthTexture = textureManager.getTexture("health");
-	sf::Texture* keyTexture = textureManager.getTexture("keyPolana");
 	sf::Texture* gateTexture = textureManager.getTexture("gate");
+	sf::Texture* keyTexture = textureManager.getTexture("keyNiebo");
 
 
-	if (marchewkaTexture) {
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(400.f, 400.0f), ItemType::Carrot);
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(200.f, 400.0f), ItemType::Carrot);
-		collectableItems.emplace_back(*marchewkaTexture, sf::Vector2f(1400.f, 170.f), ItemType::Carrot);
-	}
-	else {
-		std::cerr << "Tekstura marchewki nie zosta³a poprawnie za³adowana." << marchewkaTexture << std::endl;
-	}
 	if (healthTexture) {
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(400.f, 230.f), ItemType::Health);
-		collectableItems.emplace_back(*healthTexture, sf::Vector2f(200.f, 230.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(570.f, 80.f), ItemType::Health);
+		collectableItems.emplace_back(*healthTexture, sf::Vector2f(1370.f, 80.f), ItemType::Health);
 	}
 	else {
 		std::cerr << "Tekstura hp nie zosta³a poprawnie za³adowana." << healthTexture << std::endl;
-	}
-	if (keyTexture) {
-		collectableItems.emplace_back(*keyTexture, sf::Vector2f(750.f, 330.f), ItemType::Key);
-	}
-	else {
-		std::cerr << "Tekstura key nie zosta³a poprawnie za³adowana." << keyTexture << std::endl;
 	}
 
 	if (gateTexture) {
@@ -320,5 +381,11 @@ void MapInitializer::initMap5CollectableItems(std::vector<CollectableItem>& coll
 	}
 	else {
 		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << gateTexture << std::endl;
+	}
+	if (keyTexture) {
+		collectableItems.emplace_back(*keyTexture, sf::Vector2f(750.f, 400.f), ItemType::Key);
+	}
+	else {
+		std::cerr << "Tekstura chest nie zosta³a poprawnie za³adowana." << keyTexture << std::endl;
 	}
 }
