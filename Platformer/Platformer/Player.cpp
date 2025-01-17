@@ -113,7 +113,7 @@ Player::Player(sf::Vector2f playerPosition, int hp) : health(hp) {
     this->experienceToNext = 100;
     this->maxHealth = 5;
     this->damage = 1;
-    this->characterSpeed = 600.f;
+    this->characterSpeed = 200.f;
 }
 
 Player::~Player()
